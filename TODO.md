@@ -52,7 +52,7 @@ Legenda: `👤` = butuh tindakan manual user · `🌐` = butuh network/testnet R
   - Tab 2: Upload Gambar Foto QR (drag & drop file foto)
   - Tab 3: Paste frasa manual
 - [ ] **Header Bar & Status Sesi**: Indikator "Locked" / "Active (Fingerprint: ae0d...)" + tombol **"Lock / Clear Memory"**
-- [ ] Desain Modern Glassmorphism (Dark mode elegan, responsive, Google Font typography)
+- [ ] **Desain Terinspirasi Rabby Wallet UI** (Palet Rabby Blue `#705BFF`, Dark Slate `#13141E`, rounded squircles, kartu portfolio, badge security shield, simulasi pre-flight transaksi, Google Font Inter/Outfit)
 - [ ] **Gate:** Generate seed -> Download/Foto QR -> Lock -> Scan QR via kamera/file -> Mnemonic ter-load di memori
 
 ---
