@@ -7,6 +7,7 @@ import { registerBalanceCommands } from './cli/commands/balance.js';
 import { registerFaucetCommands } from './cli/commands/faucet.js';
 import { registerSendCommands } from './cli/commands/send.js';
 import { registerRateCommands } from './cli/commands/rate.js';
+import { registerHistoryCommands } from './cli/commands/history.js';
 
 dotenv.config();
 
@@ -23,5 +24,6 @@ registerBalanceCommands(program);
 registerFaucetCommands(program);
 registerSendCommands(program);
 registerRateCommands(program);
+registerHistoryCommands(program);
 
 program.parse(process.argv);
