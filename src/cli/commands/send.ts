@@ -7,6 +7,7 @@ import { DEFAULT_TEST_TOKENS } from '../../config/tokens.js';
 import { NETWORKS } from '../../config/networks.js';
 import { parseAmount } from '../../core/amount.js';
 import type { LedgerId, Asset } from '../../core/types.js';
+import { appendCliHistory } from './history.js';
 
 export function registerSendCommands(program: Command): void {
   program
@@ -106,6 +107,21 @@ export function registerSendCommands(program: Command): void {
         const signed = await adapter.sign(unsigned, fromAccount.privateKey!);
         console.log('Menyiarkan transaksi ke node testnet...');
         const res = await adapter.broadcast(signed);
+
+        appendCliHistory({
+          id: res.hash,
+          hash: res.hash,
+          ledger,
+          type: 'send',
+          assetSymbol: asset.symbol || config.nativeAsset.symbol,
+          amount: opts.amount,
+          from: fromAccount.address,
+          to: toAddress,
+          timestamp: Date.now(),
+          status: 'confirmed',
+          explorerUrl: adapter.explorerTx(res.hash),
+        });
+
         console.log(`\n🎉 Transaksi berhasil disiarkan!`);
         console.log(`Tx Hash : ${res.hash}`);
         console.log(`Explorer: ${adapter.explorerTx(res.hash)}\n`);

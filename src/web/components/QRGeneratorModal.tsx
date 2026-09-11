@@ -129,7 +129,7 @@ export const QRGeneratorModal: React.FC<Props> = ({ isOpen, onClose }) => {
             gap: '8px',
             background: 'var(--bg-input)',
             padding: '14px',
-            borderRadius: 'var(--radius-md)',
+            borderRadius: 'var(--radius-base)',
             border: '1px solid var(--border-subtle)',
             marginBottom: '16px',
           }}

@@ -6,9 +6,10 @@ import { DEFAULT_TEST_TOKENS, getActiveTokenAsset } from '../../config/tokens.js
 import { parseAmount } from '../../core/amount.js';
 import { validateAddress } from '../../core/validate.js';
 import type { Asset, UnsignedTx, LedgerId } from '../../core/types.js';
-import { formatIDR, calculateIDRValue, type RatesMap } from '../../core/rates.js';
+import { formatIDR, calculateIDRValue, TESTNET_TO_INDODAX_MAP, type RatesMap } from '../../core/rates.js';
+import { saveTransaction } from '../../core/history.js';
+import { SubpageLayout } from './SubpageLayout';
 import {
-  X,
   Send,
   ShieldCheck,
   ArrowDownLeft,
@@ -161,6 +162,33 @@ export const SendModal: React.FC<Props> = ({
       // Step 2: Broadcast to testnet
       const { hash } = await adapter.broadcast(signed);
       setTxHash(hash);
+
+      // Save to transaction history
+      const symbol = getAssetSymbol();
+      const idrRate = rates && TESTNET_TO_INDODAX_MAP[symbol] ? rates[TESTNET_TO_INDODAX_MAP[symbol]]?.priceIdr : undefined;
+      const idrVal = rates ? calculateIDRValue(amountStr, symbol, rates) : undefined;
+      let explorerLink = '';
+      try {
+        explorerLink = adapter.explorerTx(hash);
+      } catch {
+        explorerLink = `${currentNetwork.explorerUrl}/tx/${hash}`;
+      }
+
+      saveTransaction({
+        hash,
+        ledger: targetLedger,
+        type: 'send',
+        assetSymbol: symbol,
+        amount: amountStr,
+        from: currentAccount.address,
+        to: recipient.trim(),
+        timestamp: Date.now(),
+        status: 'confirmed',
+        idrRate,
+        idrValue: idrVal,
+        explorerUrl: explorerLink,
+      });
+
       setStep('confirmed');
       onSuccess();
     } catch (err: any) {
@@ -183,19 +211,21 @@ export const SendModal: React.FC<Props> = ({
   };
 
 
+  if (!isOpen) return null;
+
   return (
-    <div className="rabby-modal-overlay">
-      <div className="rabby-modal-card">
-        {/* Header */}
-        <div className="rabby-modal-header">
-          <div className="rabby-modal-title">
-            <Send className="rabby-shield-icon" size={22} />
-            {step === 'simulate' ? 'Pre-execution Simulation' : step === 'confirmed' ? 'Transaksi Terkonfirmasi' : 'Kirim Aset'}
-          </div>
-          <button className="rabby-close-btn" onClick={handleResetAndClose}>
-            <X size={20} />
-          </button>
-        </div>
+    <SubpageLayout
+      title={step === 'simulate' ? 'Pre-execution Simulation' : step === 'confirmed' ? 'Transaksi Terkonfirmasi' : `Kirim Aset (${currentNetwork.name})`}
+      icon={<Send size={18} />}
+      onBack={() => {
+        if (step === 'simulate') {
+          setStep('form');
+        } else {
+          handleResetAndClose();
+        }
+      }}
+      backLabel={step === 'simulate' ? 'Kembali ke Form' : 'Kembali'}
+    >
 
         {/* Error Alert */}
         {errorMsg && (
@@ -276,7 +306,7 @@ export const SendModal: React.FC<Props> = ({
                   width: '100%',
                   background: 'var(--bg-input)',
                   border: '1px solid var(--border-subtle)',
-                  borderRadius: 'var(--radius-md)',
+                  borderRadius: 'var(--radius-base)',
                   color: 'var(--text-main)',
                   padding: '12px',
                   fontSize: '13px',
@@ -307,7 +337,7 @@ export const SendModal: React.FC<Props> = ({
                   width: '100%',
                   background: 'var(--bg-input)',
                   border: '1px solid var(--border-subtle)',
-                  borderRadius: 'var(--radius-md)',
+                  borderRadius: 'var(--radius-base)',
                   color: 'var(--text-main)',
                   padding: '12px',
                   fontSize: '16px',
@@ -356,7 +386,7 @@ export const SendModal: React.FC<Props> = ({
               style={{
                 background: 'var(--bg-input)',
                 border: '1px solid var(--border-subtle)',
-                borderRadius: 'var(--radius-md)',
+                borderRadius: 'var(--radius-base)',
                 padding: '16px',
                 marginBottom: '16px',
               }}
@@ -374,7 +404,7 @@ export const SendModal: React.FC<Props> = ({
                   marginBottom: '8px',
                   padding: '10px 12px',
                   background: 'var(--danger-bg)',
-                  borderRadius: 'var(--radius-sm)',
+                  borderRadius: 'var(--radius-base)',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}>
@@ -400,7 +430,7 @@ export const SendModal: React.FC<Props> = ({
                   alignItems: 'center',
                   padding: '10px 12px',
                   background: 'var(--success-bg)',
-                  borderRadius: 'var(--radius-sm)',
+                  borderRadius: 'var(--radius-base)',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}>
@@ -427,7 +457,7 @@ export const SendModal: React.FC<Props> = ({
                 fontSize: '13px',
                 padding: '10px 14px',
                 background: 'var(--bg-card-sub)',
-                borderRadius: 'var(--radius-md)',
+                borderRadius: 'var(--radius-base)',
                 marginBottom: '16px',
               }}
             >
@@ -524,7 +554,8 @@ export const SendModal: React.FC<Props> = ({
             </button>
           </div>
         )}
-      </div>
-    </div>
+    </SubpageLayout>
   );
 };
+
+export { SendModal as SendView };

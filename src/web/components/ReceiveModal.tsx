@@ -3,7 +3,8 @@ import QRCode from 'qrcode';
 import { useSession, ACTIVE_LEDGERS } from '../context/SessionContext';
 import { NETWORKS, LEDGER_LOGOS } from '../../config/networks.js';
 import type { LedgerId } from '../../core/types.js';
-import { X, QrCode, Copy, Check } from 'lucide-react';
+import { QrCode, Copy, Check } from 'lucide-react';
+import { BottomSheet } from './BottomSheet';
 
 interface Props {
   isOpen: boolean;
@@ -33,7 +34,7 @@ export const ReceiveModal: React.FC<Props> = ({ isOpen, onClose, initialLedger }
   useEffect(() => {
     if (isOpen && currentAccount && canvasRef.current) {
       QRCode.toCanvas(canvasRef.current, currentAccount.address, {
-        width: 200,
+        width: 180,
         margin: 2,
         color: {
           dark: '#0C0D14',
@@ -52,20 +53,15 @@ export const ReceiveModal: React.FC<Props> = ({ isOpen, onClose, initialLedger }
   };
 
   return (
-    <div className="rabby-modal-overlay">
-      <div className="rabby-modal-card" style={{ textAlign: 'center' }}>
-        <div className="rabby-modal-header">
-          <div className="rabby-modal-title">
-            <QrCode className="rabby-shield-icon" size={22} />
-            Receive Asset ({currentNetwork.nativeAsset.symbol})
-          </div>
-          <button className="rabby-close-btn" onClick={onClose}>
-            <X size={20} />
-          </button>
-        </div>
-
+    <BottomSheet
+      isOpen={isOpen}
+      onClose={onClose}
+      title={`Receive Asset (${currentNetwork.nativeAsset.symbol})`}
+      icon={<QrCode size={20} />}
+    >
+      <div style={{ textAlign: 'center' }}>
         {/* Chain selector tabs */}
-        <div className="rabby-chain-tabs">
+        <div className="rabby-chain-tabs" style={{ marginBottom: '14px' }}>
           {ACTIVE_LEDGERS.map((ledger) => (
             <button
               key={ledger}
@@ -86,7 +82,8 @@ export const ReceiveModal: React.FC<Props> = ({ isOpen, onClose, initialLedger }
           ))}
         </div>
 
-        <div className="rabby-qr-box">
+        {/* QR Code */}
+        <div className="rabby-qr-box" style={{ margin: '8px auto 14px auto', padding: '12px' }}>
           <canvas ref={canvasRef} />
         </div>
 
@@ -98,7 +95,7 @@ export const ReceiveModal: React.FC<Props> = ({ isOpen, onClose, initialLedger }
           style={{
             background: 'var(--bg-input)',
             border: '1px solid var(--border-subtle)',
-            borderRadius: 'var(--radius-md)',
+            borderRadius: 'var(--radius-base)',
             padding: '12px',
             fontFamily: 'var(--font-mono)',
             fontSize: '12px',
@@ -115,7 +112,8 @@ export const ReceiveModal: React.FC<Props> = ({ isOpen, onClose, initialLedger }
           {copied ? 'Address Tersalin!' : `Salin Address ${currentNetwork.nativeAsset.symbol}`}
         </button>
       </div>
-    </div>
+    </BottomSheet>
   );
 };
 
+export { ReceiveModal as ReceiveSheet };

@@ -5,7 +5,9 @@ import { getActiveTokenAsset, setActiveTokenAddress } from '../../config/tokens.
 import { TEST_TOKEN_ABI, TEST_TOKEN_BYTECODE } from '../../contracts/TestTokenArtifact.js';
 import { ContractFactory, Contract, JsonRpcProvider, Wallet, getAddress } from 'ethers';
 import type { LedgerId } from '../../core/types.js';
-import { X, Coins, Sparkles, Loader2, CheckCircle2, AlertCircle, ExternalLink, Check, Save } from 'lucide-react';
+import { saveTransaction } from '../../core/history.js';
+import { SubpageLayout } from './SubpageLayout';
+import { Coins, Sparkles, Loader2, CheckCircle2, AlertCircle, ExternalLink, Check, Save } from 'lucide-react';
 
 interface Props {
   isOpen: boolean;
@@ -104,6 +106,21 @@ export const MintTokenModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, in
       const contract = await factory.deploy();
       await contract.waitForDeployment();
       const addr = await contract.getAddress();
+      const deployHash = contract.deploymentTransaction()?.hash || `deploy_${Date.now()}`;
+
+      saveTransaction({
+        hash: deployHash,
+        ledger: targetLedger,
+        type: 'mint',
+        assetSymbol: 'HTT',
+        amount: 'Deploy',
+        from: currentAccount.address,
+        to: addr,
+        timestamp: Date.now(),
+        status: 'confirmed',
+        explorerUrl: `${currentNetwork.explorerUrl}/address/${addr}`,
+        memo: 'Deploy HTT Token Contract',
+      });
 
       setActiveTokenAddress(targetLedger, addr);
       setContractInput(addr);
@@ -169,6 +186,20 @@ export const MintTokenModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, in
       const tx = await contract.mint(currentAccount.address, mintAmount);
       await tx.wait(1);
 
+      saveTransaction({
+        hash: tx.hash,
+        ledger: targetLedger,
+        type: 'mint',
+        assetSymbol: 'HTT',
+        amount: '1000',
+        from: validAddr,
+        to: currentAccount.address,
+        timestamp: Date.now(),
+        status: 'confirmed',
+        explorerUrl: `${currentNetwork.explorerUrl}/tx/${tx.hash}`,
+        memo: 'Mint 1,000 HTT Test Token',
+      });
+
       setStatusMsg({
         type: 'success',
         text: `Berhasil mint 1,000 HTT ke akun #${currentAccount.index} di ${currentNetwork.name}!`,
@@ -186,18 +217,14 @@ export const MintTokenModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, in
     }
   };
 
+  if (!isOpen) return null;
+
   return (
-    <div className="rabby-modal-overlay">
-      <div className="rabby-modal-card" style={{ maxWidth: '520px' }}>
-        <div className="rabby-modal-header">
-          <div className="rabby-modal-title">
-            <Coins className="rabby-shield-icon" size={22} />
-            Kelola & Mint Hadi Token Test (HTT)
-          </div>
-          <button className="rabby-close-btn" onClick={onClose}>
-            <X size={20} />
-          </button>
-        </div>
+    <SubpageLayout
+      title="Kelola & Mint Hadi Token Test (HTT)"
+      icon={<Coins size={18} />}
+      onBack={onClose}
+    >
 
         {/* EVM Chain tabs */}
         <div className="rabby-chain-tabs">
@@ -232,7 +259,7 @@ export const MintTokenModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, in
           style={{
             background: 'var(--bg-secondary)',
             border: '1px solid var(--border-color)',
-            borderRadius: 'var(--radius-sm)',
+            borderRadius: 'var(--radius-base)',
             padding: '12px',
             marginBottom: '16px',
           }}
@@ -338,8 +365,9 @@ export const MintTokenModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, in
             Deploy Kontrak Baru HTT dari Akun Ini (Butuh Gas Fee)
           </button>
         </div>
-      </div>
-    </div>
+    </SubpageLayout>
   );
 };
+
+export { MintTokenModal as MintTokenView };
 

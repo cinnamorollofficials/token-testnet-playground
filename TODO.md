@@ -157,6 +157,61 @@ Legenda: `👤` = butuh tindakan manual user · `🌐` = butuh network/testnet R
 
 ---
 
+## Fase 7 — Standarisasi Border Radius (Design System 8px) 📐
+
+- [x] **1. Design Tokens & CSS Variables Refactoring (`src/web/styles/rabby.css`)**
+  - [x] Definisikan `--radius-base: 8px` sebagai standar utama elemen UI kotak
+  - [x] Definisikan `--radius-outer: 12px` (atau selaraskan `--radius-lg: 12px`) untuk wadah luar kartu & modal
+  - [x] Selaraskan `--radius-md: 8px` dan `--radius-sm: 8px`
+  - [x] Pertahankan `--radius-pill: 9999px` untuk chips/pills dan `50%` untuk avatar/logo koin
+- [x] **2. Standarisasi Elemen Dashboard Inti (`src/web/styles/rabby.css`)**
+  - [x] `.rabby-chart-glass-card`: ubah dari 18px $\rightarrow$ `var(--radius-base)` (8px)
+  - [x] `.rabby-action-squircle`: ubah dari 14px $\rightarrow$ `var(--radius-base)` (8px)
+  - [x] `.rabby-token-item`: ubah dari 16px $\rightarrow$ `var(--radius-base)` (8px)
+  - [x] `.rabby-tx-item`: ubah dari 14px $\rightarrow$ `var(--radius-base)` (8px)
+  - [x] `.rabby-empty-tx`: ubah dari 16px $\rightarrow$ `var(--radius-base)` (8px)
+  - [x] `.rabby-account-pill`: ubah dari 14px $\rightarrow$ `var(--radius-base)` (8px)
+  - [x] `.rabby-card`: selaraskan border-radius ke `var(--radius-outer)` (12px)
+  - [x] Pastikan avatar token koin (`.rabby-token-avatar-img`) & chain badge tetap `50%` (bulat)
+- [x] **3. Standarisasi Modal & Form Controls (`rabby.css` & Modal Components)**
+  - [x] `.rabby-modal-card`: selaraskan ke `var(--radius-outer)` (12px)
+  - [x] `.rabby-btn-primary`, `.rabby-btn-secondary`: selaraskan ke `var(--radius-base)` (8px)
+  - [x] `.rabby-input`, `.rabby-select`, `.rabby-chain-btn`: selaraskan ke `var(--radius-base)` (8px)
+  - [x] `.rabby-shield-box`, `.rabby-qr-box`: selaraskan ke `var(--radius-base)` (8px)
+  - [x] Selaraskan inline `borderRadius` di `SendModal.tsx`, `ReceiveModal.tsx`, `MintTokenModal.tsx`, `QRScannerModal.tsx`, `QRGeneratorModal.tsx` ke `var(--radius-base)` (8px)
+- [x] **4. Verifikasi, Uji & Build**
+  - [x] Validasi linter: `npm run lint` (0 error, 0 warning)
+  - [x] Jalankan unit tests: `npm run test` (39 tests hijau)
+  - [x] Validasi build web & extension: `npm run build:web` & `npm run build:ext`
+  - [x] Commit per task rapi sesuai git workflow
+
+---
+
+## Fase 8 — Transisi UI: Bottom Sheet (Data Pendek) & Halaman Baru (Data Panjang) 📱
+
+- [x] **1. Komponen Fondasi BottomSheet & SubpageLayout + Styling CSS**
+  - [x] Buat `src/web/components/BottomSheet.tsx` (backdrop blur, slide-up animation, handle pill, header, close handlers)
+  - [x] Buat `src/web/components/SubpageLayout.tsx` (sticky top bar, tombol Back `<ArrowLeft />`, title, right action, scrollable body)
+  - [x] Tambahkan styling & animasi `.rabby-sheet-*` dan `.rabby-subpage-*` di `src/web/styles/rabby.css`
+- [x] **2. Konversi Aksi Cepat ke Bottom Sheet (Data Pendek)**
+  - [x] Konversi `ReceiveModal` menjadi `ReceiveSheet` (menggunakan `BottomSheet` untuk QR code & address copy)
+  - [x] Konversi `FaucetModal` menjadi `FaucetSheet` (menggunakan `BottomSheet` untuk 1-click testnet funding)
+- [x] **3. Konversi Alur Panjang ke Halaman Baru / Subpage (Data Panjang)**
+  - [x] Konversi `SendModal` menjadi `SendView` (menggunakan `SubpageLayout` untuk form transfer, estimasi fee, simulasi saldo)
+  - [x] Konversi `MintTokenModal` menjadi `MintTokenView` (menggunakan `SubpageLayout` untuk deploy smart contract & minting)
+  - [x] Konversi `TransactionModal` menjadi `TransactionView` (menggunakan `SubpageLayout` untuk filter & riwayat transaksi panjang)
+- [x] **4. Integrasi Screen Routing di App.tsx & Penyelarasan Onboarding**
+  - [x] Tambahkan state navigasi `currentScreen` (`dashboard`, `send`, `mint`, `transactions`, `scanner`, `generator`) di `App.tsx`
+  - [x] Hubungkan aksi tombol Quick Actions & Asset rows untuk berpindah screen atau memunculkan bottom sheet
+  - [x] Hubungkan tombol Back pada setiap subpage untuk kembali ke `dashboard`
+- [x] **5. Pengujian, Verifikasi & Dokumentasi**
+  - [x] Validasi linter `npm run lint` (0 error, 0 warning)
+  - [x] Validasi 39 unit tests `npm run test` (seluruh tes hijau)
+  - [x] Validasi build web dan Chrome extension (`npm run build:web`, `npm run build:ext`)
+  - [x] Update `walkthrough.md` dan commit per task
+
+---
+
 ## Ditunda (Backlog)
 
 - [ ] 👤 **Kaia — putuskan coin type** (coin type 60 vs 8217 di Kaia Wallet)

@@ -7,10 +7,20 @@ import type { LedgerId, Balance } from '../core/types.js';
 import { fetchIndodaxRates, formatIDR, calculateIDRValue, type RatesMap } from '../core/rates.js';
 import { QRGeneratorModal } from './components/QRGeneratorModal';
 import { QRScannerModal } from './components/QRScannerModal';
-import { FaucetModal } from './components/FaucetModal';
-import { ReceiveModal } from './components/ReceiveModal';
-import { MintTokenModal } from './components/MintTokenModal';
-import { SendModal } from './components/SendModal';
+import { FaucetSheet } from './components/FaucetModal';
+import { ReceiveSheet } from './components/ReceiveModal';
+import { MintTokenView } from './components/MintTokenModal';
+import { SendView } from './components/SendModal';
+import { TransactionView } from './components/TransactionModal';
+import { PortfolioChart } from './components/PortfolioChart';
+import { getTransactions } from '../core/history.js';
+import {
+  generate24hPortfolioTimeSeries,
+  calculate24hChange,
+  recordValuationSnapshot,
+  type ChartPoint,
+  type PortfolioHolding,
+} from '../core/chart.js';
 import {
   Wallet,
   Lock,
@@ -19,7 +29,6 @@ import {
   Coins,
   QrCode,
   Layers,
-  ExternalLink,
   ArrowLeftRight,
 } from 'lucide-react';
 
@@ -197,16 +206,26 @@ export const App: React.FC = () => {
     lockSession,
   } = useSession();
 
+  type AppScreen = 'dashboard' | 'send' | 'mint' | 'transactions';
+  const [currentScreen, setCurrentScreen] = useState<AppScreen>('dashboard');
+
   const [isGeneratorOpen, setIsGeneratorOpen] = useState<boolean>(false);
   const [isScannerOpen, setIsScannerOpen] = useState<boolean>(false);
   const [isFaucetOpen, setIsFaucetOpen] = useState<boolean>(false);
   const [isReceiveOpen, setIsReceiveOpen] = useState<boolean>(false);
-  const [isMintOpen, setIsMintOpen] = useState<boolean>(false);
-  const [isSendOpen, setIsSendOpen] = useState<boolean>(false);
 
-  // Target ledger/asset for modals
+  // Target ledger/asset for subpages & sheets
   const [modalTargetLedger, setModalTargetLedger] = useState<LedgerId | undefined>(undefined);
   const [modalTargetAsset, setModalTargetAsset] = useState<'native' | 'token'>('native');
+  const [hoveredChartPoint, setHoveredChartPoint] = useState<ChartPoint | null>(null);
+
+  // Transaction count for badge
+  const txCount = useMemo(() => {
+    return getTransactions({
+      ledger: selectedLedger,
+      address: activeAccount?.address,
+    }).length;
+  }, [selectedLedger, activeAccount, currentScreen, isFaucetOpen]);
 
   const [portfolioBalances, setPortfolioBalances] = useState<Record<string, Balance | null>>({});
   const [loadingLedgers, setLoadingLedgers] = useState<Partial<Record<LedgerId, boolean>>>({
@@ -297,13 +316,13 @@ export const App: React.FC = () => {
   const handleOpenSendForAsset = (ledger: LedgerId, kind: 'native' | 'token') => {
     setModalTargetLedger(ledger);
     setModalTargetAsset(kind);
-    setIsSendOpen(true);
+    setCurrentScreen('send');
   };
 
   const handleOpenGeneralSend = () => {
     setModalTargetLedger(selectedLedger !== 'all' ? selectedLedger : 'ethereum');
     setModalTargetAsset('native');
-    setIsSendOpen(true);
+    setCurrentScreen('send');
   };
 
   const handleOpenGeneralFaucet = () => {
@@ -318,7 +337,7 @@ export const App: React.FC = () => {
 
   const handleOpenMint = () => {
     setModalTargetLedger(selectedLedger === 'polygon' ? 'polygon' : 'ethereum');
-    setIsMintOpen(true);
+    setCurrentScreen('mint');
   };
 
 
@@ -356,18 +375,46 @@ export const App: React.FC = () => {
     return calculateIDRValue(bal.formatted, bal.symbol, rates);
   }, [selectedLedger, portfolioBalances, rates]);
 
+  const currentValuationIdr = selectedLedger === 'all' ? totalPortfolioIdr : singleChainIdr;
+
+  // Track periodic snapshot in localStorage
+  useEffect(() => {
+    if (isUnlocked && currentValuationIdr > 0) {
+      recordValuationSnapshot(currentValuationIdr);
+    }
+  }, [isUnlocked, currentValuationIdr]);
+
+  const portfolioHoldings: PortfolioHolding[] = useMemo(() => {
+    return filteredAssets.map((a) => {
+      const bal = portfolioBalances[a.id];
+      return {
+        symbol: a.symbol,
+        amount: bal?.formatted || 0,
+      };
+    });
+  }, [filteredAssets, portfolioBalances]);
+
+  const chartPoints = useMemo(() => {
+    return generate24hPortfolioTimeSeries(portfolioHoldings, rates, currentValuationIdr);
+  }, [portfolioHoldings, rates, currentValuationIdr]);
+
+  const change24h = useMemo(() => {
+    return calculate24hChange(currentValuationIdr, chartPoints);
+  }, [currentValuationIdr, chartPoints]);
+
   return (
     <div className="rabby-app-container">
       {/* Unified All-in-One Wallet Card */}
       <div className="rabby-card rabby-unified-card">
-        {/* Card Top Header */}
-        {/* Card Top Header - Option 1: Single-Row Unified Header */}
-        <header className="rabby-header">
-          {/* Left Zone: Account Switcher Pill (if unlocked) OR Brand Title (if locked) */}
-          {isUnlocked ? (
-            <button
-              type="button"
-              className="rabby-header-acc-pill"
+        {currentScreen === 'dashboard' ? (
+          <>
+            {/* Header (Unified Single Row) */}
+            <header className="rabby-header">
+              {/* Left Zone: Account Switcher Pill (if unlocked) OR Brand Title (if locked) */}
+              {isUnlocked ? (
+                <button
+                  type="button"
+                  className="rabby-header-acc-pill"
               onClick={() => {
                 setPortfolioBalances({});
                 setActiveAccountIndex(activeAccountIndex === 0 ? 1 : 0);
@@ -416,7 +463,7 @@ export const App: React.FC = () => {
                 aria-label="Pilih Jaringan"
               >
                 {SUPPORTED_LEDGERS.map((l) => (
-                  <option key={l.id} value={l.id} style={{ background: '#FFFFFF', color: '#0F172A' }}>
+                  <option key={l.id} value={l.id} style={{ background: 'var(--bg-card)', color: 'var(--text-main)' }}>
                     {l.label}
                   </option>
                 ))}
@@ -427,7 +474,7 @@ export const App: React.FC = () => {
             <button
               type="button"
               className={`rabby-header-lock-btn ${isUnlocked ? 'active' : 'locked'}`}
-              onClick={isUnlocked ? lockSession : () => setIsScannerOpen(true)}
+              onClick={isUnlocked ? () => { lockSession(); setCurrentScreen('dashboard'); } : () => setIsScannerOpen(true)}
               title={
                 isUnlocked
                   ? `Sesi aktif (${fingerprint}). Klik untuk mengunci wallet.`
@@ -481,64 +528,87 @@ export const App: React.FC = () => {
             <>
               {/* Hero Portfolio Section */}
               <div className="rabby-hero-section">
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    gap: '6px',
-                    marginBottom: '6px',
-                  }}
-                >
-                </div>
-
-                {selectedLedger === 'all' ? (
-                  <div className="rabby-hero-balance" style={{ fontSize: '28px' }}>
-                    <span>{formatIDR(totalPortfolioIdr)}</span>
+                {selectedLedger !== 'all' && (
+                  <div className="rabby-hero-balance">
+                    {loadingLedgers[selectedLedger] || !singleChainNativeBalance ? (
+                      <div className="rabby-skeleton rabby-skeleton-hero" />
+                    ) : (
+                      <>
+                        <span title={singleChainNativeBalance.formatted}>
+                          {formatDisplayBalance(singleChainNativeBalance.formatted, 5)}
+                        </span>
+                        <span className="rabby-hero-symbol">{singleChainNetwork?.nativeAsset.symbol}</span>
+                      </>
+                    )}
                   </div>
-                ) : (
-                  <>
-                    <div className="rabby-hero-balance">
-                      {loadingLedgers[selectedLedger] || !singleChainNativeBalance ? (
-                        <div className="rabby-skeleton rabby-skeleton-hero" />
-                      ) : (
-                        <>
-                          <span title={singleChainNativeBalance.formatted}>
-                            {formatDisplayBalance(singleChainNativeBalance.formatted, 5)}
-                          </span>
-                          <span className="rabby-hero-symbol">{singleChainNetwork?.nativeAsset.symbol}</span>
-                        </>
-                      )}
-                    </div>
-                    <div style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '4px' }}>
-                      ≈ {formatIDR(singleChainIdr)}
-                    </div>
-                  </>
                 )}
 
-                {/* Rabby Squircles Action Bar */}
+                {/* Glass Effect Chart Card */}
+                <div className="rabby-chart-glass-card">
+                  <div className="rabby-chart-glass-top">
+                    <div className="rabby-chart-glass-balance">
+                      {selectedLedger !== 'all' && '≈ '}
+                      {hoveredChartPoint ? hoveredChartPoint.formattedValue : formatIDR(currentValuationIdr)}
+                    </div>
+                  </div>
+
+                  <PortfolioChart
+                    points={chartPoints}
+                    change24h={change24h}
+                    onHoverPoint={setHoveredChartPoint}
+                  />
+                </div>
+
+                {/* Rabby Squircles Action Bar (3 per row) */}
                 <div className="rabby-actions-grid">
-                  <button className="rabby-action-squircle" onClick={handleOpenGeneralSend}>
+                  <button
+                    type="button"
+                    className="rabby-action-squircle"
+                    onClick={handleOpenGeneralSend}
+                    title="Send"
+                  >
                     <Send className="rabby-action-icon" />
-                    <span>Send</span>
+                    <span className="rabby-action-label">Send</span>
                   </button>
-                  <button className="rabby-action-squircle" onClick={handleOpenGeneralFaucet}>
-                    <Droplets className="rabby-action-icon" />
-                    <span>Faucet</span>
-                  </button>
-                  <button className="rabby-action-squircle" onClick={handleOpenMint}>
-                    <Coins className="rabby-action-icon" />
-                    <span>Mint HTT</span>
-                  </button>
-                  <button className="rabby-action-squircle" onClick={handleOpenGeneralReceive}>
+                  <button
+                    type="button"
+                    className="rabby-action-squircle"
+                    onClick={handleOpenGeneralReceive}
+                    title="Receive"
+                  >
                     <QrCode className="rabby-action-icon" />
-                    <span>Receive</span>
+                    <span className="rabby-action-label">Receive</span>
+                  </button>
+                  <button
+                    type="button"
+                    className="rabby-action-squircle"
+                    onClick={handleOpenGeneralFaucet}
+                    title="Faucet"
+                  >
+                    <Droplets className="rabby-action-icon" />
+                    <span className="rabby-action-label">Faucet</span>
+                  </button>
+                  <button
+                    type="button"
+                    className="rabby-action-squircle"
+                    onClick={handleOpenMint}
+                    title="Mint HTT"
+                  >
+                    <Coins className="rabby-action-icon" />
+                    <span className="rabby-action-label">Mint HTT</span>
+                  </button>
+                  <button
+                    type="button"
+                    className="rabby-action-squircle"
+                    onClick={() => setCurrentScreen('transactions')}
+                    title="Riwayat Transaksi"
+                  >
+                    <ArrowLeftRight className="rabby-action-icon" />
+                    <span className="rabby-action-label">Transactions</span>
+                    {txCount > 0 && <span className="rabby-action-tx-badge">{txCount}</span>}
                   </button>
                 </div>
               </div>
-
-              {/* Subtle Divider */}
-              <div className="rabby-card-divider" />
 
               {/* Token List Section */}
               <div className="rabby-token-section">
@@ -635,27 +705,6 @@ export const App: React.FC = () => {
                                 />
                                 {asset.badge.toUpperCase()}
                               </span>
-                              {asset.kind === 'token' && (() => {
-                                const activeTok = getActiveTokenAsset(asset.ledger);
-                                if (activeTok && 'address' in activeTok) {
-                                  return (
-                                    <button
-                                      type="button"
-                                      className="rabby-contract-chip"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        setModalTargetLedger(asset.ledger);
-                                        setIsMintOpen(true);
-                                      }}
-                                      title="Klik untuk melihat atau mengganti alamat kontrak HTT"
-                                    >
-                                      {activeTok.address.slice(0, 6)}...{activeTok.address.slice(-4)}
-                                      <ExternalLink size={9} />
-                                    </button>
-                                  );
-                                }
-                                return null;
-                              })()}
                             </div>
                             <div className="rabby-token-balance-row">
                               {loadingLedgers[asset.ledger] || bal === undefined ? (
@@ -668,6 +717,20 @@ export const App: React.FC = () => {
                             </div>
                           </div>
                         </div>
+
+                        {/* Quick Send Button on Card Hover */}
+                        <button
+                          type="button"
+                          className="rabby-quick-send-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleOpenSendForAsset(asset.ledger, asset.kind);
+                          }}
+                          title={`Kirim ${asset.symbol}`}
+                        >
+                          <Send size={12} />
+                          <span>Send</span>
+                        </button>
                       </div>
                     );
                   })}
@@ -676,36 +739,52 @@ export const App: React.FC = () => {
             </>
           )}
         </div>
-      </div>
-
-      {/* Modals */}
-      <QRGeneratorModal isOpen={isGeneratorOpen} onClose={() => setIsGeneratorOpen(false)} />
-      <QRScannerModal isOpen={isScannerOpen} onClose={() => setIsScannerOpen(false)} />
-      <FaucetModal
-        isOpen={isFaucetOpen}
-        onClose={() => setIsFaucetOpen(false)}
-        onSuccess={fetchAllBalances}
-        initialLedger={modalTargetLedger}
-      />
-      <ReceiveModal
-        isOpen={isReceiveOpen}
-        onClose={() => setIsReceiveOpen(false)}
-        initialLedger={modalTargetLedger}
-      />
-      <MintTokenModal
-        isOpen={isMintOpen}
-        onClose={() => setIsMintOpen(false)}
-        onSuccess={fetchAllBalances}
-        initialLedger={modalTargetLedger}
-      />
-      <SendModal
-        isOpen={isSendOpen}
-        onClose={() => setIsSendOpen(false)}
+      </>
+    ) : currentScreen === 'send' ? (
+      <SendView
+        isOpen={true}
+        onClose={() => setCurrentScreen('dashboard')}
         onSuccess={fetchAllBalances}
         initialLedger={modalTargetLedger}
         initialAsset={modalTargetAsset}
         rates={rates}
       />
-    </div>
-  );
+    ) : currentScreen === 'mint' ? (
+      <MintTokenView
+        isOpen={true}
+        onClose={() => setCurrentScreen('dashboard')}
+        onSuccess={fetchAllBalances}
+        initialLedger={modalTargetLedger}
+      />
+    ) : currentScreen === 'transactions' ? (
+      <TransactionView
+        isOpen={true}
+        onClose={() => setCurrentScreen('dashboard')}
+        selectedLedger={selectedLedger}
+        currentAccount={activeAccount}
+        rates={rates}
+        onOpenSend={handleOpenGeneralSend}
+        onOpenFaucet={handleOpenGeneralFaucet}
+      />
+    ) : null}
+  </div>
+
+  {/* Bottom Sheets (Compact Data & Quick Actions) */}
+  <ReceiveSheet
+    isOpen={isReceiveOpen}
+    onClose={() => setIsReceiveOpen(false)}
+    initialLedger={modalTargetLedger}
+  />
+  <FaucetSheet
+    isOpen={isFaucetOpen}
+    onClose={() => setIsFaucetOpen(false)}
+    onSuccess={fetchAllBalances}
+    initialLedger={modalTargetLedger}
+  />
+
+  {/* Onboarding Modals */}
+  <QRGeneratorModal isOpen={isGeneratorOpen} onClose={() => setIsGeneratorOpen(false)} />
+  <QRScannerModal isOpen={isScannerOpen} onClose={() => setIsScannerOpen(false)} />
+</div>
+);
 };
