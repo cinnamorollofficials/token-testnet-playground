@@ -365,16 +365,13 @@ export const App: React.FC = () => {
 
           {/* Right Zone: Network Selector + Actions */}
           <div className="rabby-header-right-group">
-            {/* Network Selector Pill - Logo only with 'ALL' as default */}
+            {/* Network Selector Button - Icon only (no text, no dot) */}
             <div
-              className="rabby-header-network-pill"
-              title={`Jaringan aktif: ${selectedLedger === 'all' ? 'All Chains (5 Testnets)' : singleChainNetwork?.name}. Klik untuk mengganti.`}
+              className="rabby-header-network-btn"
+              title={`Jaringan: ${selectedLedger === 'all' ? 'All Chains (5 Testnets)' : singleChainNetwork?.name}. Klik untuk mengganti.`}
             >
               {selectedLedger === 'all' ? (
-                <div className="rabby-header-network-all-badge">
-                  <Layers size={13} color="var(--primary)" />
-                  <span className="rabby-header-network-all-text">ALL</span>
-                </div>
+                <Layers size={15} color="var(--primary)" />
               ) : (
                 <img
                   src={LEDGER_LOGOS[selectedLedger]}
@@ -382,12 +379,8 @@ export const App: React.FC = () => {
                   className="rabby-header-network-active-logo"
                 />
               )}
-              <div
-                className="rabby-network-dot"
-                title={selectedLedger === 'all' ? 'All Testnets Connected (5 Chains)' : `${singleChainNetwork?.name} Testnet Connected`}
-              />
 
-              {/* Native invisible select covering the pill for seamless click-to-change */}
+              {/* Native invisible select covering the button for seamless click-to-change */}
               <select
                 value={selectedLedger}
                 onChange={(e) => setSelectedLedger(e.target.value as ChainFilter)}
