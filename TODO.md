@@ -164,15 +164,15 @@ Legenda: `👤` = butuh tindakan manual user · `🌐` = butuh network/testnet R
   - [x] Definisikan `--radius-outer: 12px` (atau selaraskan `--radius-lg: 12px`) untuk wadah luar kartu & modal
   - [x] Selaraskan `--radius-md: 8px` dan `--radius-sm: 8px`
   - [x] Pertahankan `--radius-pill: 9999px` untuk chips/pills dan `50%` untuk avatar/logo koin
-- [ ] **2. Standarisasi Elemen Dashboard Inti (`src/web/styles/rabby.css`)**
-  - [ ] `.rabby-chart-glass-card`: ubah dari 18px $\rightarrow$ `var(--radius-base)` (8px)
-  - [ ] `.rabby-action-squircle`: ubah dari 14px $\rightarrow$ `var(--radius-base)` (8px)
-  - [ ] `.rabby-token-item`: ubah dari 16px $\rightarrow$ `var(--radius-base)` (8px)
-  - [ ] `.rabby-tx-item`: ubah dari 14px $\rightarrow$ `var(--radius-base)` (8px)
-  - [ ] `.rabby-empty-tx`: ubah dari 16px $\rightarrow$ `var(--radius-base)` (8px)
-  - [ ] `.rabby-account-pill`: ubah dari 14px $\rightarrow$ `var(--radius-base)` (8px)
-  - [ ] `.rabby-card`: selaraskan border-radius ke `var(--radius-outer)` (12px)
-  - [ ] Pastikan avatar token koin (`.rabby-token-avatar-img`) & chain badge tetap `50%` (bulat)
+- [x] **2. Standarisasi Elemen Dashboard Inti (`src/web/styles/rabby.css`)**
+  - [x] `.rabby-chart-glass-card`: ubah dari 18px $\rightarrow$ `var(--radius-base)` (8px)
+  - [x] `.rabby-action-squircle`: ubah dari 14px $\rightarrow$ `var(--radius-base)` (8px)
+  - [x] `.rabby-token-item`: ubah dari 16px $\rightarrow$ `var(--radius-base)` (8px)
+  - [x] `.rabby-tx-item`: ubah dari 14px $\rightarrow$ `var(--radius-base)` (8px)
+  - [x] `.rabby-empty-tx`: ubah dari 16px $\rightarrow$ `var(--radius-base)` (8px)
+  - [x] `.rabby-account-pill`: ubah dari 14px $\rightarrow$ `var(--radius-base)` (8px)
+  - [x] `.rabby-card`: selaraskan border-radius ke `var(--radius-outer)` (12px)
+  - [x] Pastikan avatar token koin (`.rabby-token-avatar-img`) & chain badge tetap `50%` (bulat)
 - [ ] **3. Standarisasi Modal & Form Controls (`rabby.css` & Modal Components)**
   - [ ] `.rabby-modal-card`: selaraskan ke `var(--radius-outer)` (12px)
   - [ ] `.rabby-btn-primary`, `.rabby-btn-secondary`: selaraskan ke `var(--radius-base)` (8px)
