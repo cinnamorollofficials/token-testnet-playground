@@ -86,7 +86,6 @@ textarea {
   justify-content: space-between;
   padding: 10px 16px;
   background: var(--bg-card);
-  border-bottom: 1px solid var(--border-subtle);
   gap: 8px;
   min-height: 52px;
 }
@@ -292,10 +291,8 @@ textarea {
   padding: 8px 0 4px 0;
 }
 
-.rabby-card-divider {
-  border: 0;
-  border-top: 1px solid var(--border-subtle);
-  margin: 20px -20px 18px -20px;
+.rabby-token-section {
+  margin-top: 20px;
 }
 
 .rabby-hero-label {

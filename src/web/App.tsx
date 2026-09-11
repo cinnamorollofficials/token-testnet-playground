@@ -609,9 +609,6 @@ export const App: React.FC = () => {
                 </div>
               </div>
 
-              {/* Subtle Divider */}
-              <div className="rabby-card-divider" />
-
               {/* Token List Section */}
               <div className="rabby-token-section">
                 <div
