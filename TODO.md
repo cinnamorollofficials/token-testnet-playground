@@ -179,11 +179,11 @@ Legenda: `👤` = butuh tindakan manual user · `🌐` = butuh network/testnet R
   - [x] `.rabby-input`, `.rabby-select`, `.rabby-chain-btn`: selaraskan ke `var(--radius-base)` (8px)
   - [x] `.rabby-shield-box`, `.rabby-qr-box`: selaraskan ke `var(--radius-base)` (8px)
   - [x] Selaraskan inline `borderRadius` di `SendModal.tsx`, `ReceiveModal.tsx`, `MintTokenModal.tsx`, `QRScannerModal.tsx`, `QRGeneratorModal.tsx` ke `var(--radius-base)` (8px)
-- [ ] **4. Verifikasi, Uji & Build**
-  - [ ] Validasi linter: `npm run lint` (0 error, 0 warning)
-  - [ ] Jalankan unit tests: `npm run test` (39 tests hijau)
-  - [ ] Validasi build web & extension: `npm run build:web` & `npm run build:ext`
-  - [ ] Commit per task rapi sesuai git workflow
+- [x] **4. Verifikasi, Uji & Build**
+  - [x] Validasi linter: `npm run lint` (0 error, 0 warning)
+  - [x] Jalankan unit tests: `npm run test` (39 tests hijau)
+  - [x] Validasi build web & extension: `npm run build:web` & `npm run build:ext`
+  - [x] Commit per task rapi sesuai git workflow
 
 ---
 
