@@ -531,67 +531,64 @@ export const App: React.FC = () => {
               {/* Hero Portfolio Section */}
               <div className="rabby-hero-section">
                 {hoveredChartPoint ? (
-                  <>
-                    <div className="rabby-hero-balance" style={{ fontSize: '28px' }}>
-                      <span>{hoveredChartPoint.formattedValue}</span>
-                    </div>
-                    <div className="rabby-pnl-row">
-                      <span className="rabby-pnl-chip neutral">
-                        {hoveredChartPoint.label}
-                      </span>
-                    </div>
-                  </>
+                  <div className="rabby-hero-balance" style={{ fontSize: '28px' }}>
+                    <span>{hoveredChartPoint.formattedValue}</span>
+                  </div>
+                ) : selectedLedger === 'all' ? (
+                  <div className="rabby-hero-balance" style={{ fontSize: '28px' }}>
+                    <span>{formatIDR(totalPortfolioIdr)}</span>
+                  </div>
                 ) : (
                   <>
-                    {selectedLedger === 'all' ? (
-                      <div className="rabby-hero-balance" style={{ fontSize: '28px' }}>
-                        <span>{formatIDR(totalPortfolioIdr)}</span>
-                      </div>
-                    ) : (
-                      <>
-                        <div className="rabby-hero-balance">
-                          {loadingLedgers[selectedLedger] || !singleChainNativeBalance ? (
-                            <div className="rabby-skeleton rabby-skeleton-hero" />
-                          ) : (
-                            <>
-                              <span title={singleChainNativeBalance.formatted}>
-                                {formatDisplayBalance(singleChainNativeBalance.formatted, 5)}
-                              </span>
-                              <span className="rabby-hero-symbol">{singleChainNetwork?.nativeAsset.symbol}</span>
-                            </>
-                          )}
-                        </div>
-                        <div style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '4px' }}>
-                          ≈ {formatIDR(singleChainIdr)}
-                        </div>
-                      </>
-                    )}
-
-                    {/* 24h P&L Badge */}
-                    <div className="rabby-pnl-row">
-                      <span className={`rabby-pnl-chip ${change24h.direction}`}>
-                        {change24h.direction === 'positive' ? (
-                          <TrendingUp size={12} />
-                        ) : change24h.direction === 'negative' ? (
-                          <TrendingDown size={12} />
-                        ) : (
-                          <Minus size={12} />
-                        )}
-                        <span>
-                          {change24h.direction === 'positive' ? '+' : ''}
-                          {change24h.percentage.toFixed(2)}% ({change24h.formattedDiff}) 24h
-                        </span>
-                      </span>
+                    <div className="rabby-hero-balance">
+                      {loadingLedgers[selectedLedger] || !singleChainNativeBalance ? (
+                        <div className="rabby-skeleton rabby-skeleton-hero" />
+                      ) : (
+                        <>
+                          <span title={singleChainNativeBalance.formatted}>
+                            {formatDisplayBalance(singleChainNativeBalance.formatted, 5)}
+                          </span>
+                          <span className="rabby-hero-symbol">{singleChainNetwork?.nativeAsset.symbol}</span>
+                        </>
+                      )}
+                    </div>
+                    <div style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '4px' }}>
+                      ≈ {formatIDR(singleChainIdr)}
                     </div>
                   </>
                 )}
 
-                {/* 24h Portfolio Interactive Chart */}
-                <PortfolioChart
-                  points={chartPoints}
-                  change24h={change24h}
-                  onHoverPoint={setHoveredChartPoint}
-                />
+                {/* 24h Glass Effect Chart Card */}
+                <div className="rabby-chart-glass-card">
+                  <div className="rabby-chart-glass-top">
+                    <div className="rabby-chart-glass-tag">
+                      <span className="rabby-chart-glass-dot" />
+                      <span>{hoveredChartPoint ? hoveredChartPoint.label : '24H Portfolio Trend'}</span>
+                    </div>
+
+                    <div className="rabby-pnl-row">
+                      <span className={`rabby-pnl-chip ${change24h.direction}`}>
+                        {change24h.direction === 'positive' ? (
+                          <TrendingUp size={11} />
+                        ) : change24h.direction === 'negative' ? (
+                          <TrendingDown size={11} />
+                        ) : (
+                          <Minus size={11} />
+                        )}
+                        <span>
+                          {change24h.direction === 'positive' ? '+' : ''}
+                          {change24h.percentage.toFixed(2)}% ({change24h.formattedDiff})
+                        </span>
+                      </span>
+                    </div>
+                  </div>
+
+                  <PortfolioChart
+                    points={chartPoints}
+                    change24h={change24h}
+                    onHoverPoint={setHoveredChartPoint}
+                  />
+                </div>
 
                 {/* Rabby Squircles Action Bar (3 per row) */}
                 <div className="rabby-actions-grid">
