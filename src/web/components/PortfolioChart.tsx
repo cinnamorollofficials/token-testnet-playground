@@ -104,6 +104,7 @@ export const PortfolioChart: React.FC<Props> = ({
       <svg
         ref={svgRef}
         viewBox={`0 0 ${width} ${height}`}
+        preserveAspectRatio="none"
         className="rabby-chart-svg"
         onPointerMove={handlePointerMove}
         onPointerLeave={handlePointerLeave}
