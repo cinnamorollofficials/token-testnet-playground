@@ -465,8 +465,6 @@ input, select, textarea {
 .rabby-token-item:hover {
   border-color: var(--border-hover);
   background: #f8fafc;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
 }
 
 .rabby-token-left {
