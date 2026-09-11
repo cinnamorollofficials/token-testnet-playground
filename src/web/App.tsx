@@ -12,7 +12,15 @@ import { ReceiveModal } from './components/ReceiveModal';
 import { MintTokenModal } from './components/MintTokenModal';
 import { SendModal } from './components/SendModal';
 import { TransactionModal } from './components/TransactionModal';
+import { PortfolioChart } from './components/PortfolioChart';
 import { getTransactions } from '../core/history.js';
+import {
+  generate24hPortfolioTimeSeries,
+  calculate24hChange,
+  recordValuationSnapshot,
+  type ChartPoint,
+  type PortfolioHolding,
+} from '../core/chart.js';
 import {
   Wallet,
   Lock,
@@ -22,6 +30,9 @@ import {
   QrCode,
   Layers,
   ArrowLeftRight,
+  TrendingUp,
+  TrendingDown,
+  Minus,
 } from 'lucide-react';
 
 const SUPPORTED_LEDGERS: { id: ChainFilter; label: string }[] = [
@@ -209,6 +220,7 @@ export const App: React.FC = () => {
   // Target ledger/asset for modals
   const [modalTargetLedger, setModalTargetLedger] = useState<LedgerId | undefined>(undefined);
   const [modalTargetAsset, setModalTargetAsset] = useState<'native' | 'token'>('native');
+  const [hoveredChartPoint, setHoveredChartPoint] = useState<ChartPoint | null>(null);
 
   // Transaction count for badge
   const txCount = useMemo(() => {
@@ -366,6 +378,33 @@ export const App: React.FC = () => {
     return calculateIDRValue(bal.formatted, bal.symbol, rates);
   }, [selectedLedger, portfolioBalances, rates]);
 
+  const currentValuationIdr = selectedLedger === 'all' ? totalPortfolioIdr : singleChainIdr;
+
+  // Track periodic snapshot in localStorage
+  useEffect(() => {
+    if (isUnlocked && currentValuationIdr > 0) {
+      recordValuationSnapshot(currentValuationIdr);
+    }
+  }, [isUnlocked, currentValuationIdr]);
+
+  const portfolioHoldings: PortfolioHolding[] = useMemo(() => {
+    return filteredAssets.map((a) => {
+      const bal = portfolioBalances[a.id];
+      return {
+        symbol: a.symbol,
+        amount: bal?.formatted || 0,
+      };
+    });
+  }, [filteredAssets, portfolioBalances]);
+
+  const chartPoints = useMemo(() => {
+    return generate24hPortfolioTimeSeries(portfolioHoldings, rates, currentValuationIdr);
+  }, [portfolioHoldings, rates, currentValuationIdr]);
+
+  const change24h = useMemo(() => {
+    return calculate24hChange(currentValuationIdr, chartPoints);
+  }, [currentValuationIdr, chartPoints]);
+
   return (
     <div className="rabby-app-container">
       {/* Unified All-in-One Wallet Card */}
@@ -491,40 +530,68 @@ export const App: React.FC = () => {
             <>
               {/* Hero Portfolio Section */}
               <div className="rabby-hero-section">
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    gap: '6px',
-                    marginBottom: '6px',
-                  }}
-                >
-                </div>
-
-                {selectedLedger === 'all' ? (
-                  <div className="rabby-hero-balance" style={{ fontSize: '28px' }}>
-                    <span>{formatIDR(totalPortfolioIdr)}</span>
-                  </div>
+                {hoveredChartPoint ? (
+                  <>
+                    <div className="rabby-hero-balance" style={{ fontSize: '28px' }}>
+                      <span>{hoveredChartPoint.formattedValue}</span>
+                    </div>
+                    <div className="rabby-pnl-row">
+                      <span className="rabby-pnl-chip neutral">
+                        {hoveredChartPoint.label}
+                      </span>
+                    </div>
+                  </>
                 ) : (
                   <>
-                    <div className="rabby-hero-balance">
-                      {loadingLedgers[selectedLedger] || !singleChainNativeBalance ? (
-                        <div className="rabby-skeleton rabby-skeleton-hero" />
-                      ) : (
-                        <>
-                          <span title={singleChainNativeBalance.formatted}>
-                            {formatDisplayBalance(singleChainNativeBalance.formatted, 5)}
-                          </span>
-                          <span className="rabby-hero-symbol">{singleChainNetwork?.nativeAsset.symbol}</span>
-                        </>
-                      )}
-                    </div>
-                    <div style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '4px' }}>
-                      ≈ {formatIDR(singleChainIdr)}
+                    {selectedLedger === 'all' ? (
+                      <div className="rabby-hero-balance" style={{ fontSize: '28px' }}>
+                        <span>{formatIDR(totalPortfolioIdr)}</span>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="rabby-hero-balance">
+                          {loadingLedgers[selectedLedger] || !singleChainNativeBalance ? (
+                            <div className="rabby-skeleton rabby-skeleton-hero" />
+                          ) : (
+                            <>
+                              <span title={singleChainNativeBalance.formatted}>
+                                {formatDisplayBalance(singleChainNativeBalance.formatted, 5)}
+                              </span>
+                              <span className="rabby-hero-symbol">{singleChainNetwork?.nativeAsset.symbol}</span>
+                            </>
+                          )}
+                        </div>
+                        <div style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '4px' }}>
+                          ≈ {formatIDR(singleChainIdr)}
+                        </div>
+                      </>
+                    )}
+
+                    {/* 24h P&L Badge */}
+                    <div className="rabby-pnl-row">
+                      <span className={`rabby-pnl-chip ${change24h.direction}`}>
+                        {change24h.direction === 'positive' ? (
+                          <TrendingUp size={12} />
+                        ) : change24h.direction === 'negative' ? (
+                          <TrendingDown size={12} />
+                        ) : (
+                          <Minus size={12} />
+                        )}
+                        <span>
+                          {change24h.direction === 'positive' ? '+' : ''}
+                          {change24h.percentage.toFixed(2)}% ({change24h.formattedDiff}) 24h
+                        </span>
+                      </span>
                     </div>
                   </>
                 )}
+
+                {/* 24h Portfolio Interactive Chart */}
+                <PortfolioChart
+                  points={chartPoints}
+                  change24h={change24h}
+                  onHoverPoint={setHoveredChartPoint}
+                />
 
                 {/* Rabby Squircles Action Bar (3 per row) */}
                 <div className="rabby-actions-grid">

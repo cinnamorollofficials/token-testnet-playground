@@ -322,6 +322,60 @@ textarea {
   color: var(--primary);
 }
 
+/* Portfolio 24h Trend Chart & P&L */
+.rabby-pnl-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.rabby-pnl-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  letter-spacing: -0.1px;
+}
+
+.rabby-pnl-chip.positive {
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.rabby-pnl-chip.negative {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.rabby-pnl-chip.neutral {
+  color: var(--text-muted);
+  background: var(--bg-card-sub);
+  border: 1px solid var(--border-subtle);
+}
+
+.rabby-chart-wrap {
+  position: relative;
+  width: 100%;
+  height: 80px;
+  margin: 10px 0 6px 0;
+  cursor: crosshair;
+  touch-action: none;
+  user-select: none;
+}
+
+.rabby-chart-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
 /* Quick Action Squircles (3 per row) */
 .rabby-actions-grid {
   display: flex;
