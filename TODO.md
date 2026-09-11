@@ -204,11 +204,11 @@ Legenda: `👤` = butuh tindakan manual user · `🌐` = butuh network/testnet R
   - [x] Tambahkan state navigasi `currentScreen` (`dashboard`, `send`, `mint`, `transactions`, `scanner`, `generator`) di `App.tsx`
   - [x] Hubungkan aksi tombol Quick Actions & Asset rows untuk berpindah screen atau memunculkan bottom sheet
   - [x] Hubungkan tombol Back pada setiap subpage untuk kembali ke `dashboard`
-- [ ] **5. Pengujian, Verifikasi & Dokumentasi**
-  - [ ] Validasi linter `npm run lint` (0 error, 0 warning)
-  - [ ] Validasi 39 unit tests `npm run test` (seluruh tes hijau)
-  - [ ] Validasi build web dan Chrome extension (`npm run build:web`, `npm run build:ext`)
-  - [ ] Update `walkthrough.md` dan commit per task
+- [x] **5. Pengujian, Verifikasi & Dokumentasi**
+  - [x] Validasi linter `npm run lint` (0 error, 0 warning)
+  - [x] Validasi 39 unit tests `npm run test` (seluruh tes hijau)
+  - [x] Validasi build web dan Chrome extension (`npm run build:web`, `npm run build:ext`)
+  - [x] Update `walkthrough.md` dan commit per task
 
 ---
 
