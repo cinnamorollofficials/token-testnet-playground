@@ -286,10 +286,20 @@ export const SendModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
               </div>
 
               {/* Sender change */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '8px',
+                  padding: '10px 12px',
+                  background: 'var(--danger-bg)',
+                  borderRadius: 'var(--radius-sm)',
+                }}
+              >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}>
                   <ArrowUpRight size={16} color="var(--danger)" />
-                  <span>Akun #{activeAccount.index} (Pengirim)</span>
+                  <span style={{ color: 'var(--text-main)', fontWeight: 600 }}>Akun #{activeAccount.index} (Pengirim)</span>
                 </div>
                 <div style={{ color: 'var(--danger)', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
                   -{amountStr} {getAssetSymbol()}
@@ -297,10 +307,19 @@ export const SendModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
               </div>
 
               {/* Recipient change */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: '10px 12px',
+                  background: 'var(--success-bg)',
+                  borderRadius: 'var(--radius-sm)',
+                }}
+              >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}>
                   <ArrowDownLeft size={16} color="var(--success)" />
-                  <span>Penerima</span>
+                  <span style={{ color: 'var(--text-main)', fontWeight: 600 }}>Penerima</span>
                 </div>
                 <div style={{ color: 'var(--success)', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
                   +{amountStr} {getAssetSymbol()}

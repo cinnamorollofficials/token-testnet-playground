@@ -113,7 +113,7 @@ export const App: React.FC = () => {
             style={{ appearance: 'none', WebkitAppearance: 'none', cursor: 'pointer', paddingRight: '28px', position: 'relative' }}
           >
             {SUPPORTED_LEDGERS.map((l) => (
-              <option key={l.id} value={l.id} style={{ background: '#1A1D2E', color: '#fff' }}>
+              <option key={l.id} value={l.id} style={{ background: '#FFFFFF', color: '#0F172A' }}>
                 {l.label}
               </option>
             ))}
