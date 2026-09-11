@@ -19,7 +19,6 @@ import {
   Coins,
   QrCode,
   Layers,
-  ExternalLink,
   ArrowLeftRight,
 } from 'lucide-react';
 
@@ -518,21 +517,37 @@ export const App: React.FC = () => {
 
                 {/* Rabby Squircles Action Bar */}
                 <div className="rabby-actions-grid">
-                  <button className="rabby-action-squircle" onClick={handleOpenGeneralSend}>
+                  <button
+                    type="button"
+                    className="rabby-action-squircle"
+                    onClick={handleOpenGeneralSend}
+                    title="Send"
+                  >
                     <Send className="rabby-action-icon" />
-                    <span>Send</span>
                   </button>
-                  <button className="rabby-action-squircle" onClick={handleOpenGeneralFaucet}>
+                  <button
+                    type="button"
+                    className="rabby-action-squircle"
+                    onClick={handleOpenGeneralFaucet}
+                    title="Faucet"
+                  >
                     <Droplets className="rabby-action-icon" />
-                    <span>Faucet</span>
                   </button>
-                  <button className="rabby-action-squircle" onClick={handleOpenMint}>
+                  <button
+                    type="button"
+                    className="rabby-action-squircle"
+                    onClick={handleOpenMint}
+                    title="Mint HTT"
+                  >
                     <Coins className="rabby-action-icon" />
-                    <span>Mint HTT</span>
                   </button>
-                  <button className="rabby-action-squircle" onClick={handleOpenGeneralReceive}>
+                  <button
+                    type="button"
+                    className="rabby-action-squircle"
+                    onClick={handleOpenGeneralReceive}
+                    title="Receive"
+                  >
                     <QrCode className="rabby-action-icon" />
-                    <span>Receive</span>
                   </button>
                 </div>
               </div>
@@ -635,27 +650,6 @@ export const App: React.FC = () => {
                                 />
                                 {asset.badge.toUpperCase()}
                               </span>
-                              {asset.kind === 'token' && (() => {
-                                const activeTok = getActiveTokenAsset(asset.ledger);
-                                if (activeTok && 'address' in activeTok) {
-                                  return (
-                                    <button
-                                      type="button"
-                                      className="rabby-contract-chip"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        setModalTargetLedger(asset.ledger);
-                                        setIsMintOpen(true);
-                                      }}
-                                      title="Klik untuk melihat atau mengganti alamat kontrak HTT"
-                                    >
-                                      {activeTok.address.slice(0, 6)}...{activeTok.address.slice(-4)}
-                                      <ExternalLink size={9} />
-                                    </button>
-                                  );
-                                }
-                                return null;
-                              })()}
                             </div>
                             <div className="rabby-token-balance-row">
                               {loadingLedgers[asset.ledger] || bal === undefined ? (
@@ -668,6 +662,20 @@ export const App: React.FC = () => {
                             </div>
                           </div>
                         </div>
+
+                        {/* Quick Send Button on Card Hover */}
+                        <button
+                          type="button"
+                          className="rabby-quick-send-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleOpenSendForAsset(asset.ledger, asset.kind);
+                          }}
+                          title={`Kirim ${asset.symbol}`}
+                        >
+                          <Send size={12} />
+                          <span>Send</span>
+                        </button>
                       </div>
                     );
                   })}
