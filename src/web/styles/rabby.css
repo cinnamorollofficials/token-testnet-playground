@@ -113,45 +113,33 @@ input, select, textarea {
   letter-spacing: -0.2px;
 }
 
-/* Header Account Capsule (when unlocked) */
-.rabby-header-account-capsule {
-  display: flex;
-  align-items: center;
-  background: var(--bg-card-sub);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-pill);
-  padding: 2px 3px;
-  gap: 2px;
-  transition: all 0.2s ease;
-  max-width: 58%;
-}
-
-.rabby-header-account-capsule:hover {
-  border-color: var(--border-hover);
-  background: #f1f5f9;
-}
-
+/* Header Account Pill (Seamless No-Border) */
 .rabby-header-acc-pill {
   display: flex;
   align-items: center;
-  gap: 5px;
-  padding: 3px 8px 3px 4px;
+  gap: 6px;
+  padding: 4px 8px 4px 3px;
   border-radius: var(--radius-pill);
-  background: #ffffff;
-  border: 1px solid var(--border-subtle);
+  background: transparent;
+  border: none;
+  outline: none;
   cursor: pointer;
   transition: all 0.15s ease;
   flex-shrink: 0;
 }
 
 .rabby-header-acc-pill:hover {
-  border-color: var(--primary);
-  background: #faf5ff;
+  background: var(--bg-card-hover);
+}
+
+.rabby-header-acc-pill:focus,
+.rabby-header-acc-pill:focus-visible {
+  outline: none;
 }
 
 .rabby-header-avatar {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   background: var(--primary-gradient);
   color: #ffffff;
@@ -160,7 +148,7 @@ input, select, textarea {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 1px 3px rgba(112, 91, 255, 0.25);
+  box-shadow: 0 1px 4px rgba(112, 91, 255, 0.3);
   flex-shrink: 0;
 }
 
@@ -179,42 +167,6 @@ input, select, textarea {
 .rabby-header-acc-pill:hover .rabby-header-acc-switch-icon {
   color: var(--primary);
   transform: rotate(180deg);
-}
-
-.rabby-header-addr-pill {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px 8px;
-  border-radius: var(--radius-pill);
-  cursor: pointer;
-  color: var(--text-muted);
-  transition: all 0.15s ease;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.rabby-header-addr-pill:hover {
-  color: var(--text-main);
-  background: rgba(255, 255, 255, 0.9);
-}
-
-.rabby-header-addr-text {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: -0.2px;
-}
-
-.rabby-header-copy-icon {
-  color: var(--text-dim);
-  transition: color 0.15s ease;
-  flex-shrink: 0;
-}
-
-.rabby-header-addr-pill:hover .rabby-header-copy-icon {
-  color: var(--primary);
 }
 
 /* Header Right Group */

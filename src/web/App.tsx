@@ -338,42 +338,22 @@ export const App: React.FC = () => {
         {/* Card Top Header */}
         {/* Card Top Header - Option 1: Single-Row Unified Header */}
         <header className="rabby-header">
-          {/* Left Zone: Account & Address Capsule (if unlocked) OR Brand Title (if locked) */}
+          {/* Left Zone: Account Switcher Pill (if unlocked) OR Brand Title (if locked) */}
           {isUnlocked ? (
-            <div className="rabby-header-account-capsule">
-              {/* Account Switcher Button */}
-              <button
-                type="button"
-                className="rabby-header-acc-pill"
-                onClick={() => setActiveAccountIndex(activeAccountIndex === 0 ? 1 : 0)}
-                title={`Akun aktif: Account #${activeAccountIndex}. Klik untuk beralih ke Account #${activeAccountIndex === 0 ? 1 : 0}`}
-              >
-                <div className="rabby-header-avatar">#{activeAccountIndex}</div>
-                <span className="rabby-header-acc-name">Acc #{activeAccountIndex}</span>
-                <ArrowLeftRight size={11} className="rabby-header-acc-switch-icon" />
-              </button>
-
-              {/* Address with 1-Click Copy */}
-              <button
-                type="button"
-                className="rabby-header-addr-pill"
-                onClick={() => displayedAddress && handleCopyAddress(displayedAddress)}
-                title={
-                  displayedAddress
-                    ? `Salin ${displayedAddress} (${selectedLedger === 'all' ? 'EVM Primary' : singleChainNetwork?.name})`
-                    : 'Salin address'
-                }
-              >
-                <span className="rabby-header-addr-text">
-                  {displayedAddress ? truncateAddress(displayedAddress, 6, 4) : '...'}
-                </span>
-                {copiedAddr ? (
-                  <Check size={12} color="var(--success)" />
-                ) : (
-                  <Copy size={12} className="rabby-header-copy-icon" />
-                )}
-              </button>
-            </div>
+            <button
+              type="button"
+              className="rabby-header-acc-pill"
+              onClick={() => setActiveAccountIndex(activeAccountIndex === 0 ? 1 : 0)}
+              title={
+                displayedAddress
+                  ? `Akun aktif: Account #${activeAccountIndex} (${truncateAddress(displayedAddress, 6, 4)}). Klik untuk beralih ke Account #${activeAccountIndex === 0 ? 1 : 0}`
+                  : `Akun aktif: Account #${activeAccountIndex}. Klik untuk beralih ke Account #${activeAccountIndex === 0 ? 1 : 0}`
+              }
+            >
+              <div className="rabby-header-avatar">#{activeAccountIndex}</div>
+              <span className="rabby-header-acc-name">Acc #{activeAccountIndex}</span>
+              <ArrowLeftRight size={11} className="rabby-header-acc-switch-icon" />
+            </button>
           ) : (
             <div className="rabby-header-brand">
               <div className="rabby-header-brand-icon">
