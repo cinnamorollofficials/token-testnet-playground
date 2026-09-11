@@ -354,9 +354,17 @@ textarea {
 
 .rabby-chart-glass-top {
   display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 16px 6px 16px;
+  text-align: left;
+}
+
+.rabby-chart-glass-header-row {
+  display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 14px 6px 14px;
+  width: 100%;
 }
 
 .rabby-chart-glass-tag {
@@ -367,6 +375,14 @@ textarea {
   font-weight: 700;
   color: var(--text-muted);
   letter-spacing: -0.1px;
+}
+
+.rabby-chart-glass-balance {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text-main);
+  letter-spacing: -0.8px;
+  line-height: 1.15;
 }
 
 .rabby-chart-glass-dot {
