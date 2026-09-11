@@ -4,7 +4,7 @@
   --bg-card-sub: #f8fafc;
   --bg-card-hover: #edf2f7;
   --bg-input: #f1f5f9;
-  
+
   --border-subtle: #e2e8f0;
   --border-focus: #705bff;
   --border-hover: #cbd5e1;
@@ -51,7 +51,7 @@ body {
   display: flex;
   flex-direction: column;
   -webkit-font-smoothing: antialiased;
-  background-image: 
+  background-image:
     radial-gradient(circle at 50% 0%, rgba(112, 91, 255, 0.08) 0%, transparent 50%),
     radial-gradient(circle at 100% 100%, rgba(0, 168, 119, 0.04) 0%, transparent 40%);
 }
@@ -63,7 +63,9 @@ button {
   background: none;
 }
 
-input, select, textarea {
+input,
+select,
+textarea {
   font-family: inherit;
 }
 
@@ -82,7 +84,6 @@ input, select, textarea {
   justify-content: space-between;
   padding: 10px 16px;
   background: #ffffff;
-  border-bottom: 1px solid var(--border-subtle);
   gap: 8px;
   min-height: 52px;
 }
@@ -542,9 +543,9 @@ input, select, textarea {
 }
 
 .rabby-token-name {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
-  color: var(--text-main);
+  color: #0f172a;
   letter-spacing: -0.2px;
   line-height: 1.2;
 }
@@ -553,14 +554,14 @@ input, select, textarea {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   padding: 2px 8px;
   border-radius: var(--radius-pill);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  background: #f8fafc;
-  color: #64748b;
+  background: #f1f5f9;
+  color: #475569;
   border: 1px solid #e2e8f0;
   line-height: 1.3;
 }
@@ -579,14 +580,15 @@ input, select, textarea {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 13px;
+  font-size: 14px;
   color: #64748b;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.2;
+  margin-top: 2px;
 }
 
 .rabby-token-balance-val {
-  font-weight: 500;
+  font-weight: 600;
   color: #64748b;
   letter-spacing: -0.1px;
 }
@@ -596,6 +598,7 @@ input, select, textarea {
   0% {
     background-position: -200% 0;
   }
+
   100% {
     background-position: 200% 0;
   }
@@ -897,9 +900,108 @@ input, select, textarea {
   box-shadow: 0 2px 8px rgba(112, 91, 255, 0.25);
 }
 
+/* Indodax Live Rate Indicators & Valuations */
+.rabby-live-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--success);
+  background: var(--success-bg);
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  letter-spacing: 0.1px;
+}
+
+.rabby-live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 6px var(--success);
+  animation: rabbyPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  flex-shrink: 0;
+}
+
+@keyframes rabbyPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(0.8);
+  }
+}
+
+.rabby-rate-badge-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--bg-card-sub);
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.rabby-rate-badge-header:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+  background: var(--primary-glow);
+}
+
+.rabby-rate-tag {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  padding: 1px 6px;
+  border-radius: 4px;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.rabby-token-sub-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 3px;
+  flex-wrap: wrap;
+}
+
+.rabby-token-balance-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.rabby-token-fiat-val {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  line-height: 1.2;
+}
+
+.rabby-spin {
+  animation: spin 1s linear infinite;
+}
+
 /* Extension Popup & Side Panel Viewport Optimization */
 @media (max-width: 520px) {
-  html, body {
+
+  html,
+  body {
     min-width: 380px;
     width: 100%;
     margin: 0;
@@ -934,5 +1036,3 @@ input, select, textarea {
     border-radius: var(--radius-md);
   }
 }
-
-

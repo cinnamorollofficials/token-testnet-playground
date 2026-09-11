@@ -58,7 +58,7 @@ export const NETWORKS: Record<LedgerId, NetworkConfig> = {
     testnetName: 'Amoy',
     chainId: 80002,
     networkId: 80002,
-    rpcUrl: process.env.POLYGON_AMOY_RPC || 'https://rpc-amoy.polygon.technology',
+    rpcUrl: process.env.POLYGON_AMOY_RPC || 'https://polygon-amoy-bor-rpc.publicnode.com',
     explorerUrl: 'https://amoy.polygonscan.com',
     faucetUrl: 'https://faucet.polygon.technology',
     nativeAsset: {
