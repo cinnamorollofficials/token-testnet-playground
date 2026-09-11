@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useSession, ACTIVE_LEDGERS } from '../context/SessionContext.js';
-import { NETWORKS } from '../../config/networks.js';
+import { useSession, ACTIVE_LEDGERS } from '../context/SessionContext';
+import { NETWORKS, LEDGER_LOGOS } from '../../config/networks.js';
 import { getAdapter } from '../../core/registry.js';
 import { DEFAULT_TEST_TOKENS } from '../../config/tokens.js';
 import { parseAmount } from '../../core/amount.js';
@@ -220,7 +220,12 @@ export const SendModal: React.FC<Props> = ({
                     }
                   }}
                 >
-                  {NETWORKS[ledger].nativeAsset.symbol} ({NETWORKS[ledger].testnetName})
+                  <img
+                    src={LEDGER_LOGOS[ledger]}
+                    alt=""
+                    className="rabby-chain-tab-icon"
+                  />
+                  <span>{NETWORKS[ledger].nativeAsset.symbol} ({NETWORKS[ledger].testnetName})</span>
                 </button>
               ))}
             </div>

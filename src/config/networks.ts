@@ -14,7 +14,17 @@ export interface NetworkConfig {
     readonly decimals: number;
   };
   readonly supportsAutoFaucet: boolean;
+  readonly logoUrl: string;
 }
+
+export const LEDGER_LOGOS: Record<LedgerId, string> = {
+  ethereum: 'https://cdn.jsdelivr.net/gh/trustwallet/assets@master/blockchains/ethereum/info/logo.png',
+  polygon: 'https://cdn.jsdelivr.net/gh/trustwallet/assets@master/blockchains/polygon/info/logo.png',
+  solana: 'https://cdn.jsdelivr.net/gh/trustwallet/assets@master/blockchains/solana/info/logo.png',
+  xrpl: 'https://cdn.jsdelivr.net/gh/trustwallet/assets@master/blockchains/ripple/info/logo.png',
+  bitcoin: 'https://cdn.jsdelivr.net/gh/trustwallet/assets@master/blockchains/bitcoin/info/logo.png',
+  kaia: 'https://coin-images.coingecko.com/coins/images/39901/large/KAIA.png',
+};
 
 export const ALLOWLISTED_TESTNET_IDS: ReadonlySet<string | number> = new Set([
   11155111,          // Ethereum Sepolia
@@ -40,6 +50,7 @@ export const NETWORKS: Record<LedgerId, NetworkConfig> = {
       decimals: 18,
     },
     supportsAutoFaucet: false,
+    logoUrl: LEDGER_LOGOS.ethereum,
   },
   polygon: {
     id: 'polygon',
@@ -55,6 +66,7 @@ export const NETWORKS: Record<LedgerId, NetworkConfig> = {
       decimals: 18,
     },
     supportsAutoFaucet: false,
+    logoUrl: LEDGER_LOGOS.polygon,
   },
   solana: {
     id: 'solana',
@@ -69,6 +81,7 @@ export const NETWORKS: Record<LedgerId, NetworkConfig> = {
       decimals: 9,
     },
     supportsAutoFaucet: true,
+    logoUrl: LEDGER_LOGOS.solana,
   },
   xrpl: {
     id: 'xrpl',
@@ -83,6 +96,7 @@ export const NETWORKS: Record<LedgerId, NetworkConfig> = {
       decimals: 6,
     },
     supportsAutoFaucet: true,
+    logoUrl: LEDGER_LOGOS.xrpl,
   },
   bitcoin: {
     id: 'bitcoin',
@@ -97,6 +111,7 @@ export const NETWORKS: Record<LedgerId, NetworkConfig> = {
       decimals: 8,
     },
     supportsAutoFaucet: false,
+    logoUrl: LEDGER_LOGOS.bitcoin,
   },
   kaia: {
     id: 'kaia',
@@ -112,6 +127,7 @@ export const NETWORKS: Record<LedgerId, NetworkConfig> = {
       decimals: 18,
     },
     supportsAutoFaucet: false,
+    logoUrl: LEDGER_LOGOS.kaia,
   },
 };
 

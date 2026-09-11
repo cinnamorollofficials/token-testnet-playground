@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
-import { useSession } from '../context/SessionContext.js';
+import { useSession } from '../context/SessionContext';
 import { X, Camera, Upload, Edit3, CheckCircle2, AlertCircle } from 'lucide-react';
 
 interface Props {

@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useSession, ACTIVE_LEDGERS, type ChainFilter } from './context/SessionContext.js';
-import { NETWORKS } from '../config/networks.js';
+import { useSession, ACTIVE_LEDGERS, type ChainFilter } from './context/SessionContext';
+import { NETWORKS, LEDGER_LOGOS } from '../config/networks.js';
 import { getAdapter } from '../core/registry.js';
 import { DEFAULT_TEST_TOKENS } from '../config/tokens.js';
 import type { LedgerId, Balance } from '../core/types.js';
-import { QRGeneratorModal } from './components/QRGeneratorModal.js';
-import { QRScannerModal } from './components/QRScannerModal.js';
-import { FaucetModal } from './components/FaucetModal.js';
-import { ReceiveModal } from './components/ReceiveModal.js';
-import { MintTokenModal } from './components/MintTokenModal.js';
-import { SendModal } from './components/SendModal.js';
+import { QRGeneratorModal } from './components/QRGeneratorModal';
+import { QRScannerModal } from './components/QRScannerModal';
+import { FaucetModal } from './components/FaucetModal';
+import { ReceiveModal } from './components/ReceiveModal';
+import { MintTokenModal } from './components/MintTokenModal';
+import { SendModal } from './components/SendModal';
 import {
   Wallet,
   Lock,
@@ -20,8 +20,6 @@ import {
   Droplets,
   Coins,
   QrCode,
-  ShieldCheck,
-  ExternalLink,
   RefreshCw,
   Layers,
 } from 'lucide-react';
@@ -47,6 +45,7 @@ interface AssetItem {
   decimals: number;
   avatarBg?: string;
   explorerUrl: string;
+  logoUrl?: string;
 }
 
 const ALL_ASSETS: AssetItem[] = [
@@ -61,6 +60,7 @@ const ALL_ASSETS: AssetItem[] = [
     badge: 'Sepolia',
     decimals: 18,
     explorerUrl: 'https://sepolia.etherscan.io',
+    logoUrl: LEDGER_LOGOS.ethereum,
   },
   {
     id: 'ethereum-token',
@@ -74,6 +74,7 @@ const ALL_ASSETS: AssetItem[] = [
     decimals: 18,
     avatarBg: 'linear-gradient(135deg, #FF9F43 0%, #FF6B6B 100%)',
     explorerUrl: 'https://sepolia.etherscan.io',
+    logoUrl: LEDGER_LOGOS.ethereum,
   },
   {
     id: 'polygon-native',
@@ -87,6 +88,7 @@ const ALL_ASSETS: AssetItem[] = [
     decimals: 18,
     avatarBg: 'linear-gradient(135deg, #8247E5 0%, #A855F7 100%)',
     explorerUrl: 'https://amoy.polygonscan.com',
+    logoUrl: LEDGER_LOGOS.polygon,
   },
   {
     id: 'polygon-token',
@@ -100,6 +102,7 @@ const ALL_ASSETS: AssetItem[] = [
     decimals: 18,
     avatarBg: 'linear-gradient(135deg, #FF9F43 0%, #FF6B6B 100%)',
     explorerUrl: 'https://amoy.polygonscan.com',
+    logoUrl: LEDGER_LOGOS.polygon,
   },
   {
     id: 'solana-native',
@@ -113,6 +116,7 @@ const ALL_ASSETS: AssetItem[] = [
     decimals: 9,
     avatarBg: 'linear-gradient(135deg, #14F195 0%, #9945FF 100%)',
     explorerUrl: 'https://explorer.solana.com/?cluster=devnet',
+    logoUrl: LEDGER_LOGOS.solana,
   },
   {
     id: 'xrpl-native',
@@ -126,6 +130,7 @@ const ALL_ASSETS: AssetItem[] = [
     decimals: 6,
     avatarBg: 'linear-gradient(135deg, #23292F 0%, #008CE7 100%)',
     explorerUrl: 'https://testnet.xrpl.org',
+    logoUrl: LEDGER_LOGOS.xrpl,
   },
   {
     id: 'bitcoin-native',
@@ -139,6 +144,7 @@ const ALL_ASSETS: AssetItem[] = [
     decimals: 8,
     avatarBg: 'linear-gradient(135deg, #F7931A 0%, #FFA834 100%)',
     explorerUrl: 'https://mempool.space/signet',
+    logoUrl: LEDGER_LOGOS.bitcoin,
   },
 ];
 
@@ -278,6 +284,20 @@ export const App: React.FC = () => {
       <header className="rabby-header">
         {/* Network Selector */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {selectedLedger !== 'all' && (
+            <img
+              src={LEDGER_LOGOS[selectedLedger]}
+              alt={singleChainNetwork?.name}
+              style={{
+                width: '20px',
+                height: '20px',
+                borderRadius: '50%',
+                objectFit: 'cover',
+                background: '#ffffff',
+                boxShadow: '0 1px 4px rgba(0,0,0,0.15)',
+              }}
+            />
+          )}
           <select
             value={selectedLedger}
             onChange={(e) => setSelectedLedger(e.target.value as ChainFilter)}
@@ -472,17 +492,6 @@ export const App: React.FC = () => {
             </div>
           </div>
 
-          {/* Rabby Signature Security Shield */}
-          <div className="rabby-shield-box">
-            <ShieldCheck className="rabby-shield-icon" size={22} />
-            <div>
-              <div className="rabby-shield-title">Testnet Pre-flight Guard Active</div>
-              <div className="rabby-shield-desc">
-                Transaksi dilindungi oleh <code>assertTestnet()</code>. Seluruh panggilan dibatasi pada chain ID testnet resmi (0 risiko dana nyata).
-              </div>
-            </div>
-          </div>
-
           {/* Token List Card */}
           <div className="rabby-card">
             <div
@@ -512,27 +521,7 @@ export const App: React.FC = () => {
                 </span>
               </div>
 
-              {singleChainNetwork ? (
-                <a
-                  href={singleChainNetwork.explorerUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  style={{
-                    fontSize: '12px',
-                    color: 'var(--primary)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    textDecoration: 'none',
-                  }}
-                >
-                  Explorer <ExternalLink size={12} />
-                </a>
-              ) : (
-                <span style={{ fontSize: '11px', color: 'var(--text-dim)' }}>
-                  Default Filter: All Chains
-                </span>
-              )}
+
             </div>
 
             <div className="rabby-token-list">
@@ -541,11 +530,43 @@ export const App: React.FC = () => {
                 return (
                   <div key={asset.id} className="rabby-token-item">
                     <div className="rabby-token-left">
-                      <div
-                        className="rabby-token-avatar"
-                        style={asset.avatarBg ? { background: asset.avatarBg } : undefined}
-                      >
-                        {asset.symbol.slice(0, 3)}
+                      <div className="rabby-token-avatar-wrap">
+                        {asset.kind === 'native' ? (
+                          <img
+                            src={LEDGER_LOGOS[asset.ledger]}
+                            alt={asset.symbol}
+                            className="rabby-token-avatar-img"
+                            onError={(e) => {
+                              (e.currentTarget as HTMLElement).style.display = 'none';
+                              const fallback = e.currentTarget.parentElement?.querySelector('.rabby-token-avatar') as HTMLElement;
+                              if (fallback) fallback.style.display = 'flex';
+                            }}
+                          />
+                        ) : (
+                          <>
+                            <div
+                              className="rabby-token-avatar"
+                              style={asset.avatarBg ? { background: asset.avatarBg } : undefined}
+                            >
+                              {asset.symbol.slice(0, 3)}
+                            </div>
+                            <img
+                              src={LEDGER_LOGOS[asset.ledger]}
+                              alt={asset.networkName}
+                              className="rabby-token-chain-badge"
+                              title={`Network: ${asset.networkName}`}
+                            />
+                          </>
+                        )}
+                        <div
+                          className="rabby-token-avatar"
+                          style={{
+                            display: 'none',
+                            ...(asset.avatarBg ? { background: asset.avatarBg } : {}),
+                          }}
+                        >
+                          {asset.symbol.slice(0, 3)}
+                        </div>
                       </div>
                       <div>
                         <div
@@ -556,7 +577,14 @@ export const App: React.FC = () => {
                           }}
                         >
                           <span className="rabby-token-name">{asset.name}</span>
-                          <span className="rabby-chain-badge-tag">{asset.badge}</span>
+                          <span className="rabby-chain-badge-tag">
+                            <img
+                              src={LEDGER_LOGOS[asset.ledger]}
+                              alt=""
+                              style={{ width: 11, height: 11, borderRadius: '50%', objectFit: 'cover' }}
+                            />
+                            {asset.badge}
+                          </span>
                         </div>
                         <div className="rabby-token-chain">
                           {asset.kind === 'native' ? 'Native Testnet Coin' : 'Custom Test Token'} • {asset.networkName}

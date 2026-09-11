@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { App } from './App.js';
-import { SessionProvider } from './context/SessionContext.js';
+import { App } from './App';
+import { SessionProvider } from './context/SessionContext';
 import './styles/rabby.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

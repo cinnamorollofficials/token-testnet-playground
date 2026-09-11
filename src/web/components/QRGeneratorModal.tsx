@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import QRCode from 'qrcode';
 import { generate } from '../../core/mnemonic.js';
-import { useSession } from '../context/SessionContext.js';
+import { useSession } from '../context/SessionContext';
 import { X, Download, RefreshCw, Key, ShieldAlert, Check } from 'lucide-react';
 
 interface Props {

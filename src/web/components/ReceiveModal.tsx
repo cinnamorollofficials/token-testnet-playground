@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import QRCode from 'qrcode';
-import { useSession, ACTIVE_LEDGERS } from '../context/SessionContext.js';
-import { NETWORKS } from '../../config/networks.js';
+import { useSession, ACTIVE_LEDGERS } from '../context/SessionContext';
+import { NETWORKS, LEDGER_LOGOS } from '../../config/networks.js';
 import type { LedgerId } from '../../core/types.js';
 import { X, QrCode, Copy, Check } from 'lucide-react';
 
@@ -76,7 +76,12 @@ export const ReceiveModal: React.FC<Props> = ({ isOpen, onClose, initialLedger }
                 setCopied(false);
               }}
             >
-              {NETWORKS[ledger].nativeAsset.symbol} ({NETWORKS[ledger].testnetName})
+              <img
+                src={LEDGER_LOGOS[ledger]}
+                alt=""
+                className="rabby-chain-tab-icon"
+              />
+              <span>{NETWORKS[ledger].nativeAsset.symbol} ({NETWORKS[ledger].testnetName})</span>
             </button>
           ))}
         </div>

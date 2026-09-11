@@ -331,6 +331,37 @@ input, select, textarea {
   gap: 12px;
 }
 
+.rabby-token-avatar-wrap {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+}
+
+.rabby-token-avatar-img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #ffffff;
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  display: block;
+}
+
+.rabby-token-chain-badge {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1.5px solid #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  object-fit: cover;
+}
+
 .rabby-token-avatar {
   width: 36px;
   height: 36px;
@@ -508,6 +539,10 @@ input, select, textarea {
 }
 
 .rabby-chain-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   flex: 1;
   min-width: fit-content;
   padding: 6px 12px;
@@ -518,6 +553,14 @@ input, select, textarea {
   text-align: center;
   white-space: nowrap;
   transition: all 0.2s;
+}
+
+.rabby-chain-tab-icon {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
 }
 
 .rabby-chain-tab:hover {

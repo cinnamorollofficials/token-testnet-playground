@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSession } from '../context/SessionContext.js';
+import { useSession } from '../context/SessionContext';
 import { NETWORKS } from '../../config/networks.js';
 import { TEST_TOKEN_ABI, TEST_TOKEN_BYTECODE } from '../../contracts/TestTokenArtifact.js';
 import { ContractFactory, Contract, JsonRpcProvider, Wallet } from 'ethers';
