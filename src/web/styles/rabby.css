@@ -679,11 +679,11 @@ textarea {
 }
 
 .rabby-token-name {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--text-main);
   letter-spacing: -0.2px;
-  line-height: 1.2;
+  line-height: 1.25;
   white-space: nowrap;
 }
 
@@ -697,9 +697,9 @@ textarea {
   border-radius: var(--radius-pill);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  background: #f1f5f9;
-  color: #475569;
-  border: 1px solid #e2e8f0;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
   line-height: 1.3;
   white-space: nowrap;
   flex-shrink: 0;
@@ -719,9 +719,9 @@ textarea {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 14px;
-  color: #64748b;
-  font-weight: 600;
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
   line-height: 1.2;
   margin-top: 2px;
   white-space: nowrap;
@@ -729,7 +729,7 @@ textarea {
 
 .rabby-token-balance-val {
   font-weight: 600;
-  color: #64748b;
+  color: var(--text-muted);
   letter-spacing: -0.1px;
   white-space: nowrap;
 }
@@ -747,7 +747,7 @@ textarea {
 
 .rabby-skeleton {
   display: inline-block;
-  background: linear-gradient(90deg, #edf2f7 0%, #e2e8f0 50%, #edf2f7 100%);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.04) 100%);
   background-size: 200% 100%;
   animation: rabbyShimmer 1.5s infinite ease-in-out;
   border-radius: var(--radius-sm);
@@ -1106,8 +1106,8 @@ textarea {
   font-size: 11px;
   font-weight: 600;
   color: var(--text-muted);
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-subtle);
   padding: 1px 6px;
   border-radius: 4px;
   line-height: 1.3;
