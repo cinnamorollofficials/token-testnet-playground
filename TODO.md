@@ -212,6 +212,27 @@ Legenda: `👤` = butuh tindakan manual user · `🌐` = butuh network/testnet R
 
 ---
 
+## Fase 9 — Tampilan Saldo Kripto & Harga Token di List Aset + Sembunyikan di Layar Kecil 📊
+
+- [ ] **1. CSS Design System & Responsivitas (`src/web/styles/rabby.css`)**
+  - [ ] Tambahkan styling `.rabby-token-right` (kolom kanan flex-end)
+  - [ ] Tambahkan styling `.rabby-token-fiat-val` (valuasi IDR bold di kanan atas)
+  - [ ] Tambahkan styling `.rabby-token-crypto-amount` (saldo koin kripto di kiri bawah)
+  - [ ] Tambahkan styling `.rabby-token-price-row` & `.rabby-token-unit-price` (kurs per token di kanan bawah)
+  - [ ] Tambahkan media query `@media (max-width: 390px)` untuk menyembunyikan `.rabby-token-price-row` di layar kecil
+  - [ ] Selaraskan transisi hover dengan tombol `.rabby-quick-send-btn`
+- [ ] **2. Integrasi Markup 2-Kolom List Aset di App.tsx**
+  - [ ] Perbarui perulangan aset di `App.tsx` agar menyajikan struktur 2-kolom 2-baris sesuai Rabby Wallet
+  - [ ] Kolom Kiri: Avatar & badge + Nama Token (atas) & Jumlah Saldo Kripto (bawah, `formatDisplayBalance(bal?.formatted, 4)`)
+  - [ ] Kolom Kanan: Total Valuasi IDR (atas, `formatIDR(assetIdrVal)`) & Harga Satuan Token (bawah, `formatIDR(rates[asset.symbol]?.priceIdr)`)
+- [ ] **3. Pengujian, Verifikasi & Dokumentasi**
+  - [ ] Validasi linter `npm run lint` (0 error, 0 warning)
+  - [ ] Validasi 39 unit tests `npm run test` (seluruh tes hijau)
+  - [ ] Validasi build web dan Chrome extension (`npm run build:web`, `npm run build:ext`)
+  - [ ] Update `walkthrough.md` dan commit per task
+
+---
+
 ## Ditunda (Backlog)
 
 - [ ] 👤 **Kaia — putuskan coin type** (coin type 60 vs 8217 di Kaia Wallet)
@@ -220,4 +241,5 @@ Legenda: `👤` = butuh tindakan manual user · `🌐` = butuh network/testnet R
 - [ ] Batch / sweep multi-index transfer
 - [ ] Kaia fee delegation
 - [ ] EIP-2612 permit
+
 
