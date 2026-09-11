@@ -22,6 +22,7 @@ import {
   RefreshCw,
   Layers,
   ExternalLink,
+  ArrowLeftRight,
 } from 'lucide-react';
 
 const SUPPORTED_LEDGERS: { id: ChainFilter; label: string }[] = [
@@ -275,9 +276,9 @@ export const App: React.FC = () => {
     setTimeout(() => setCopiedAddr(false), 2000);
   };
 
-  const truncateAddress = (addr: string) => {
-    if (addr.length <= 16) return addr;
-    return `${addr.slice(0, 8)}...${addr.slice(-6)}`;
+  const truncateAddress = (addr: string, start = 6, end = 4) => {
+    if (addr.length <= start + end + 3) return addr;
+    return `${addr.slice(0, start)}...${addr.slice(-end)}`;
   };
 
   const handleOpenSendForAsset = (ledger: LedgerId, kind: 'native' | 'token') => {
@@ -335,56 +336,89 @@ export const App: React.FC = () => {
       {/* Unified All-in-One Wallet Card */}
       <div className="rabby-card rabby-unified-card">
         {/* Card Top Header */}
+        {/* Card Top Header - Option 1: Single-Row Unified Header */}
         <header className="rabby-header">
-          {/* Network Selector */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            {selectedLedger !== 'all' && (
-              <img
-                src={LEDGER_LOGOS[selectedLedger]}
-                alt={singleChainNetwork?.name}
-                style={{
-                  width: '20px',
-                  height: '20px',
-                  borderRadius: '50%',
-                  objectFit: 'cover',
-                  background: '#ffffff',
-                  boxShadow: '0 1px 4px rgba(0,0,0,0.15)',
-                }}
-              />
-            )}
-            <select
-              value={selectedLedger}
-              onChange={(e) => setSelectedLedger(e.target.value as ChainFilter)}
-              className="rabby-network-badge"
-              style={{
-                appearance: 'none',
-                WebkitAppearance: 'none',
-                cursor: 'pointer',
-                paddingRight: '28px',
-                position: 'relative',
-              }}
-            >
-              {SUPPORTED_LEDGERS.map((l) => (
-                <option key={l.id} value={l.id} style={{ background: '#FFFFFF', color: '#0F172A' }}>
-                  {l.label}
-                </option>
-              ))}
-            </select>
-            <div
-              className="rabby-network-dot"
-              title={selectedLedger === 'all' ? 'All Testnets Connected (5 Chains)' : `${singleChainNetwork?.name} Testnet Connected`}
-            />
-          </div>
+          {/* Left Zone: Account & Address Capsule (if unlocked) OR Brand Title (if locked) */}
+          {isUnlocked ? (
+            <div className="rabby-header-account-capsule">
+              {/* Account Switcher Button */}
+              <button
+                type="button"
+                className="rabby-header-acc-pill"
+                onClick={() => setActiveAccountIndex(activeAccountIndex === 0 ? 1 : 0)}
+                title={`Akun aktif: Account #${activeAccountIndex}. Klik untuk beralih ke Account #${activeAccountIndex === 0 ? 1 : 0}`}
+              >
+                <div className="rabby-header-avatar">#{activeAccountIndex}</div>
+                <span className="rabby-header-acc-name">Acc #{activeAccountIndex}</span>
+                <ArrowLeftRight size={11} className="rabby-header-acc-switch-icon" />
+              </button>
 
-          {/* Header Action Buttons */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              {/* Address with 1-Click Copy */}
+              <button
+                type="button"
+                className="rabby-header-addr-pill"
+                onClick={() => displayedAddress && handleCopyAddress(displayedAddress)}
+                title={
+                  displayedAddress
+                    ? `Salin ${displayedAddress} (${selectedLedger === 'all' ? 'EVM Primary' : singleChainNetwork?.name})`
+                    : 'Salin address'
+                }
+              >
+                <span className="rabby-header-addr-text">
+                  {displayedAddress ? truncateAddress(displayedAddress, 6, 4) : '...'}
+                </span>
+                {copiedAddr ? (
+                  <Check size={12} color="var(--success)" />
+                ) : (
+                  <Copy size={12} className="rabby-header-copy-icon" />
+                )}
+              </button>
+            </div>
+          ) : (
+            <div className="rabby-header-brand">
+              <div className="rabby-header-brand-icon">
+                <Wallet size={14} color="#fff" />
+              </div>
+              <span className="rabby-header-brand-title">Testnet Playground</span>
+            </div>
+          )}
+
+          {/* Right Zone: Network Selector + Actions */}
+          <div className="rabby-header-right-group">
+            {/* Network Selector Pill */}
+            <div className="rabby-header-network-wrap">
+              {selectedLedger !== 'all' && (
+                <img
+                  src={LEDGER_LOGOS[selectedLedger]}
+                  alt={singleChainNetwork?.name}
+                  className="rabby-header-network-logo"
+                />
+              )}
+              <select
+                value={selectedLedger}
+                onChange={(e) => setSelectedLedger(e.target.value as ChainFilter)}
+                className="rabby-header-network-select"
+              >
+                {SUPPORTED_LEDGERS.map((l) => (
+                  <option key={l.id} value={l.id} style={{ background: '#FFFFFF', color: '#0F172A' }}>
+                    {l.label}
+                  </option>
+                ))}
+              </select>
+              <div
+                className="rabby-network-dot"
+                title={selectedLedger === 'all' ? 'All Testnets Connected (5 Chains)' : `${singleChainNetwork?.name} Testnet Connected`}
+              />
+            </div>
+
+            {/* Expand to Tab */}
             <button
               type="button"
               className="rabby-header-action-btn"
               onClick={handleExpandTab}
               title="Buka di tab penuh (Expand to Tab)"
             >
-              <ExternalLink size={15} />
+              <ExternalLink size={14} />
             </button>
 
             {/* Header Lock Icon */}
@@ -398,7 +432,7 @@ export const App: React.FC = () => {
                   : 'Wallet terkunci. Klik untuk scan QR atau login.'
               }
             >
-              <Lock size={16} />
+              <Lock size={14} />
             </button>
           </div>
         </header>
@@ -443,48 +477,6 @@ export const App: React.FC = () => {
           ) : (
             /* UNLOCKED DASHBOARD VIEW */
             <>
-              {/* Account Pill (Index 0 vs Index 1 toggle) */}
-              <div className="rabby-account-pill">
-                <div className="rabby-account-info">
-                  <div className="rabby-account-name">
-                    <span>
-                      Account #{activeAccountIndex}
-                      {selectedLedger === 'all' ? ' (Multi-Chain)' : ` • ${singleChainNetwork?.name}`}
-                    </span>
-                    <span className="rabby-account-path">
-                      ({selectedLedger === 'all' ? '5 Testnets' : accounts[selectedLedger]?.path})
-                    </span>
-                  </div>
-                  <div className="rabby-account-addr">
-                    {displayedAddress ? truncateAddress(displayedAddress) : 'Deriving...'}
-                    {selectedLedger === 'all' && (
-                      <span style={{ fontSize: '11px', color: 'var(--text-dim)', marginLeft: '6px' }}>
-                        (EVM Primary)
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', gap: '6px' }}>
-                  <button
-                    className="rabby-btn-secondary"
-                    style={{ padding: '8px 10px', fontSize: '12px' }}
-                    onClick={() => setActiveAccountIndex(activeAccountIndex === 0 ? 1 : 0)}
-                    title="Ganti antara Account #0 dan Account #1"
-                  >
-                    Index {activeAccountIndex === 0 ? '0 ➔ 1' : '1 ➔ 0'}
-                  </button>
-                  <button
-                    className="rabby-btn-secondary"
-                    style={{ padding: '8px 10px' }}
-                    onClick={() => displayedAddress && handleCopyAddress(displayedAddress)}
-                    title="Copy Address"
-                  >
-                    {copiedAddr ? <Check size={14} color="var(--success)" /> : <Copy size={14} />}
-                  </button>
-                </div>
-              </div>
-
               {/* Hero Portfolio Section */}
               <div className="rabby-hero-section">
                 <div
