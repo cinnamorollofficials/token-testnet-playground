@@ -166,7 +166,7 @@ export const SendModal: React.FC<Props> = ({
       // Save to transaction history
       const symbol = getAssetSymbol();
       const idrRate = rates && TESTNET_TO_INDODAX_MAP[symbol] ? rates[TESTNET_TO_INDODAX_MAP[symbol]]?.priceIdr : undefined;
-      const idrVal = rates ? calculateIDRValue(amount, symbol, rates) : undefined;
+      const idrVal = rates ? calculateIDRValue(amountStr, symbol, rates) : undefined;
       let explorerLink = '';
       try {
         explorerLink = adapter.explorerTx(hash);
@@ -179,7 +179,7 @@ export const SendModal: React.FC<Props> = ({
         ledger: targetLedger,
         type: 'send',
         assetSymbol: symbol,
-        amount,
+        amount: amountStr,
         from: currentAccount.address,
         to: recipient.trim(),
         timestamp: Date.now(),
