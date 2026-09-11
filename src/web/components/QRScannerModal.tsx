@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
 import { useSession } from '../context/SessionContext';
-import { X, Camera, Upload, Edit3, CheckCircle2, AlertCircle } from 'lucide-react';
+import { X, Camera, Upload, Edit3, CheckCircle2, AlertCircle, ExternalLink } from 'lucide-react';
 
 interface Props {
   isOpen: boolean;
@@ -27,6 +27,15 @@ export const QRScannerModal: React.FC<Props> = ({ isOpen, onClose }) => {
         console.warn('Error clearing scanner:', err);
       }
       scannerRef.current = null;
+    }
+  };
+
+  const handleOpenScannerInTab = () => {
+    stopCamera();
+    if (typeof chrome !== 'undefined' && chrome.tabs?.create) {
+      chrome.tabs.create({ url: chrome.runtime.getURL('index.html?action=scan') });
+    } else {
+      window.open(window.location.origin + window.location.pathname + '?action=scan', '_blank');
     }
   };
 
@@ -100,13 +109,7 @@ export const QRScannerModal: React.FC<Props> = ({ isOpen, onClose }) => {
 
   const handleManualSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMsg(null);
-    const success = unlockWithMnemonic(manualText);
-    if (success) {
-      onClose();
-    } else {
-      setErrorMsg('Frasa mnemonic tidak valid. Periksa ejaan dan jumlah kata (12 atau 24 kata).');
-    }
+    handleSuccessfulScan(manualText);
   };
 
   if (!isOpen) return null;
@@ -114,10 +117,11 @@ export const QRScannerModal: React.FC<Props> = ({ isOpen, onClose }) => {
   return (
     <div className="rabby-modal-overlay">
       <div className="rabby-modal-card">
+        {/* Header */}
         <div className="rabby-modal-header">
           <div className="rabby-modal-title">
-            <Camera className="rabby-shield-icon" size={22} />
-            Unlock Session with QR
+            <Camera color="var(--primary)" size={20} />
+            Unlock Sesi Runtime via QR
           </div>
           <button
             className="rabby-close-btn"
@@ -182,6 +186,20 @@ export const QRScannerModal: React.FC<Props> = ({ isOpen, onClose }) => {
             <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '12px' }}>
               Arahkan foto QR code di layar HP Anda ke kamera laptop ini.
             </p>
+
+            {/* Quick action button for Extension popup */}
+            <div style={{ marginTop: '14px', paddingTop: '12px', borderTop: '1px solid var(--border-subtle)' }}>
+              <button
+                type="button"
+                className="rabby-quick-send-btn"
+                onClick={handleOpenScannerInTab}
+                title="Buka scanner di tab penuh jika izin kamera di popup browser terhambat"
+                style={{ fontSize: '12px', padding: '7px 14px' }}
+              >
+                <ExternalLink size={13} />
+                Buka Scanner di Tab Penuh
+              </button>
+            </div>
           </div>
         )}
 

@@ -213,6 +213,13 @@ export const App: React.FC = () => {
   const [loadingBalance, setLoadingBalance] = useState<boolean>(false);
   const [copiedAddr, setCopiedAddr] = useState<boolean>(false);
 
+  // Auto-open scanner modal when opened with ?action=scan (e.g. from extension popup redirect)
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.search.includes('action=scan')) {
+      setIsScannerOpen(true);
+    }
+  }, []);
+
   const fetchAllBalances = useCallback(async () => {
     if (!isUnlocked) return;
     setLoadingBalance(true);

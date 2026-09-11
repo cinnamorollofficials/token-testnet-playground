@@ -140,10 +140,9 @@ Legenda: `👤` = butuh tindakan manual user · `🌐` = butuh network/testnet R
 - [x] Perbarui tombol **"Lock / Clear Memory"** agar seketika menghapus state React sekaligus membersihkan `chrome.storage.session`
 
 ### 4. Kamera & Pemindai QR di Extension
-- [ ] Evaluasi izin `getUserMedia` di popup:
-  - Jika popup memicu dialog izin yang menutup jendela popup, sediakan fallback:
-    - Tombol "Open Scanner in Tab" (buka tab sementara untuk memindai kamera HP)
-    - Tab Upload Gambar QR dan Input Teks manual tetap aktif sebagai opsi utama
+- [x] Evaluasi izin `getUserMedia` di popup:
+  - Sediakan tombol "Buka Scanner di Tab Penuh" (`index.html?action=scan`) agar scan webcam laptop bebas hambatan dialog izin browser
+  - Tab Upload Gambar QR dan Input Teks manual tetap aktif sebagai opsi utama
 
 ### 5. Pengujian & Verifikasi
 - [ ] Jalankan `npm run build:ext` dan pastikan build bersih tanpa peringatan CSP (Content Security Policy)
