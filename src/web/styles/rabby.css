@@ -1,0 +1,478 @@
+:root {
+  --bg-main: #0c0d14;
+  --bg-card: #141622;
+  --bg-card-sub: #1a1d2e;
+  --bg-card-hover: #22263b;
+  --bg-input: #121420;
+  
+  --border-subtle: #24283b;
+  --border-focus: #705bff;
+  --border-hover: #333852;
+
+  --primary: #705bff;
+  --primary-hover: #5d46f7;
+  --primary-gradient: linear-gradient(135deg, #705bff 0%, #8c75ff 100%);
+  --primary-glow: rgba(112, 91, 255, 0.25);
+
+  --success: #00c48c;
+  --success-bg: rgba(0, 196, 140, 0.1);
+  --warning: #ff9f43;
+  --warning-bg: rgba(255, 159, 67, 0.1);
+  --danger: #ff5b5b;
+  --danger-bg: rgba(255, 91, 91, 0.1);
+
+  --text-main: #ffffff;
+  --text-muted: #8c93a8;
+  --text-dim: #5a6175;
+
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --radius-sm: 8px;
+  --radius-pill: 9999px;
+
+  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --shadow-glow: 0 0 20px var(--primary-glow);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(112, 91, 255, 0.12) 0%, transparent 60%),
+    radial-gradient(circle at 100% 100%, rgba(0, 196, 140, 0.05) 0%, transparent 40%);
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+input, select, textarea {
+  font-family: inherit;
+}
+
+/* Container */
+.rabby-app-container {
+  max-width: 520px;
+  margin: 24px auto;
+  padding: 0 16px;
+  width: 100%;
+}
+
+/* Header */
+.rabby-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding: 12px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+}
+
+.rabby-network-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-main);
+  background: var(--bg-card-sub);
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-subtle);
+}
+
+.rabby-network-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 8px var(--success);
+}
+
+.rabby-session-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.rabby-session-btn.active {
+  background: var(--success-bg);
+  color: var(--success);
+  border: 1px solid rgba(0, 196, 140, 0.3);
+}
+
+.rabby-session-btn.locked {
+  background: var(--danger-bg);
+  color: var(--danger);
+  border: 1px solid rgba(255, 91, 91, 0.3);
+}
+
+/* Cards */
+.rabby-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+/* Hero Portfolio */
+.rabby-hero-card {
+  background: linear-gradient(180deg, #181b2b 0%, #131522 100%);
+  border: 1px solid var(--border-subtle);
+  text-align: center;
+  padding: 30px 24px;
+}
+
+.rabby-hero-label {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.rabby-hero-balance {
+  font-size: 38px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  color: var(--text-main);
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.rabby-hero-symbol {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+/* Quick Action Squircles */
+.rabby-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.rabby-action-squircle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 8px;
+  background: var(--bg-card-sub);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--text-main);
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.rabby-action-squircle:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-focus);
+  transform: translateY(-2px);
+  color: var(--primary);
+}
+
+.rabby-action-icon {
+  width: 22px;
+  height: 22px;
+  color: var(--primary);
+}
+
+/* Account Info Pill */
+.rabby-account-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+
+.rabby-account-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+}
+
+.rabby-account-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rabby-account-path {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+}
+
+.rabby-account-addr {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* Buttons */
+.rabby-btn-primary {
+  width: 100%;
+  background: var(--primary-gradient);
+  color: #fff;
+  padding: 14px 20px;
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  font-weight: 700;
+  box-shadow: 0 4px 16px rgba(112, 91, 255, 0.35);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.rabby-btn-primary:hover {
+  background: var(--primary-hover);
+  box-shadow: 0 6px 20px rgba(112, 91, 255, 0.5);
+  transform: translateY(-1px);
+}
+
+.rabby-btn-secondary {
+  width: 100%;
+  background: var(--bg-card-sub);
+  color: var(--text-main);
+  border: 1px solid var(--border-subtle);
+  padding: 12px 18px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.rabby-btn-secondary:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-hover);
+}
+
+/* Token List */
+.rabby-token-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rabby-token-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: var(--bg-card-sub);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+}
+
+.rabby-token-item:hover {
+  border-color: var(--border-hover);
+  background: var(--bg-card-hover);
+}
+
+.rabby-token-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rabby-token-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--primary-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 14px;
+  color: #fff;
+}
+
+.rabby-token-name {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.rabby-token-chain {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.rabby-token-amount {
+  font-size: 15px;
+  font-weight: 700;
+  text-align: right;
+  font-family: var(--font-mono);
+}
+
+/* Modals */
+.rabby-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 9, 14, 0.82);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  padding: 16px;
+}
+
+.rabby-modal-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.rabby-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.rabby-modal-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rabby-close-btn {
+  color: var(--text-dim);
+  font-size: 20px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.rabby-close-btn:hover {
+  color: var(--text-main);
+}
+
+/* Simulation Shield Box (Signature Rabby Feature) */
+.rabby-shield-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--success-bg);
+  border: 1px solid rgba(0, 196, 140, 0.3);
+  border-radius: var(--radius-md);
+  margin-bottom: 16px;
+}
+
+.rabby-shield-icon {
+  color: var(--success);
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.rabby-shield-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--success);
+  margin-bottom: 2px;
+}
+
+.rabby-shield-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* QR Display Container */
+.rabby-qr-box {
+  background: #ffffff;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  margin: 16px auto;
+}
+
+/* Tabs */
+.rabby-tabs {
+  display: flex;
+  gap: 8px;
+  background: var(--bg-card-sub);
+  padding: 4px;
+  border-radius: var(--radius-pill);
+  margin-bottom: 16px;
+}
+
+.rabby-tab-btn {
+  flex: 1;
+  padding: 8px 14px;
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: all 0.2s;
+}
+
+.rabby-tab-btn.active {
+  background: var(--primary);
+  color: #fff;
+}

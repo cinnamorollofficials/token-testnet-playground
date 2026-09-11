@@ -40,20 +40,20 @@ Legenda: `👤` = butuh tindakan manual user · `🌐` = butuh network/testnet R
 ## Fase 2 — Web App Setup, QR Generator & Camera Scanner (Prioritas Utama 🚀)
 
 ### Setup Frontend
-- [ ] Setup Vite + React (TypeScript) untuk Web UI
-- [ ] Konfigurasi Vite polyfills (`buffer`, `crypto`) agar library blockchain berjalan di browser
-- [ ] Install library QR: `qrcode` (generate QR) & `html5-qrcode` (kamera & file scanner)
-- [ ] In-Memory Session Store — state runtime saja; frasa hilang saat tab ditutup / di-lock
+- [x] Setup Vite + React (TypeScript) untuk Web UI
+- [x] Konfigurasi Vite polyfills (`buffer`, `crypto`) agar library blockchain berjalan di browser
+- [x] Install library QR: `qrcode` (generate QR) & `html5-qrcode` (kamera & file scanner)
+- [x] In-Memory Session Store — state runtime saja; frasa hilang saat tab ditutup / di-lock
 
 ### Komponen QR & Runtime Session
-- [ ] **QR Generator Modal / View**: Tampilkan frasa 12/24 kata + render gambar QR Code + tombol "Download QR"
-- [ ] **QR Scanner Modal**:
+- [x] **QR Generator Modal / View**: Tampilkan frasa 12/24 kata + render gambar QR Code + tombol "Download QR"
+- [x] **QR Scanner Modal**:
   - Tab 1: Pemindai Kamera/Webcam (scan foto QR dari layar HP)
   - Tab 2: Upload Gambar Foto QR (drag & drop file foto)
   - Tab 3: Paste frasa manual
-- [ ] **Header Bar & Status Sesi**: Indikator "Locked" / "Active (Fingerprint: ae0d...)" + tombol **"Lock / Clear Memory"**
-- [ ] **Desain Terinspirasi Rabby Wallet UI** (Palet Rabby Blue `#705BFF`, Dark Slate `#13141E`, rounded squircles, kartu portfolio, badge security shield, simulasi pre-flight transaksi, Google Font Inter/Outfit)
-- [ ] **Gate:** Generate seed -> Download/Foto QR -> Lock -> Scan QR via kamera/file -> Mnemonic ter-load di memori
+- [x] **Header Bar & Status Sesi**: Indikator "Locked" / "Active (Fingerprint: ae0d...)" + tombol **"Lock / Clear Memory"**
+- [x] **Desain Terinspirasi Rabby Wallet UI** (Palet Rabby Blue `#705BFF`, Dark Slate `#13141E`, rounded squircles, kartu portfolio, badge security shield, simulasi pre-flight transaksi, Google Font Inter/Outfit)
+- [x] **Gate:** Generate seed -> Download/Foto QR -> Lock -> Scan QR via kamera/file -> Mnemonic ter-load di memori
 
 ---
 
