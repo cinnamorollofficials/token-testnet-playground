@@ -69,9 +69,9 @@ input, select, textarea {
 
 /* Container */
 .rabby-app-container {
-  max-width: 560px;
-  margin: 24px auto;
-  padding: 0 16px;
+  max-width: 380px;
+  margin: 20px auto;
+  padding: 0 12px;
   width: 100%;
 }
 
@@ -272,7 +272,7 @@ input, select, textarea {
 }
 
 .rabby-card-body {
-  padding: 20px;
+  padding: 16px;
 }
 
 /* Hero Portfolio */
@@ -454,19 +454,19 @@ input, select, textarea {
 .rabby-token-item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  background: var(--bg-card-sub);
+  padding: 12px 14px;
+  background: #ffffff;
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: 16px;
   transition: all 0.2s ease;
-  gap: 16px;
-  overflow: hidden;
+  cursor: pointer;
 }
 
 .rabby-token-item:hover {
   border-color: var(--border-hover);
-  background: var(--bg-card-hover);
+  background: #f8fafc;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
 }
 
 .rabby-token-left {
@@ -474,94 +474,104 @@ input, select, textarea {
   align-items: center;
   gap: 12px;
   min-width: 0;
-  flex: 1 1 auto;
-  overflow: hidden;
+  width: 100%;
+}
+
+.rabby-token-avatar-wrap {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+
+.rabby-token-avatar-img {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: contain;
+}
+
+.rabby-token-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 13px;
+  color: #fff;
+  flex-shrink: 0;
 }
 
 .rabby-token-info {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
   min-width: 0;
-  overflow: hidden;
+  flex: 1;
 }
 
 .rabby-token-title-row {
   display: flex;
   align-items: center;
-  gap: 6px;
-  white-space: nowrap;
-}
-
-.rabby-token-avatar-wrap {
-  position: relative;
-  width: 36px;
-  height: 36px;
-  flex-shrink: 0;
-}
-
-.rabby-token-avatar-img {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  object-fit: cover;
-  background: #ffffff;
-  border: 1px solid var(--border-subtle);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  display: block;
-}
-
-.rabby-token-chain-badge {
-  position: absolute;
-  bottom: -2px;
-  right: -2px;
-  width: 15px;
-  height: 15px;
-  border-radius: 50%;
-  background: #ffffff;
-  border: 1.5px solid #ffffff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
-  object-fit: cover;
-}
-
-.rabby-token-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: var(--primary-gradient);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 14px;
-  color: #fff;
-  box-shadow: 0 2px 8px rgba(112, 91, 255, 0.25);
+  gap: 8px;
 }
 
 .rabby-token-name {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--text-main);
-  white-space: nowrap;
+  letter-spacing: -0.2px;
+  line-height: 1.2;
 }
 
-.rabby-token-chain {
-  font-size: 11px;
-  color: var(--text-muted);
-  white-space: nowrap;
+.rabby-chain-badge-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: #f8fafc;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+  line-height: 1.3;
+}
+
+.rabby-token-balance-row {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.rabby-token-balance-val {
+  font-weight: 500;
+  color: #64748b;
+  letter-spacing: -0.1px;
 }
 
 .rabby-contract-chip {
-  font-size: 11px;
+  font-size: 10.5px;
   font-family: var(--font-mono);
   color: var(--primary);
   background: var(--primary-glow);
   border: 1px solid rgba(112, 91, 255, 0.2);
   border-radius: var(--radius-pill);
-  padding: 1px 7px;
+  padding: 1px 6px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;

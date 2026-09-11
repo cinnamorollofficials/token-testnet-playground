@@ -13,13 +13,10 @@ import { SendModal } from './components/SendModal';
 import {
   Wallet,
   Lock,
-  Copy,
-  Check,
   Send,
   Droplets,
   Coins,
   QrCode,
-  RefreshCw,
   Layers,
   ExternalLink,
   ArrowLeftRight,
@@ -211,8 +208,6 @@ export const App: React.FC = () => {
   const [modalTargetAsset, setModalTargetAsset] = useState<'native' | 'token'>('native');
 
   const [portfolioBalances, setPortfolioBalances] = useState<Record<string, Balance | null>>({});
-  const [loadingBalance, setLoadingBalance] = useState<boolean>(false);
-  const [copiedAddr, setCopiedAddr] = useState<boolean>(false);
 
   // Auto-open scanner modal when opened with ?action=scan (e.g. from extension popup redirect)
   useEffect(() => {
@@ -223,7 +218,6 @@ export const App: React.FC = () => {
 
   const fetchAllBalances = useCallback(async () => {
     if (!isUnlocked) return;
-    setLoadingBalance(true);
 
     try {
       const promises = ACTIVE_LEDGERS.map(async (ledger) => {
@@ -259,8 +253,6 @@ export const App: React.FC = () => {
       setPortfolioBalances((prev) => ({ ...prev, ...newBalances }));
     } catch (err) {
       console.warn('Failed fetching balances:', err);
-    } finally {
-      setLoadingBalance(false);
     }
   }, [isUnlocked, accounts]);
 
@@ -270,11 +262,6 @@ export const App: React.FC = () => {
     }
   }, [isUnlocked, fetchAllBalances]);
 
-  const handleCopyAddress = (addr: string) => {
-    navigator.clipboard.writeText(addr);
-    setCopiedAddr(true);
-    setTimeout(() => setCopiedAddr(false), 2000);
-  };
 
   const truncateAddress = (addr: string, start = 6, end = 4) => {
     if (addr.length <= start + end + 3) return addr;
@@ -308,13 +295,6 @@ export const App: React.FC = () => {
     setIsMintOpen(true);
   };
 
-  const handleExpandTab = useCallback(() => {
-    if (typeof chrome !== 'undefined' && chrome.tabs?.create) {
-      chrome.tabs.create({ url: chrome.runtime.getURL('index.html') });
-    } else {
-      window.open(window.location.href, '_blank');
-    }
-  }, []);
 
   // Filter assets based on selectedLedger
   const filteredAssets = selectedLedger === 'all'
@@ -462,21 +442,6 @@ export const App: React.FC = () => {
                     marginBottom: '6px',
                   }}
                 >
-                  <span className="rabby-hero-label">
-                    {selectedLedger === 'all'
-                      ? 'Multi-Chain Testnet Portfolio'
-                      : `${singleChainNetwork?.name} (${singleChainNetwork?.testnetName})`}
-                  </span>
-                  <button
-                    onClick={fetchAllBalances}
-                    title="Refresh Seluruh Saldo"
-                    style={{ color: 'var(--text-dim)', verticalAlign: 'middle', padding: '2px' }}
-                  >
-                    <RefreshCw
-                      size={14}
-                      style={{ animation: loadingBalance ? 'spin 1s linear infinite' : 'none' }}
-                    />
-                  </button>
                 </div>
 
                 {selectedLedger === 'all' ? (
@@ -559,7 +524,12 @@ export const App: React.FC = () => {
                   {filteredAssets.map((asset) => {
                     const bal = portfolioBalances[asset.id];
                     return (
-                      <div key={asset.id} className="rabby-token-item">
+                      <div
+                        key={asset.id}
+                        className="rabby-token-item"
+                        onClick={() => handleOpenSendForAsset(asset.ledger, asset.kind)}
+                        title={`Klik untuk mengirim ${asset.symbol}`}
+                      >
                         <div className="rabby-token-left">
                           <div className="rabby-token-avatar-wrap">
                             {asset.kind === 'native' ? (
@@ -606,62 +576,38 @@ export const App: React.FC = () => {
                                 <img
                                   src={LEDGER_LOGOS[asset.ledger]}
                                   alt=""
-                                  style={{ width: 11, height: 11, borderRadius: '50%', objectFit: 'cover' }}
+                                  style={{ width: 10, height: 10, borderRadius: '50%', objectFit: 'cover' }}
                                 />
-                                {asset.badge}
+                                {asset.badge.toUpperCase()}
                               </span>
                             </div>
-                            <div className="rabby-token-chain">
-                              {asset.kind === 'native' ? (
-                                <span>Native • {asset.networkName}</span>
-                              ) : (
-                                <>
-                                  <span>{asset.networkName}</span>
-                                  {(() => {
-                                    const activeTok = getActiveTokenAsset(asset.ledger);
-                                    if (activeTok && 'address' in activeTok) {
-                                      return (
-                                        <>
-                                          <span>•</span>
-                                          <button
-                                            type="button"
-                                            className="rabby-contract-chip"
-                                            onClick={(e) => {
-                                              e.stopPropagation();
-                                              setModalTargetLedger(asset.ledger);
-                                              setIsMintOpen(true);
-                                            }}
-                                            title="Klik untuk melihat atau mengganti alamat kontrak HTT"
-                                          >
-                                            {activeTok.address.slice(0, 6)}...{activeTok.address.slice(-4)}
-                                            <ExternalLink size={9} />
-                                          </button>
-                                        </>
-                                      );
-                                    }
-                                    return null;
-                                  })()}
-                                </>
-                              )}
+                            <div className="rabby-token-balance-row">
+                              <span className="rabby-token-balance-val">
+                                {bal ? formatDisplayBalance(bal.formatted) : '0.00'} {asset.symbol}
+                              </span>
+                              {asset.kind === 'token' && (() => {
+                                const activeTok = getActiveTokenAsset(asset.ledger);
+                                if (activeTok && 'address' in activeTok) {
+                                  return (
+                                    <button
+                                      type="button"
+                                      className="rabby-contract-chip"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setModalTargetLedger(asset.ledger);
+                                        setIsMintOpen(true);
+                                      }}
+                                      title="Klik untuk melihat atau mengganti alamat kontrak HTT"
+                                    >
+                                      {activeTok.address.slice(0, 6)}...{activeTok.address.slice(-4)}
+                                      <ExternalLink size={9} />
+                                    </button>
+                                  );
+                                }
+                                return null;
+                              })()}
                             </div>
                           </div>
-                        </div>
-
-                        <div className="rabby-token-right">
-                          <div
-                            className="rabby-token-amount"
-                            title={bal ? `${bal.formatted} ${asset.symbol}` : `0.00 ${asset.symbol}`}
-                          >
-                            <span className="rabby-token-val">{formatDisplayBalance(bal?.formatted)}</span>
-                            <span className="rabby-token-sym">{asset.symbol}</span>
-                          </div>
-                          <button
-                            className="rabby-quick-send-btn"
-                            onClick={() => handleOpenSendForAsset(asset.ledger, asset.kind)}
-                            title={`Kirim ${asset.symbol} di ${asset.networkName}`}
-                          >
-                            <Send size={11} /> Send
-                          </button>
                         </div>
                       </div>
                     );
