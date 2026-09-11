@@ -6,7 +6,8 @@ import { DEFAULT_TEST_TOKENS, getActiveTokenAsset } from '../../config/tokens.js
 import { parseAmount } from '../../core/amount.js';
 import { validateAddress } from '../../core/validate.js';
 import type { Asset, UnsignedTx, LedgerId } from '../../core/types.js';
-import { formatIDR, calculateIDRValue, type RatesMap } from '../../core/rates.js';
+import { formatIDR, calculateIDRValue, TESTNET_TO_INDODAX_MAP, type RatesMap } from '../../core/rates.js';
+import { saveTransaction } from '../../core/history.js';
 import {
   X,
   Send,
@@ -161,6 +162,33 @@ export const SendModal: React.FC<Props> = ({
       // Step 2: Broadcast to testnet
       const { hash } = await adapter.broadcast(signed);
       setTxHash(hash);
+
+      // Save to transaction history
+      const symbol = getAssetSymbol();
+      const idrRate = rates && TESTNET_TO_INDODAX_MAP[symbol] ? rates[TESTNET_TO_INDODAX_MAP[symbol]]?.priceIdr : undefined;
+      const idrVal = rates ? calculateIDRValue(amount, symbol, rates) : undefined;
+      let explorerLink = '';
+      try {
+        explorerLink = adapter.explorerTx(hash);
+      } catch {
+        explorerLink = `${currentNetwork.explorerUrl}/tx/${hash}`;
+      }
+
+      saveTransaction({
+        hash,
+        ledger: targetLedger,
+        type: 'send',
+        assetSymbol: symbol,
+        amount,
+        from: currentAccount.address,
+        to: recipient.trim(),
+        timestamp: Date.now(),
+        status: 'confirmed',
+        idrRate,
+        idrValue: idrVal,
+        explorerUrl: explorerLink,
+      });
+
       setStep('confirmed');
       onSuccess();
     } catch (err: any) {

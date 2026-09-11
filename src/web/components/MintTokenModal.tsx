@@ -5,6 +5,7 @@ import { getActiveTokenAsset, setActiveTokenAddress } from '../../config/tokens.
 import { TEST_TOKEN_ABI, TEST_TOKEN_BYTECODE } from '../../contracts/TestTokenArtifact.js';
 import { ContractFactory, Contract, JsonRpcProvider, Wallet, getAddress } from 'ethers';
 import type { LedgerId } from '../../core/types.js';
+import { saveTransaction } from '../../core/history.js';
 import { X, Coins, Sparkles, Loader2, CheckCircle2, AlertCircle, ExternalLink, Check, Save } from 'lucide-react';
 
 interface Props {
@@ -104,6 +105,21 @@ export const MintTokenModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, in
       const contract = await factory.deploy();
       await contract.waitForDeployment();
       const addr = await contract.getAddress();
+      const deployHash = contract.deploymentTransaction()?.hash || `deploy_${Date.now()}`;
+
+      saveTransaction({
+        hash: deployHash,
+        ledger: targetLedger,
+        type: 'mint',
+        assetSymbol: 'HTT',
+        amount: 'Deploy',
+        from: currentAccount.address,
+        to: addr,
+        timestamp: Date.now(),
+        status: 'confirmed',
+        explorerUrl: `${currentNetwork.explorerUrl}/address/${addr}`,
+        memo: 'Deploy HTT Token Contract',
+      });
 
       setActiveTokenAddress(targetLedger, addr);
       setContractInput(addr);
@@ -168,6 +184,20 @@ export const MintTokenModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, in
       const mintAmount = 1000n * 10n ** 18n; // 1,000 HTT
       const tx = await contract.mint(currentAccount.address, mintAmount);
       await tx.wait(1);
+
+      saveTransaction({
+        hash: tx.hash,
+        ledger: targetLedger,
+        type: 'mint',
+        assetSymbol: 'HTT',
+        amount: '1000',
+        from: validAddr,
+        to: currentAccount.address,
+        timestamp: Date.now(),
+        status: 'confirmed',
+        explorerUrl: `${currentNetwork.explorerUrl}/tx/${tx.hash}`,
+        memo: 'Mint 1,000 HTT Test Token',
+      });
 
       setStatusMsg({
         type: 'success',

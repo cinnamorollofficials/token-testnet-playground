@@ -5,6 +5,7 @@ import { getAdapter } from '../../core/registry.js';
 import type { SolanaAdapter } from '../../adapters/solana.js';
 import type { XRPLAdapter } from '../../adapters/xrpl.js';
 import type { LedgerId } from '../../core/types.js';
+import { saveTransaction } from '../../core/history.js';
 import { X, Droplets, ExternalLink, Copy, Check, Sparkles, Loader2 } from 'lucide-react';
 
 interface Props {
@@ -50,6 +51,20 @@ export const FaucetModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, initi
       if (targetLedger === 'solana') {
         const solanaAdapter = getAdapter('solana') as SolanaAdapter;
         const sig = await solanaAdapter.requestAirdrop(currentAccount.address, 1);
+
+        saveTransaction({
+          hash: sig,
+          ledger: 'solana',
+          type: 'faucet',
+          assetSymbol: 'SOL',
+          amount: '1.0',
+          from: 'Solana Devnet Faucet',
+          to: currentAccount.address,
+          timestamp: Date.now(),
+          status: 'confirmed',
+          explorerUrl: `https://explorer.solana.com/tx/${sig}?cluster=devnet`,
+        });
+
         setResultMsg({
           type: 'success',
           text: `Airdrop 1 SOL berhasil! Signature: ${sig.slice(0, 16)}...`,
@@ -58,6 +73,20 @@ export const FaucetModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, initi
       } else if (targetLedger === 'xrpl') {
         const xrplAdapter = getAdapter('xrpl') as XRPLAdapter;
         const res = await xrplAdapter.fundWallet(currentAccount);
+
+        saveTransaction({
+          hash: `xrpl_fund_${Date.now()}`,
+          ledger: 'xrpl',
+          type: 'faucet',
+          assetSymbol: 'XRP',
+          amount: res.balance ? String(res.balance) : '10',
+          from: 'XRPL Altnet Faucet',
+          to: currentAccount.address,
+          timestamp: Date.now(),
+          status: 'confirmed',
+          explorerUrl: `https://testnet.xrpscan.com/account/${currentAccount.address}`,
+        });
+
         setResultMsg({
           type: 'success',
           text: `Dompet XRPL berhasil didanai! Saldo: ${res.balance} XRP`,
