@@ -214,22 +214,22 @@ Legenda: `👤` = butuh tindakan manual user · `🌐` = butuh network/testnet R
 
 ## Fase 9 — Tampilan Saldo Kripto & Harga Token di List Aset + Sembunyikan di Layar Kecil 📊
 
-- [ ] **1. CSS Design System & Responsivitas (`src/web/styles/rabby.css`)**
-  - [ ] Tambahkan styling `.rabby-token-right` (kolom kanan flex-end)
-  - [ ] Tambahkan styling `.rabby-token-fiat-val` (valuasi IDR bold di kanan atas)
-  - [ ] Tambahkan styling `.rabby-token-crypto-amount` (saldo koin kripto di kiri bawah)
-  - [ ] Tambahkan styling `.rabby-token-price-row` & `.rabby-token-unit-price` (kurs per token di kanan bawah)
-  - [ ] Tambahkan media query `@media (max-width: 390px)` untuk menyembunyikan `.rabby-token-price-row` di layar kecil
-  - [ ] Selaraskan transisi hover dengan tombol `.rabby-quick-send-btn`
-- [ ] **2. Integrasi Markup 2-Kolom List Aset di App.tsx**
-  - [ ] Perbarui perulangan aset di `App.tsx` agar menyajikan struktur 2-kolom 2-baris sesuai Rabby Wallet
-  - [ ] Kolom Kiri: Avatar & badge + Nama Token (atas) & Jumlah Saldo Kripto (bawah, `formatDisplayBalance(bal?.formatted, 4)`)
-  - [ ] Kolom Kanan: Total Valuasi IDR (atas, `formatIDR(assetIdrVal)`) & Harga Satuan Token (bawah, `formatIDR(rates[asset.symbol]?.priceIdr)`)
-- [ ] **3. Pengujian, Verifikasi & Dokumentasi**
-  - [ ] Validasi linter `npm run lint` (0 error, 0 warning)
-  - [ ] Validasi 39 unit tests `npm run test` (seluruh tes hijau)
-  - [ ] Validasi build web dan Chrome extension (`npm run build:web`, `npm run build:ext`)
-  - [ ] Update `walkthrough.md` dan commit per task
+- [x] **1. CSS Design System & Responsivitas (`src/web/styles/rabby.css`)**
+  - [x] Tambahkan styling `.rabby-token-right` (kolom kanan flex-end)
+  - [x] Tambahkan styling `.rabby-token-fiat-val` (valuasi IDR bold di kanan atas)
+  - [x] Tambahkan styling `.rabby-token-crypto-amount` (saldo koin kripto di kiri bawah)
+  - [x] Tambahkan styling `.rabby-token-price-row` & `.rabby-token-unit-price` (kurs per token di kanan bawah)
+  - [x] Tambahkan media query `@media (max-width: 400px)` untuk menyembunyikan `.rabby-token-price-row` di layar kecil
+  - [x] Selaraskan transisi hover dengan tombol `.rabby-quick-send-btn`
+- [x] **2. Integrasi Markup 2-Kolom List Aset di App.tsx**
+  - [x] Perbarui perulangan aset di `App.tsx` agar menyajikan struktur 2-kolom 2-baris sesuai Rabby Wallet
+  - [x] Kolom Kiri: Avatar & badge + Nama Token (atas) & Jumlah Saldo Kripto (bawah, `formatDisplayBalance(bal?.formatted, 4)`)
+  - [x] Kolom Kanan: Total Valuasi IDR (atas, `formatIDR(assetIdrVal)`) & Harga Satuan Token (bawah, `formatIDR(rates[asset.symbol]?.priceIdr)`)
+- [x] **3. Pengujian, Verifikasi & Dokumentasi**
+  - [x] Validasi linter `npm run lint` (0 error, 0 warning)
+  - [x] Validasi 39 unit tests `npm run test` (seluruh tes hijau)
+  - [x] Validasi build web dan Chrome extension (`npm run build:web`, `npm run build:ext`)
+  - [x] Update `walkthrough.md` dan commit per task
 
 ---
 
