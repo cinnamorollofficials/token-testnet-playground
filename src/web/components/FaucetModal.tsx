@@ -2,27 +2,25 @@ import React, { useState, useEffect } from 'react';
 import { useSession, ACTIVE_LEDGERS } from '../context/SessionContext';
 import { NETWORKS, LEDGER_LOGOS } from '../../config/networks.js';
 import { getAdapter } from '../../core/registry.js';
-import type { SolanaAdapter } from '../../adapters/solana.js';
-import type { XRPLAdapter } from '../../adapters/xrpl.js';
 import type { LedgerId } from '../../core/types.js';
-import { saveTransaction } from '../../core/history.js';
-import { X, Droplets, ExternalLink, Copy, Check, Sparkles, Loader2 } from 'lucide-react';
+import { Droplets, Sparkles, ExternalLink, Copy, Check, Loader2 } from 'lucide-react';
+import { BottomSheet } from './BottomSheet';
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess?: () => void;
   initialLedger?: LedgerId;
 }
 
 export const FaucetModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, initialLedger }) => {
   const { selectedLedger, accounts } = useSession();
   const [targetLedger, setTargetLedger] = useState<LedgerId>(
-    initialLedger || (selectedLedger !== 'all' ? selectedLedger : 'ethereum')
+    initialLedger || (selectedLedger !== 'all' ? selectedLedger : 'solana')
   );
   const [loading, setLoading] = useState<boolean>(false);
-  const [resultMsg, setResultMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [copied, setCopied] = useState<boolean>(false);
+  const [resultMsg, setResultMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   useEffect(() => {
     if (initialLedger) {
@@ -46,55 +44,19 @@ export const FaucetModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, initi
   const handleAutoFaucet = async () => {
     setLoading(true);
     setResultMsg(null);
-
     try {
-      if (targetLedger === 'solana') {
-        const solanaAdapter = getAdapter('solana') as SolanaAdapter;
-        const sig = await solanaAdapter.requestAirdrop(currentAccount.address, 1);
-
-        saveTransaction({
-          hash: sig,
-          ledger: 'solana',
-          type: 'faucet',
-          assetSymbol: 'SOL',
-          amount: '1.0',
-          from: 'Solana Devnet Faucet',
-          to: currentAccount.address,
-          timestamp: Date.now(),
-          status: 'confirmed',
-          explorerUrl: `https://explorer.solana.com/tx/${sig}?cluster=devnet`,
-        });
-
-        setResultMsg({
-          type: 'success',
-          text: `Airdrop 1 SOL berhasil! Signature: ${sig.slice(0, 16)}...`,
-        });
-        onSuccess();
-      } else if (targetLedger === 'xrpl') {
-        const xrplAdapter = getAdapter('xrpl') as XRPLAdapter;
-        const res = await xrplAdapter.fundWallet(currentAccount);
-
-        saveTransaction({
-          hash: `xrpl_fund_${Date.now()}`,
-          ledger: 'xrpl',
-          type: 'faucet',
-          assetSymbol: 'XRP',
-          amount: res.balance ? String(res.balance) : '10',
-          from: 'XRPL Altnet Faucet',
-          to: currentAccount.address,
-          timestamp: Date.now(),
-          status: 'confirmed',
-          explorerUrl: `https://testnet.xrpscan.com/account/${currentAccount.address}`,
-        });
-
-        setResultMsg({
-          type: 'success',
-          text: `Dompet XRPL berhasil didanai! Saldo: ${res.balance} XRP`,
-        });
-        onSuccess();
+      const adapter = getAdapter(targetLedger);
+      if (!adapter.requestFaucet) {
+        throw new Error(`Faucet otomatis tidak didukung untuk ${targetLedger}`);
       }
+
+      const txHash = await adapter.requestFaucet(currentAccount.address);
+      setResultMsg({
+        type: 'success',
+        text: `Berhasil klaim faucet! Tx: ${txHash.slice(0, 10)}... Saldo akan terupdate dalam beberapa saat.`,
+      });
+      onSuccess?.();
     } catch (err: any) {
-      console.error('Faucet error:', err);
       setResultMsg({
         type: 'error',
         text: `Gagal klaim faucet: ${err.message || 'RPC rate limit atau timeout'}. Silakan coba beberapa saat lagi.`,
@@ -105,20 +67,15 @@ export const FaucetModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, initi
   };
 
   return (
-    <div className="rabby-modal-overlay">
-      <div className="rabby-modal-card">
-        <div className="rabby-modal-header">
-          <div className="rabby-modal-title">
-            <Droplets className="rabby-shield-icon" size={22} />
-            Testnet Faucet ({currentNetwork.name})
-          </div>
-          <button className="rabby-close-btn" onClick={onClose}>
-            <X size={20} />
-          </button>
-        </div>
-
+    <BottomSheet
+      isOpen={isOpen}
+      onClose={onClose}
+      title={`Testnet Faucet (${currentNetwork.name})`}
+      icon={<Droplets size={20} />}
+    >
+      <div>
         {/* Chain selector tabs */}
-        <div className="rabby-chain-tabs">
+        <div className="rabby-chain-tabs" style={{ marginBottom: '14px' }}>
           {ACTIVE_LEDGERS.map((ledger) => (
             <button
               key={ledger}
@@ -141,7 +98,7 @@ export const FaucetModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, initi
         </div>
 
         {/* Address info */}
-        <div className="rabby-account-pill" style={{ marginBottom: '16px' }}>
+        <div className="rabby-account-pill" style={{ marginBottom: '14px' }}>
           <div className="rabby-account-info">
             <div className="rabby-account-name">
               Target Address (Account #{currentAccount.index} • {currentNetwork.name})
@@ -150,7 +107,13 @@ export const FaucetModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, initi
               {currentAccount.address}
             </div>
           </div>
-          <button className="rabby-btn-secondary" style={{ padding: '6px 10px' }} onClick={handleCopy}>
+          <button
+            type="button"
+            className="rabby-btn-secondary"
+            style={{ padding: '6px 10px', width: 'auto' }}
+            onClick={handleCopy}
+            title="Salin Address"
+          >
             {copied ? <Check size={14} color="var(--success)" /> : <Copy size={14} />}
           </button>
         </div>
@@ -162,7 +125,7 @@ export const FaucetModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, initi
             style={{
               background: resultMsg.type === 'success' ? 'var(--success-bg)' : 'var(--danger-bg)',
               borderColor: resultMsg.type === 'success' ? 'rgba(0, 196, 140, 0.3)' : 'rgba(255, 91, 91, 0.3)',
-              marginBottom: '16px',
+              marginBottom: '14px',
             }}
           >
             <div
@@ -177,10 +140,10 @@ export const FaucetModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, initi
         {/* Dynamic Faucet Actions */}
         {currentNetwork.supportsAutoFaucet ? (
           <div>
-            <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '16px', lineHeight: '1.5' }}>
+            <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '14px', lineHeight: '1.5' }}>
               Jaringan <strong>{currentNetwork.name}</strong> mendukung faucet otomatis langsung dari RPC testnet.
             </p>
-            <button className="rabby-btn-primary" onClick={handleAutoFaucet} disabled={loading}>
+            <button type="button" className="rabby-btn-primary" onClick={handleAutoFaucet} disabled={loading}>
               {loading ? (
                 <>
                   <Loader2 size={16} className="animate-spin" style={{ animation: 'spin 1s linear infinite' }} />
@@ -195,7 +158,7 @@ export const FaucetModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, initi
           </div>
         ) : (
           <div>
-            <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '16px', lineHeight: '1.5' }}>
+            <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '14px', lineHeight: '1.5' }}>
               Faucet untuk <strong>{currentNetwork.name} ({currentNetwork.testnetName})</strong> memerlukan verifikasi captcha manual melalui situs web resmi penyedia faucet:
             </p>
 
@@ -204,19 +167,20 @@ export const FaucetModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, initi
               target="_blank"
               rel="noreferrer"
               className="rabby-btn-primary"
-              style={{ textDecoration: 'none', marginBottom: '12px' }}
+              style={{ textDecoration: 'none', marginBottom: '10px' }}
             >
               <ExternalLink size={16} /> Buka Faucet {currentNetwork.name}
             </a>
 
-            <button className="rabby-btn-secondary" onClick={handleCopy}>
+            <button type="button" className="rabby-btn-secondary" onClick={handleCopy}>
               {copied ? <Check size={16} color="var(--success)" /> : <Copy size={16} />}
               {copied ? 'Address Berhasil Dicopy!' : `Copy Address ${currentNetwork.nativeAsset.symbol} untuk di-paste di Faucet`}
             </button>
           </div>
         )}
       </div>
-    </div>
+    </BottomSheet>
   );
 };
 
+export { FaucetModal as FaucetSheet };
