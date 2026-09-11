@@ -129,7 +129,8 @@ input, select, textarea {
   border: 1px solid rgba(220, 38, 38, 0.3);
 }
 
-/* Header Lock Button */
+/* Header Action & Lock Buttons */
+.rabby-header-action-btn,
 .rabby-header-lock-btn {
   display: flex;
   align-items: center;
@@ -144,6 +145,7 @@ input, select, textarea {
   transition: all 0.2s ease;
 }
 
+.rabby-header-action-btn:hover,
 .rabby-header-lock-btn:hover {
   background: var(--bg-card-hover);
   color: var(--primary);
@@ -736,4 +738,43 @@ input, select, textarea {
   border-color: var(--primary);
   box-shadow: 0 2px 8px rgba(112, 91, 255, 0.25);
 }
+
+/* Extension Popup & Side Panel Viewport Optimization */
+@media (max-width: 520px) {
+  html, body {
+    min-width: 380px;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    min-height: 100vh;
+    background: #ffffff;
+  }
+
+  .rabby-app-container {
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  .rabby-card.rabby-unified-card {
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    min-height: 100vh;
+  }
+
+  .rabby-modal-overlay {
+    padding: 8px;
+  }
+
+  .rabby-modal-card {
+    padding: 20px 16px;
+    max-height: 96vh;
+    border-radius: var(--radius-md);
+  }
+}
+
 

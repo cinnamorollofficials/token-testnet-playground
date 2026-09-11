@@ -300,6 +300,14 @@ export const App: React.FC = () => {
     setIsMintOpen(true);
   };
 
+  const handleExpandTab = useCallback(() => {
+    if (typeof chrome !== 'undefined' && chrome.tabs?.create) {
+      chrome.tabs.create({ url: chrome.runtime.getURL('index.html') });
+    } else {
+      window.open(window.location.href, '_blank');
+    }
+  }, []);
+
   // Filter assets based on selectedLedger
   const filteredAssets = selectedLedger === 'all'
     ? ALL_ASSETS
@@ -361,19 +369,31 @@ export const App: React.FC = () => {
             />
           </div>
 
-          {/* Header Lock Icon */}
-          <button
-            type="button"
-            className={`rabby-header-lock-btn ${isUnlocked ? 'active' : 'locked'}`}
-            onClick={isUnlocked ? lockSession : () => setIsScannerOpen(true)}
-            title={
-              isUnlocked
-                ? `Sesi aktif (${fingerprint}). Klik untuk mengunci wallet.`
-                : 'Wallet terkunci. Klik untuk scan QR atau login.'
-            }
-          >
-            <Lock size={16} />
-          </button>
+          {/* Header Action Buttons */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <button
+              type="button"
+              className="rabby-header-action-btn"
+              onClick={handleExpandTab}
+              title="Buka di tab penuh (Expand to Tab)"
+            >
+              <ExternalLink size={15} />
+            </button>
+
+            {/* Header Lock Icon */}
+            <button
+              type="button"
+              className={`rabby-header-lock-btn ${isUnlocked ? 'active' : 'locked'}`}
+              onClick={isUnlocked ? lockSession : () => setIsScannerOpen(true)}
+              title={
+                isUnlocked
+                  ? `Sesi aktif (${fingerprint}). Klik untuk mengunci wallet.`
+                  : 'Wallet terkunci. Klik untuk scan QR atau login.'
+              }
+            >
+              <Lock size={16} />
+            </button>
+          </div>
         </header>
 
         {/* Card Body */}

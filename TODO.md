@@ -129,9 +129,9 @@ Legenda: `👤` = butuh tindakan manual user · `🌐` = butuh network/testnet R
 - [x] Update `package.json`: Tambahkan script `npm run build:ext`
 
 ### 2. Penyesuaian UI & Layout Extension
-- [ ] Sesuaikan style container utama di `src/web/styles/index.css` agar pas di viewport popup (~400px x 600px)
-- [ ] Pastikan modal (`MintTokenModal`, `FaucetModal`, `SendModal`, `QRGeneratorModal`, `QRScannerModal`) tidak overflow dan memiliki vertical scrolling yang rapi di dalam jendela popup
-- [ ] Tambahkan tombol **"Expand to Tab"** (`chrome.tabs.create`) di header agar pengguna bisa membuka dashboard dalam mode layar penuh (full-tab) kapan saja
+- [x] Sesuaikan style container utama di `src/web/styles/rabby.css` agar pas di viewport popup (~400px x 600px)
+- [x] Pastikan modal (`MintTokenModal`, `FaucetModal`, `SendModal`, `QRGeneratorModal`, `QRScannerModal`) tidak overflow dan memiliki vertical scrolling yang rapi di dalam jendela popup
+- [x] Tambahkan tombol **"Expand to Tab"** (`chrome.tabs.create`) di header agar pengguna bisa membuka dashboard dalam mode layar penuh (full-tab) kapan saja
 
 ### 3. Adaptasi Sesi Runtime (Mnemonic & Keamanan Memory)
 - [ ] Integrasikan `chrome.storage.session` ke dalam `src/web/context/SessionContext.tsx`:
