@@ -33,11 +33,13 @@ export function validateAddress(ledger: LedgerId, address: string): ValidationRe
   switch (ledger) {
     case 'ethereum':
     case 'polygon':
-    case 'kaia':
-      if (!isAddress(trimmed)) {
-        return { valid: false, error: `Format address ${ledger} tidak valid (bukan EIP-55 yang sah).` };
+    case 'kaia': {
+      const lower = (trimmed as string).toLowerCase();
+      if (!isAddress(trimmed) && !isAddress(lower)) {
+        return { valid: false, error: `Format address ${ledger} tidak valid (harus berupa address EVM 42-karakter yang sah).` };
       }
       return { valid: true };
+    }
 
     case 'solana':
       try {

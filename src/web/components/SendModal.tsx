@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSession, ACTIVE_LEDGERS } from '../context/SessionContext';
 import { NETWORKS, LEDGER_LOGOS } from '../../config/networks.js';
 import { getAdapter } from '../../core/registry.js';
-import { DEFAULT_TEST_TOKENS } from '../../config/tokens.js';
+import { DEFAULT_TEST_TOKENS, getActiveTokenAsset } from '../../config/tokens.js';
 import { parseAmount } from '../../core/amount.js';
 import { validateAddress } from '../../core/validate.js';
 import type { Asset, UnsignedTx, LedgerId } from '../../core/types.js';
@@ -67,7 +67,7 @@ export const SendModal: React.FC<Props> = ({
   const currentAccount = accounts[targetLedger];
   const currentRecipient = recipientAccounts[targetLedger];
   const currentNetwork = NETWORKS[targetLedger];
-  const defaultToken = DEFAULT_TEST_TOKENS[targetLedger];
+  const defaultToken = getActiveTokenAsset(targetLedger);
 
   // If switched to a ledger that has no defaultToken, force native asset
   useEffect(() => {
@@ -176,7 +176,7 @@ export const SendModal: React.FC<Props> = ({
   };
 
   const getAssetSymbol = () => {
-    return assetType === 'native' ? currentNetwork.nativeAsset.symbol : (defaultToken?.symbol || 'TST');
+    return assetType === 'native' ? currentNetwork.nativeAsset.symbol : (defaultToken?.symbol || 'HTT');
   };
 
 

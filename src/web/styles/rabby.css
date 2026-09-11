@@ -69,7 +69,7 @@ input, select, textarea {
 
 /* Container */
 .rabby-app-container {
-  max-width: 520px;
+  max-width: 560px;
   margin: 24px auto;
   padding: 0 16px;
   width: 100%;
@@ -80,12 +80,9 @@ input, select, textarea {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 20px;
-  padding: 10px 16px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-pill);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  padding: 14px 20px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .rabby-network-badge {
@@ -132,6 +129,40 @@ input, select, textarea {
   border: 1px solid rgba(220, 38, 38, 0.3);
 }
 
+/* Header Lock Button */
+.rabby-header-lock-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--bg-card-sub);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.rabby-header-lock-btn:hover {
+  background: var(--bg-card-hover);
+  color: var(--primary);
+  border-color: var(--border-focus);
+  transform: scale(1.05);
+}
+
+.rabby-header-lock-btn.active {
+  color: var(--success);
+  background: var(--success-bg);
+  border-color: rgba(0, 168, 119, 0.25);
+}
+
+.rabby-header-lock-btn.active:hover {
+  color: var(--danger);
+  background: var(--danger-bg);
+  border-color: rgba(220, 38, 38, 0.25);
+}
+
 /* Cards */
 .rabby-card {
   background: var(--bg-card);
@@ -144,12 +175,32 @@ input, select, textarea {
   margin-bottom: 16px;
 }
 
+.rabby-unified-card {
+  padding: 0;
+  margin-bottom: 0;
+}
+
+.rabby-card-body {
+  padding: 20px;
+}
+
 /* Hero Portfolio */
 .rabby-hero-card {
   background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
   border: 1px solid var(--border-subtle);
   text-align: center;
   padding: 30px 24px;
+}
+
+.rabby-hero-section {
+  text-align: center;
+  padding: 8px 0 4px 0;
+}
+
+.rabby-card-divider {
+  border: 0;
+  border-top: 1px solid var(--border-subtle);
+  margin: 20px -20px 18px -20px;
 }
 
 .rabby-hero-label {
@@ -313,11 +364,13 @@ input, select, textarea {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 16px;
+  padding: 12px 16px;
   background: var(--bg-card-sub);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   transition: all 0.2s ease;
+  gap: 16px;
+  overflow: hidden;
 }
 
 .rabby-token-item:hover {
@@ -329,6 +382,24 @@ input, select, textarea {
   display: flex;
   align-items: center;
   gap: 12px;
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+.rabby-token-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.rabby-token-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
 }
 
 .rabby-token-avatar-wrap {
@@ -380,19 +451,71 @@ input, select, textarea {
   font-size: 14px;
   font-weight: 700;
   color: var(--text-main);
+  white-space: nowrap;
 }
 
 .rabby-token-chain {
   font-size: 11px;
   color: var(--text-muted);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.rabby-contract-chip {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--primary);
+  background: var(--primary-glow);
+  border: 1px solid rgba(112, 91, 255, 0.2);
+  border-radius: var(--radius-pill);
+  padding: 1px 7px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  transition: all 0.15s ease;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.rabby-contract-chip:hover {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+}
+
+.rabby-token-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  margin-left: auto;
 }
 
 .rabby-token-amount {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
   text-align: right;
   font-family: var(--font-mono);
   color: var(--text-main);
+  white-space: nowrap;
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.rabby-token-val {
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.rabby-token-sym {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
 }
 
 /* Modals */

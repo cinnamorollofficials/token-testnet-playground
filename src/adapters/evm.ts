@@ -1,4 +1,4 @@
-import { JsonRpcProvider, Contract, Wallet, formatUnits } from 'ethers';
+import { JsonRpcProvider, Contract, Wallet, formatUnits, getAddress } from 'ethers';
 import type { LedgerAdapter } from './base.js';
 import type {
   LedgerId,
@@ -61,14 +61,31 @@ export class EVMAdapter implements LedgerAdapter {
     }
 
     const tokenAsset = asset as EVMTokenAsset;
-    const contract = new Contract(tokenAsset.address, ERC20_ABI, this.provider);
-    const raw: bigint = await contract.balanceOf(address);
-    return {
-      asset,
-      raw,
-      formatted: formatAmount(raw, tokenAsset.decimals),
-      symbol: tokenAsset.symbol,
-    };
+    let targetAddress = tokenAsset.address;
+    try {
+      targetAddress = getAddress(tokenAsset.address);
+    } catch {
+      // keep original
+    }
+
+    try {
+      const contract = new Contract(targetAddress, ERC20_ABI, this.provider);
+      const raw: bigint = await contract.balanceOf(address);
+      return {
+        asset: { ...tokenAsset, address: targetAddress },
+        raw,
+        formatted: formatAmount(raw, tokenAsset.decimals),
+        symbol: tokenAsset.symbol,
+      };
+    } catch (err) {
+      console.warn(`[EVMAdapter] Gagal mengambil saldo token di ${targetAddress}:`, err);
+      return {
+        asset: { ...tokenAsset, address: targetAddress },
+        raw: 0n,
+        formatted: '0.00',
+        symbol: tokenAsset.symbol,
+      };
+    }
   }
 
   async buildTransfer(p: {

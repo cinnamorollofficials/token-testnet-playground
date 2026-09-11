@@ -16,7 +16,7 @@ export function registerSendCommands(program: Command): void {
     .option('--from <index>', 'Sender account index', '0')
     .requiredOption('--to <addressOrIndex>', 'Recipient address or index number')
     .requiredOption('-a, --amount <amount>', 'Amount to send')
-    .option('--token', 'Send test token (TST) instead of native coin', false)
+    .option('--token', 'Send test token (HTT) instead of native coin', false)
     .option('--dry-run', 'Simulate transaction and estimate fee without broadcasting', false)
     .action(async (opts) => {
       const mnemonic = process.env.MNEMONIC?.trim();

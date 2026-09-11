@@ -2,12 +2,12 @@
 pragma solidity ^0.8.20;
 
 /**
- * @title TestToken (TST)
+ * @title Hadi Token Test (HTT)
  * @notice ERC-20 token minimal dengan fungsi mint terbuka untuk pengujian di testnet.
  */
 contract TestToken {
-    string public name = "TestToken";
-    string public symbol = "TST";
+    string public name = "Hadi Token Test";
+    string public symbol = "HTT";
     uint8 public decimals = 18;
     uint256 public totalSupply;
 
