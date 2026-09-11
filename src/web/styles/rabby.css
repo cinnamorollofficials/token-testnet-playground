@@ -24,6 +24,7 @@
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
   --text-dim: #64748b;
+  --color-rate: #818cf8;
 
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
@@ -35,8 +36,8 @@
   --radius-sm: 8px;
   --radius-pill: 9999px;
 
-  --shadow-card: 0 12px 36px 0 rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.06);
-  --shadow-glow: 0 4px 16px rgba(112, 91, 255, 0.35);
+  --shadow-card: none;
+  --shadow-glow: none;
 }
 
 * {
@@ -79,6 +80,12 @@ textarea {
   width: 100%;
 }
 
+/* Enforce flat design: eliminate all box shadows within container and all children */
+.rabby-app-container,
+.rabby-app-container * {
+  box-shadow: none !important;
+}
+
 /* Header (Unified Single Row) */
 .rabby-header {
   display: flex;
@@ -105,7 +112,6 @@ textarea {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 6px rgba(112, 91, 255, 0.25);
   flex-shrink: 0;
 }
 
@@ -151,7 +157,6 @@ textarea {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 1px 4px rgba(112, 91, 255, 0.3);
   flex-shrink: 0;
 }
 
@@ -263,7 +268,6 @@ textarea {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-outer);
   padding: 24px;
-  box-shadow: var(--shadow-card);
   position: relative;
   overflow: hidden;
   margin-bottom: 16px;
@@ -325,29 +329,21 @@ textarea {
 /* Portfolio Trend Chart Glass Card */
 .rabby-chart-glass-card {
   position: relative;
-  background: linear-gradient(
-    180deg,
-    rgba(26, 33, 51, 0.85) 0%,
-    rgba(19, 24, 38, 0.65) 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(26, 33, 51, 0.85) 0%,
+      rgba(19, 24, 38, 0.65) 100%);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-base);
   padding: 16px 0 0 0;
   margin: 14px 0 18px 0;
-  box-shadow:
-    0 8px 24px -4px rgba(0, 0, 0, 0.4),
-    inset 0 1px 1px 0 rgba(255, 255, 255, 0.08);
   overflow: hidden;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .rabby-chart-glass-card:hover {
   border-color: rgba(112, 91, 255, 0.45);
-  box-shadow:
-    0 12px 28px -4px rgba(112, 91, 255, 0.2),
-    inset 0 1px 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .rabby-chart-glass-top {
@@ -443,7 +439,6 @@ textarea {
   background: var(--bg-card-sub);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-base);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease;
   cursor: pointer;
 }
@@ -451,7 +446,6 @@ textarea {
 .rabby-action-squircle:hover {
   background: var(--bg-card-hover);
   border-color: var(--border-focus);
-  box-shadow: 0 4px 12px rgba(112, 91, 255, 0.15);
 }
 
 .rabby-action-squircle:hover .rabby-action-label {
@@ -484,7 +478,6 @@ textarea {
   background: var(--primary);
   padding: 1px 6px;
   border-radius: var(--radius-pill);
-  box-shadow: 0 2px 6px rgba(112, 91, 255, 0.35);
   line-height: 1.2;
 }
 
@@ -537,7 +530,6 @@ textarea {
   border-radius: var(--radius-base);
   font-size: 15px;
   font-weight: 700;
-  box-shadow: 0 4px 14px rgba(112, 91, 255, 0.3);
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
@@ -547,7 +539,6 @@ textarea {
 
 .rabby-btn-primary:hover {
   background: var(--primary-hover);
-  box-shadow: 0 6px 20px rgba(112, 91, 255, 0.45);
   transform: translateY(-1px);
 }
 
@@ -565,7 +556,6 @@ textarea {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .rabby-btn-secondary:hover {
@@ -618,16 +608,16 @@ textarea {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .rabby-token-avatar-img {
-  width: 24px;
-  height: 24px;
-  max-width: 24px;
-  max-height: 24px;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
   border-radius: 50%;
-  object-fit: contain;
+  object-fit: cover;
+  display: block;
 }
 
 .rabby-token-avatar {
@@ -654,7 +644,6 @@ textarea {
   border-radius: 50%;
   background: var(--bg-card);
   border: 1.5px solid var(--bg-card);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
   object-fit: cover;
   z-index: 2;
 }
@@ -714,7 +703,8 @@ textarea {
   flex-shrink: 0;
 }
 
-.rabby-token-balance-row {
+.rabby-token-balance-row,
+.rabby-token-crypto-row {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -726,11 +716,69 @@ textarea {
   white-space: nowrap;
 }
 
-.rabby-token-balance-val {
-  font-weight: 600;
+.rabby-token-balance-val,
+.rabby-token-crypto-amount {
+  font-weight: 500;
   color: var(--text-muted);
   letter-spacing: -0.1px;
   white-space: nowrap;
+}
+
+/* Sisi Kanan: Valuasi Total IDR & Harga Per Unit Token */
+.rabby-token-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  gap: 4px;
+  flex-shrink: 0;
+  margin-left: 12px;
+  transition: opacity 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.rabby-token-item:hover .rabby-token-right {
+  opacity: 0.12;
+}
+
+.rabby-token-valuation-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  line-height: 1.25;
+}
+
+.rabby-token-fiat-val {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  line-height: 1.25;
+  white-space: nowrap;
+  color: #fff;
+}
+
+.rabby-token-price-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.rabby-token-unit-price {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: -0.1px;
+  white-space: nowrap;
+}
+
+/* Sembunyikan harga unit token di layar kecil / popup sempit agar tidak berdesakan */
+@media (max-width: 400px) {
+  .rabby-token-price-row {
+    display: none;
+  }
 }
 
 /* Skeleton Shimmer Loading */
@@ -755,9 +803,16 @@ textarea {
 
 .rabby-skeleton-token-bal {
   width: 86px;
-  height: 13px;
+  height: 14px;
   border-radius: 4px;
 }
+
+.rabby-skeleton-token-sm {
+  width: 48px;
+  height: 12px;
+  border-radius: 4px;
+}
+
 
 .rabby-skeleton-hero {
   width: 130px;
@@ -843,7 +898,6 @@ textarea {
   border-top-right-radius: 16px;
   width: 100%;
   max-width: 440px;
-  box-shadow: 0 -12px 36px rgba(0, 0, 0, 0.6);
   position: relative;
   max-height: 85vh;
   display: flex;
@@ -906,6 +960,7 @@ textarea {
   from {
     transform: translateY(100%);
   }
+
   to {
     transform: translateY(0);
   }
@@ -983,6 +1038,7 @@ textarea {
     opacity: 0;
     transform: translateX(12px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -1009,7 +1065,6 @@ textarea {
   padding: 28px;
   max-width: 480px;
   width: 100%;
-  box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.6);
   position: relative;
   max-height: 90vh;
   overflow-y: auto;
@@ -1090,7 +1145,6 @@ textarea {
   justify-content: center;
   align-items: center;
   margin: 16px auto;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
 /* Tabs */
@@ -1117,7 +1171,6 @@ textarea {
 .rabby-tab-btn.active {
   background: var(--bg-card-hover);
   color: var(--primary);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
 }
 
 /* Chain Selector Tabs (Horizontal Scrollable or Grid) */
@@ -1165,7 +1218,6 @@ textarea {
 .rabby-chain-tab.active {
   background: var(--bg-card-hover);
   color: var(--primary);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   border: 1px solid var(--border-subtle);
 }
 
@@ -1185,7 +1237,6 @@ textarea {
   background: var(--primary);
   color: #ffffff;
   border: 1px solid var(--primary);
-  box-shadow: 0 4px 12px rgba(112, 91, 255, 0.35);
   transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   opacity: 0;
@@ -1201,7 +1252,6 @@ textarea {
 
 .rabby-quick-send-btn:hover {
   background: var(--primary-hover);
-  box-shadow: 0 4px 16px rgba(112, 91, 255, 0.45);
 }
 
 .rabby-quick-send-btn:active {
@@ -1228,7 +1278,6 @@ textarea {
   height: 6px;
   border-radius: 50%;
   background: var(--success);
-  box-shadow: 0 0 6px var(--success);
   animation: rabbyPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   flex-shrink: 0;
 }
@@ -1272,9 +1321,9 @@ textarea {
 .rabby-rate-tag {
   font-size: 11px;
   font-weight: 600;
-  color: var(--text-muted);
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid var(--border-subtle);
+  color: var(--color-rate);
+  background: rgba(129, 140, 248, 0.08);
+  border: 1px solid rgba(129, 140, 248, 0.2);
   padding: 1px 6px;
   border-radius: 4px;
   line-height: 1.3;
@@ -1345,7 +1394,6 @@ textarea {
   background: var(--bg-card-hover);
   color: var(--primary);
   font-weight: 700;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .rabby-tab-count {
@@ -1443,7 +1491,6 @@ textarea {
 .rabby-tx-item:hover {
   border-color: var(--border-focus);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(112, 91, 255, 0.15);
 }
 
 .rabby-tx-left {

@@ -212,6 +212,43 @@ Legenda: `👤` = butuh tindakan manual user · `🌐` = butuh network/testnet R
 
 ---
 
+## Fase 9 — Tampilan Saldo Kripto & Harga Token di List Aset + Sembunyikan di Layar Kecil 📊
+
+- [x] **1. CSS Design System & Responsivitas (`src/web/styles/rabby.css`)**
+  - [x] Tambahkan styling `.rabby-token-right` (kolom kanan flex-end)
+  - [x] Tambahkan styling `.rabby-token-fiat-val` (valuasi IDR bold di kanan atas)
+  - [x] Tambahkan styling `.rabby-token-crypto-amount` (saldo koin kripto di kiri bawah)
+  - [x] Tambahkan styling `.rabby-token-price-row` & `.rabby-token-unit-price` (kurs per token di kanan bawah)
+  - [x] Tambahkan media query `@media (max-width: 400px)` untuk menyembunyikan `.rabby-token-price-row` di layar kecil
+  - [x] Selaraskan transisi hover dengan tombol `.rabby-quick-send-btn`
+- [x] **2. Integrasi Markup 2-Kolom List Aset di App.tsx**
+  - [x] Perbarui perulangan aset di `App.tsx` agar menyajikan struktur 2-kolom 2-baris sesuai Rabby Wallet
+  - [x] Kolom Kiri: Avatar & badge + Nama Token (atas) & Jumlah Saldo Kripto (bawah, `formatDisplayBalance(bal?.formatted, 4)`)
+  - [x] Kolom Kanan: Total Valuasi IDR (atas, `formatIDR(assetIdrVal)`) & Harga Satuan Token (bawah, `formatIDR(rates[asset.symbol]?.priceIdr)`)
+- [x] **3. Pengujian, Verifikasi & Dokumentasi**
+  - [x] Validasi linter `npm run lint` (0 error, 0 warning)
+  - [x] Validasi 39 unit tests `npm run test` (seluruh tes hijau)
+  - [x] Validasi build web dan Chrome extension (`npm run build:web`, `npm run build:ext`)
+  - [x] Update `walkthrough.md` dan commit per task
+
+---
+
+## Fase 10 — Penghilangan Seluruh Shadow di `.rabby-app-container` & Elemen Anaknya 🚫✨
+
+- [x] **1. CSS Design System & Pembersihan Shadow (`src/web/styles/rabby.css`)**
+  - [x] Set variabel `--shadow-card: none` dan `--shadow-glow: none`
+  - [x] Tambahkan aturan penegakan flat `.rabby-app-container, .rabby-app-container * { box-shadow: none !important; }`
+  - [x] Hapus seluruh deklarasi `box-shadow` pada header brand icon, network btn, card utama, chart glass card & hover, action squircle & hover, action tx badge, tombol primary & secondary, avatar wrap, chain badge, bottom sheet, modal dialog, qr box, active tabs, quick send btn & hover, live dot, dan tx item hover
+- [x] **2. Pembersihan Inline Shadow Style di Komponen (`src/web/App.tsx`)**
+  - [x] Hapus inline style `boxShadow: 'var(--shadow-glow)'` pada onboarding icon dompet
+- [x] **3. Pengujian, Verifikasi & Dokumentasi**
+  - [x] Validasi linter `npm run lint` (0 error, 0 warning)
+  - [x] Validasi 39 unit tests `npm run test` (seluruh tes hijau)
+  - [x] Validasi build web dan Chrome extension (`npm run build:web`, `npm run build:ext`)
+  - [x] Update `walkthrough.md` dan commit per task
+
+---
+
 ## Ditunda (Backlog)
 
 - [ ] 👤 **Kaia — putuskan coin type** (coin type 60 vs 8217 di Kaia Wallet)
@@ -220,4 +257,5 @@ Legenda: `👤` = butuh tindakan manual user · `🌐` = butuh network/testnet R
 - [ ] Batch / sweep multi-index transfer
 - [ ] Kaia fee delegation
 - [ ] EIP-2612 permit
+
 

@@ -501,7 +501,6 @@ export const App: React.FC = () => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   marginBottom: '20px',
-                  boxShadow: 'var(--shadow-glow)',
                 }}
               >
                 <Wallet size={34} color="#fff" />
@@ -644,6 +643,7 @@ export const App: React.FC = () => {
                   {filteredAssets.map((asset) => {
                     const bal = portfolioBalances[asset.id];
                     const assetIdrVal = calculateIDRValue(bal?.formatted, asset.symbol, rates);
+                    const unitPrice = rates[asset.symbol]?.priceIdr;
 
                     return (
                       <div
@@ -652,6 +652,7 @@ export const App: React.FC = () => {
                         onClick={() => handleOpenSendForAsset(asset.ledger, asset.kind)}
                         title={`${bal ? formatDisplayBalance(bal.formatted) : '0.00'} ${asset.symbol} (${formatIDR(assetIdrVal)}) - Klik untuk mengirim`}
                       >
+                        {/* Sisi Kiri: Avatar & Info Token (Nama + Saldo Kripto) */}
                         <div className="rabby-token-left">
                           <div className="rabby-token-avatar-wrap">
                             {asset.kind === 'native' ? (
@@ -706,15 +707,40 @@ export const App: React.FC = () => {
                                 {asset.badge.toUpperCase()}
                               </span>
                             </div>
-                            <div className="rabby-token-balance-row">
+                            <div className="rabby-token-crypto-row">
                               {loadingLedgers[asset.ledger] || bal === undefined ? (
-                                <div className="rabby-skeleton rabby-skeleton-token-bal" />
+                                <div className="rabby-skeleton rabby-skeleton-token-sm" />
                               ) : (
-                                <span className="rabby-token-balance-val">
-                                  {formatIDR(assetIdrVal)}
+                                <span className="rabby-token-crypto-amount">
+                                  {formatDisplayBalance(bal?.formatted, 4)}
                                 </span>
                               )}
                             </div>
+                          </div>
+                        </div>
+
+                        {/* Sisi Kanan: Valuasi Total IDR & Harga Per Unit Token */}
+                        <div className="rabby-token-right">
+                          <div className="rabby-token-valuation-row">
+                            {loadingLedgers[asset.ledger] || bal === undefined ? (
+                              <div className="rabby-skeleton rabby-skeleton-token-bal" />
+                            ) : (
+                              <span className="rabby-token-fiat-val">
+                                {formatIDR(assetIdrVal)}
+                              </span>
+                            )}
+                          </div>
+                          <div className="rabby-token-price-row">
+                            {unitPrice ? (
+                              <span
+                                className="rabby-token-unit-price"
+                                title={`Kurs ${asset.symbol}: ${formatIDR(unitPrice)}`}
+                              >
+                                {formatIDR(unitPrice)}
+                              </span>
+                            ) : (
+                              <span className="rabby-token-unit-price">-</span>
+                            )}
                           </div>
                         </div>
 
