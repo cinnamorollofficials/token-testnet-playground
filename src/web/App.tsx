@@ -535,6 +535,7 @@ export const App: React.FC = () => {
                     title="Send"
                   >
                     <Send className="rabby-action-icon" />
+                    <span className="rabby-action-label">Send</span>
                   </button>
                   <button
                     type="button"
@@ -543,6 +544,7 @@ export const App: React.FC = () => {
                     title="Receive"
                   >
                     <QrCode className="rabby-action-icon" />
+                    <span className="rabby-action-label">Receive</span>
                   </button>
                   <button
                     type="button"
@@ -551,6 +553,7 @@ export const App: React.FC = () => {
                     title="Faucet"
                   >
                     <Droplets className="rabby-action-icon" />
+                    <span className="rabby-action-label">Faucet</span>
                   </button>
                   <button
                     type="button"
@@ -559,6 +562,7 @@ export const App: React.FC = () => {
                     title="Mint HTT"
                   >
                     <Coins className="rabby-action-icon" />
+                    <span className="rabby-action-label">Mint HTT</span>
                   </button>
                   <button
                     type="button"
@@ -567,6 +571,7 @@ export const App: React.FC = () => {
                     title="Riwayat Transaksi"
                   >
                     <ArrowLeftRight className="rabby-action-icon" />
+                    <span className="rabby-action-label">Transactions</span>
                     {txCount > 0 && <span className="rabby-action-tx-badge">{txCount}</span>}
                   </button>
                 </div>
