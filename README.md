@@ -1,6 +1,10 @@
-# Token Testing & Faucet Playground (`pg`)
+# Token Testing & Faucet Playground
 
-Playground CLI multi-chain khusus lingkungan **testnet** untuk pengujian lifecycle token, derivasi alamat multi-chain deterministik dari satu master seed BIP-39, integrasi faucet, pembuatan token uji (ERC-20, SPL Token, XRPL IOU), dan simulasi transfer antar-akun.
+Aplikasi multi-chain khusus lingkungan **testnet** untuk pengujian lifecycle token, klaim faucet, pembuatan token uji (ERC-20, SPL Token, XRPL IOU), dan simulasi transfer antar-akun (Index 0 → Index 1).
+
+* **Antarmuka Utama:** **Web Application (Vite + React)** dengan referensi desain **Rabby Wallet** (Dark slate `#0C0D14`, Rabby purple `#705BFF`, kartu portfolio hero, squircle action buttons, dan modal simulasi pre-execution transfer).
+* **Antarmuka Kedua:** **CLI (`pg`)** untuk kebutuhan scripting dan terminal.
+* **Keamanan Mnemonic:** Mnemonic **hanya di-load di runtime** (in-memory session). Dibuat bersama QR Code (untuk difoto/disimpan), dan di-load via **Scan QR (Kamera Webcam / Upload Foto)** saat aplikasi dijalankan, tanpa menyimpan plaintext di harddisk.
 
 > [!WARNING]
 > **TESTNET ONLY — NOL NILAI NYATA**
@@ -12,181 +16,118 @@ Playground CLI multi-chain khusus lingkungan **testnet** untuk pengujian lifecyc
 
 | Ledger | Jaringan Testnet | Chain ID / Net ID | Derivation Path | Format Alamat | Status |
 |---|---|---|---|---|---|
-| **Ethereum** | Sepolia | `11155111` | `m/44'/60'/0'/0/{i}` | EIP-55 Checksum (`0x…`) | Aktif |
-| **Polygon** | Amoy | `80002` | `m/44'/60'/0'/0/{i}` | EIP-55 Checksum (`0x…`) | Aktif |
-| **Solana** | Devnet | `solana-devnet` | `m/44'/501'/{i}'/0'` | Base58 (SLIP-0010 All-Hardened) | Aktif |
-| **XRPL** | Testnet | `xrpl-testnet` | `m/44'/144'/0'/0/{i}` | Classic Address (`r…`) | Aktif |
-| **Bitcoin** | Signet | `btc-signet` | `m/84'/1'/0'/0/{i}` | Bech32 Native SegWit (`tb1q…`) | Faucet & Saldo |
-| **Kaia** | Kairos | `1001` | *60 vs 8217* | EIP-55 Checksum (`0x…`) | Ditunda (Kandidat A & B siap) |
+| **Ethereum** | Sepolia | `11155111` | `m/44'/60'/0'/0/{i}` | EIP-55 Checksum (`0x…`) | **Aktif** |
+| **Polygon** | Amoy | `80002` | `m/44'/60'/0'/0/{i}` | EIP-55 Checksum (`0x…`) | **Aktif** |
+| **Solana** | Devnet | `solana-devnet` | `m/44'/501'/{i}'/0'` | Base58 (SLIP-0010 All-Hardened) | **Aktif** |
+| **XRPL (Ripple)** | Testnet | `xrpl-testnet` | `m/44'/144'/0'/0/{i}` | Classic Address (`r…`) | **Aktif** |
+| **Bitcoin** | Signet | `btc-signet` | `m/84'/1'/0'/0/{i}` | Bech32 Native SegWit (`tb1q…`) | **Aktif (Saldo)** |
+| **Kaia** | Kairos | `1001` | *60 vs 8217* | EIP-55 Checksum (`0x…`) | **Ditunda (Backlog)** |
 
 ---
 
-## Fitur Utama & Prinsip Desain
+## Memulai Aplikasi Web (Primary)
 
-1. **Satu Seed BIP-39 untuk Seluruh Chain:**
-   Hanya satu frasa mnemonic yang perlu di-backup. Derivasi ke tiap chain mengikuti standar resmi:
-   - **BIP-32 (secp256k1):** Ethereum, Polygon, XRPL, Bitcoin.
-   - **SLIP-0010 (ed25519):** Solana dengan path **all-hardened** (`0'/0'`).
-2. **Presisi Nominal Berbasis `bigint`:**
-   Semua kalkulasi nilai token dan coin terkecil (*smallest units / wei / satoshi / lamports / drops*) menggunakan `bigint`. Dilarang menggunakan JavaScript floating-point `number`.
-3. **Pemisahan Siklus Transaksi (Air-gap / Custody Friendly):**
-   Setiap adapter memisahkan logika `buildTransfer` (estimasi fee & preview), `sign` (offline), dan `broadcast`.
-4. **Keamanan & Privasi CLI:**
-   Mnemonic hanya dibaca dari `.env` atau interactive prompt. Frasa rahasia tidak pernah dilewatkan via argumen baris perintah (`argv`) dan otomatis diredaksi pada log/error.
-
----
-
-## Panduan Instalasi & Setup
-
-### Prasyarat
-- **Node.js:** Versi 22 atau lebih baru (ESM native).
-- **npm:** Versi 10 atau lebih baru.
-
-### Langkah Instalasi
 ```bash
-# 1. Clone repositori & masuk ke direktori
-git clone git@github.com:cinnamorollofficials/token-testnet-playground.git
-cd token-testnet-playground
-
-# 2. Instal dependensi
+# 1. Instal dependensi
 npm install
 
-# 3. Buat file konfigurasi lingkungan (.env)
+# 2. Jalankan Dev Server Web UI
+npm run dev
+```
+
+Buka browser di `http://localhost:3000`.
+
+### Alur Penggunaan Web UI (Referensi: Rabby Wallet)
+
+1. **Unlock Sesi Runtime via QR Code:**
+   - **Pilihan A (Pengguna Baru):** Klik **"Generate Mnemonic Baru + QR Code"**. Frasa 12/24 kata akan digenerate bersama tampilan QR Code interaktif. Unduh atau foto QR Code tersebut menggunakan HP.
+   - **Pilihan B (Scan QR):** Klik **"Scan QR Code via Kamera / Foto"**. Anda dapat:
+     - Mengarahkan layar HP berisi foto QR ke kamera webcam laptop.
+     - Meng-upload file foto/screenshot QR dari laptop.
+     - Memasukkan frasa teks manual.
+   - Mnemonic otomatis ter-load ke **memori RAM browser**.
+   - Kapan saja Anda ingin mengunci kembali, klik tombol **"Active (ae0d...) - Lock"** di pojok kanan atas untuk menghapus seed dari memori seketika.
+2. **Dashboard & Portfolio Hero:**
+   - Ganti jaringan melalui pemilih network (Sepolia, Amoy, Solana Devnet, XRPL, Signet).
+   - Lihat alamat Akun #0 (Utama) dan beralih ke Akun #1 (Penerima) untuk menyalin address.
+   - Saldo native coin dan test token ter-refresh secara real-time via RPC.
+3. **Klaim Faucet:**
+   - Klik squircle **Faucet**:
+     - Solana Devnet: 1-klik `Airdrop 1 SOL`.
+     - XRPL Testnet: 1-klik `Fund XRP`.
+     - Sepolia / Amoy / Signet: Buka link faucet web resmi + tombol copy address siap paste.
+4. **Deploy & Mint Token Test:**
+   - Klik squircle **Mint TST** untuk mencetak 1,000 token test TST atau men-deploy kontrak `TestToken.sol` sendiri di testnet.
+5. **Kirim Aset (Send Asset) dengan Simulasi Khas Rabby:**
+   - Klik squircle **Send**.
+   - Pilih aset (Test Token TST atau Native Coin).
+   - Klik **"+ Akun #1 (Milik Sendiri)"** untuk otomatis mengisi address akun penerima Index 1.
+   - Masukkan jumlah nominal.
+   - Klik **"Preview & Simulasi Transaksi"** untuk memunculkan **Pre-execution Simulation Modal**:
+     - *Green Shield*: Testnet Pre-flight Guard Verified.
+     - *Simulasi Perubahan Saldo*: Pengirim `-10.0 TST`, Penerima `+10.0 TST`.
+     - *Estimasi Fee*: Rincian gas fee dan peringatan ATA rent / reserve.
+   - Klik **"Sign & Submit Transaksi"**: Transaksi ditandatangani secara offline di memori dan disiarkan ke testnet. Tautan resmi ke Block Explorer langsung tersedia.
+
+---
+
+## Menggunakan CLI (`pg`) (Secondary)
+
+CLI dapat digunakan jika Anda lebih menyukai antarmuka terminal:
+
+```bash
+# 1. Konfigurasi .env (opsional untuk CLI)
 cp .env.example .env
+# Isi MNEMONIC="..." di .env
 
-# 4. Compile kode TypeScript
-npm run build
+# 2. Perintah CLI
+npm run pg -- seed new                     # Buat mnemonic baru
+npm run pg -- seed info                    # Cek fingerprint mnemonic
+npm run pg -- address                      # Tampilkan address Index 0 untuk semua ledger
+npm run pg -- address -i 1                 # Tampilkan address Index 1
+npm run pg -- balance                      # Cek saldo native semua ledger
+npm run pg -- faucet -l solana             # Airdrop 1 SOL
+npm run pg -- send -l ethereum --to 1 -a 0.001 --dry-run  # Simulasi kirim tanpa broadcast
 ```
 
 ---
 
-## Panduan Penggunaan CLI (`pg`)
-
-CLI dapat dijalankan menggunakan:
-```bash
-npm run pg -- <command>
-# atau langsung:
-node dist/index.js <command>
-```
-
-### 1. Manajemen Seed Phrase (`pg seed`)
-
-#### Generate Seed Baru (`pg seed new`)
-Menghasilkan frasa seed BIP-39 acak baru khusus testnet beserta fingerprint-nya:
-```bash
-# 12 kata (default)
-npm run pg -- seed new
-
-# 24 kata
-npm run pg -- seed new --words 24
-```
-*Tempelkan mnemonic yang dihasilkan ke dalam `.env`: `MNEMONIC="..."`.*
-
-#### Cek Info & Validasi Seed (`pg seed info`)
-Memvalidasi frasa seed di `.env` dan menampilkan fingerprint SHA-256 tanpa pernah mencetak frasa mnemonic aslinya ke terminal:
-```bash
-npm run pg -- seed info
-```
-
----
-
-### 2. Menampilkan Alamat Derivasi (`pg address`)
-
-Menderivasi address untuk tiap ledger sesuai account index. Derivation path akan selalu ditampilkan di samping alamat.
-
-#### Tampilkan Semua Ledger (Index 0 - Default)
-```bash
-npm run pg -- address
-```
-
-Contoh output:
-```text
-Derived Testnet Addresses (Index 0):
-+----------+-------+-------------------+----------------------------------------------+
-| Ledger   | Index | Derivation Path   | Address                                      |
-+----------+-------+-------------------+----------------------------------------------+
-| ethereum | 0     | m/44'/60'/0'/0/0  | 0xfdd7E802723745ED8140D1fa8da8C3266545CE7f   |
-| polygon  | 0     | m/44'/60'/0'/0/0  | 0xfdd7E802723745ED8140D1fa8da8C3266545CE7f   |
-| solana   | 0     | m/44'/501'/0'/0'  | AEcmiNdYVrUUcbrjVMsBqLrtHzfw7ciTYv4GZCjvppFT |
-| xrpl     | 0     | m/44'/144'/0'/0/0 | raTfyLnjjuHaj6nm3LeBiqirpqyDKeowS7           |
-| bitcoin  | 0     | m/84'/1'/0'/0/0   | tb1q9ztsj3jx7kdk492evnh2c3kr958pg3v54g2gea   |
-+----------+-------+-------------------+----------------------------------------------+
-```
-
-#### Tampilkan Akun Index Tertentu (Misal Index 1 untuk Akun Penerima)
-```bash
-npm run pg -- address --index 1
-# atau singkatnya:
-npm run pg -- address -i 1
-```
-
-#### Tampilkan Ledger Tertentu
-```bash
-# Solana saja
-npm run pg -- address --ledger solana
-
-# Kaia (menampilkan kedua opsi kandidat: coin type 60 dan 8217)
-npm run pg -- address --ledger kaia
-```
-
----
-
-## Daftar Faucet Testnet (Koin Native untuk Gas & Reserve)
-
-Sebelum dapat membuat atau mentransfer token, akun Index 0 memerlukan saldo koin native:
-
-| Ledger | Koin Native | Faucet URL / Mekanisme | Keterangan |
-|---|---|---|---|
-| **Ethereum Sepolia** | ETH | [Google Cloud Web3 Faucet](https://cloud.google.com/application/web3/faucet/ethereum/sepolia) / [Alchemy Sepolia Faucet](https://www.alchemy.com/faucets/ethereum-sepolia) | Klaim manual ke address Sepolia Anda |
-| **Polygon Amoy** | POL | [Polygon Technology Faucet](https://faucet.polygon.technology/) | Klaim manual ke address Amoy Anda |
-| **Solana Devnet** | SOL | `requestAirdrop` otomatis via CLI atau [Solana Web Faucet](https://faucet.solana.com/) | Otomatis via `pg faucet --ledger solana` |
-| **XRPL Testnet** | XRP | [XRPL Testnet Faucet](https://faucet.altnet.rippletest.net/accounts) | Otomatis via `pg faucet --ledger xrpl` |
-| **Bitcoin Signet** | sBTC | [Signet Faucet](https://signetfaucet.com/) | Masukkan address `tb1q…` |
-
----
-
-## Menjalankan Pengujian (Testing & Quality)
+## Pengujian & Verifikasi Kualitas
 
 ```bash
-# Menjalankan suite pengujian unit & test vector offline
+# Menjalankan 22 unit tests Vitest (Derivasi, amount bigint, testnet guards, cross-chain address validation)
 npm test
 
-# Menjalankan linter oxlint
+# Menjalankan oxlint
 npm run lint
 
-# Kompilasi TypeScript strict
-npm run build
+# Kompilasi TypeScript & Web build Vite
+npm run build && npm run build:web
 ```
 
 ---
 
-## Struktur Direktori
+## Struktur Direktori Proyek
 
 ```
 test-playground/
 ├── src/
-│   ├── index.ts                   # CLI entry point (commander)
-│   ├── config/
-│   │   ├── networks.ts            # Konfigurasi RPC, explorer, dan guard assertTestnet()
-│   │   └── tokens.ts              # Token registry (EVM, SPL, XRPL)
-│   ├── core/
-│   │   ├── types.ts               # Domain types & LedgerAdapter interface
-│   │   ├── amount.ts              # Konversi nominal presisi bigint
-│   │   ├── mnemonic.ts            # Generator BIP-39, validator, & fingerprint
-│   │   ├── derive.ts              # Logika derivasi BIP-32 & SLIP-0010 multi-chain
-│   │   └── registry.ts            # Adapter registry
-│   ├── adapters/                  # Implementasi blockchain adapters (EVM, Solana, XRPL, BTC)
-│   └── cli/
-│       ├── commands/              # Sub-command CLI (seed, address, balance, faucet, token, send)
-│       └── utils/                 # Formatter tabel & prompt terminal
-├── test/
-│   ├── scaffold.test.ts           # Uji assertTestnet guard & konfigurasi jaringan
-│   ├── amount.test.ts             # Uji presisi parsing & format bigint
-│   └── vectors.test.ts            # Test vector deterministik BIP-39/BIP-32/SLIP-10
-├── .env.example                   # Template konfigurasi environment
-├── .oxlintrc.json                 # Konfigurasi linter
-├── tsconfig.json                  # Konfigurasi compiler TypeScript
-├── PLAN.md                        # Master architectural plan
+│   ├── web/                       # Web Application (Rabby Wallet Style)
+│   │   ├── components/            # QRGeneratorModal, QRScannerModal, FaucetModal, ReceiveModal, MintTokenModal, SendModal
+│   │   ├── context/               # SessionContext (In-memory ephemeral runtime mnemonic)
+│   │   ├── styles/                # rabby.css (Design system, squircles, dark slate palette)
+│   │   ├── App.tsx                # Dashboard view utama
+│   │   └── main.tsx               # React root entry
+│   ├── cli/                       # CLI commands (pg seed, address, balance, faucet, send)
+│   ├── contracts/                 # TestToken.sol & TestTokenArtifact.ts
+│   ├── adapters/                  # Multi-chain adapters (EVM, Solana, XRPL, Bitcoin)
+│   ├── core/                      # amount.ts, derive.ts, mnemonic.ts, registry.ts, types.ts, validate.ts
+│   └── config/                    # networks.ts, tokens.ts
+├── test/                          # Unit tests & deterministic vectors
+├── index.html                     # Web entry HTML
+├── vite.config.ts                 # Vite bundler & browser crypto polyfills
+├── tsconfig.json                  # Strict TypeScript configuration
+├── PLAN.md                        # Master architectural specification
 ├── TODO.md                        # Task checklist & execution gates
-└── ledger.md                      # Daftar status dukungan chain
+└── ledger.md                      # Supported ledgers & status matrix
 ```

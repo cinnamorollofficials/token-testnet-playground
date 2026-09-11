@@ -4,6 +4,7 @@ import { NETWORKS } from '../../config/networks.js';
 import { getAdapter } from '../../core/registry.js';
 import { DEFAULT_TEST_TOKENS } from '../../config/tokens.js';
 import { parseAmount } from '../../core/amount.js';
+import { validateAddress } from '../../core/validate.js';
 import type { Asset, UnsignedTx } from '../../core/types.js';
 import {
   X,
@@ -55,6 +56,12 @@ export const SendModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
 
     if (!recipient.trim()) {
       setErrorMsg('Harap masukkan address penerima.');
+      return;
+    }
+
+    const valResult = validateAddress(selectedLedger, recipient.trim());
+    if (!valResult.valid) {
+      setErrorMsg(valResult.error || 'Address penerima tidak valid.');
       return;
     }
 

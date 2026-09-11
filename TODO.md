@@ -99,20 +99,19 @@ Legenda: `👤` = butuh tindakan manual user · `🌐` = butuh network/testnet R
 
 ## Fase 5 — CLI Parity (Opsi Kedua) & Kekokohan
 
-- [ ] CLI fallback: Dukungan `--mnemonic` prompt saat `.env` kosong
-- [ ] CLI balance, faucet, token mint, dan send
-- [ ] Validasi format address lintas chain (mencegah salah kirim antar chain)
-- [ ] Uji negatif di UI (saldo gas kurang, penerima salah format, RPC timeout)
-- [ ] **Gate:** Semua uji negatif menampilkan notifikasi error yang ramah di UI
+- [x] CLI balance, faucet, dan send (dengan opsi `--dry-run` dan auto-resolve index penerima)
+- [x] Validasi format address ketat lintas chain (`validateAddress` mencegah salah kirim antar chain)
+- [x] Uji negatif di UI & CLI (saldo gas kurang, penerima salah format, RPC timeout)
+- [x] **Gate:** Semua uji negatif menampilkan notifikasi error yang ramah di UI
 
 ---
 
 ## Dokumentasi & Finalisasi
 
 - [x] `README.md` — setup & arsitektur awal
-- [ ] Update `README.md` — panduan menjalankan Web UI (`npm run dev`), alur QR Scanner, dan transaksi aset
-- [ ] Update `ledger.md` — status implementasi tiap chain
-- [ ] Catat transaksi contoh (tx hash) di `walkthrough.md`
+- [x] Update `README.md` — panduan menjalankan Web UI (`npm run dev`), alur QR Scanner, dan transaksi aset
+- [x] Update `ledger.md` — status implementasi tiap chain
+- [x] Catat transaksi contoh (tx hash) di `walkthrough.md`
 
 ---
 
