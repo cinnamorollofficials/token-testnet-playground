@@ -208,6 +208,13 @@ export const App: React.FC = () => {
   const [modalTargetAsset, setModalTargetAsset] = useState<'native' | 'token'>('native');
 
   const [portfolioBalances, setPortfolioBalances] = useState<Record<string, Balance | null>>({});
+  const [loadingLedgers, setLoadingLedgers] = useState<Record<LedgerId, boolean>>({
+    ethereum: true,
+    polygon: true,
+    solana: true,
+    xrpl: true,
+    bitcoin: true,
+  });
 
   // Auto-open scanner modal when opened with ?action=scan (e.g. from extension popup redirect)
   useEffect(() => {
@@ -219,41 +226,43 @@ export const App: React.FC = () => {
   const fetchAllBalances = useCallback(async () => {
     if (!isUnlocked) return;
 
-    try {
-      const promises = ACTIVE_LEDGERS.map(async (ledger) => {
-        const acc = accounts[ledger];
-        if (!acc) return null;
-        try {
-          const adapter = getAdapter(ledger);
-          const nativeBal = await adapter.getBalance(acc.address, { kind: 'native' });
+    setLoadingLedgers({
+      ethereum: true,
+      polygon: true,
+      solana: true,
+      xrpl: true,
+      bitcoin: true,
+    });
 
-          let tokenBal: Balance | null = null;
-          const defToken = getActiveTokenAsset(ledger);
-          if (defToken) {
-            tokenBal = await adapter.getBalance(acc.address, defToken);
-          }
-          return { ledger, nativeBal, tokenBal };
-        } catch (err) {
-          console.warn(`Balance fetch warning for ${ledger}:`, err);
-          return null;
-        }
-      });
-
-      const settled = await Promise.all(promises);
-      const newBalances: Record<string, Balance | null> = {};
-
-      for (const res of settled) {
-        if (!res) continue;
-        newBalances[`${res.ledger}-native`] = res.nativeBal;
-        if (res.tokenBal !== null) {
-          newBalances[`${res.ledger}-token`] = res.tokenBal;
-        }
+    ACTIVE_LEDGERS.forEach(async (ledger) => {
+      const acc = accounts[ledger];
+      if (!acc) {
+        setLoadingLedgers((prev) => ({ ...prev, [ledger]: false }));
+        return;
       }
+      try {
+        const adapter = getAdapter(ledger);
+        const nativeBal = await adapter.getBalance(acc.address, { kind: 'native' });
 
-      setPortfolioBalances((prev) => ({ ...prev, ...newBalances }));
-    } catch (err) {
-      console.warn('Failed fetching balances:', err);
-    }
+        let tokenBal: Balance | null = null;
+        const defToken = getActiveTokenAsset(ledger);
+        if (defToken) {
+          tokenBal = await adapter.getBalance(acc.address, defToken);
+        }
+
+        setPortfolioBalances((prev) => {
+          const updated = { ...prev, [`${ledger}-native`]: nativeBal };
+          if (tokenBal !== null) {
+            updated[`${ledger}-token`] = tokenBal;
+          }
+          return updated;
+        });
+      } catch (err) {
+        console.warn(`Balance fetch warning for ${ledger}:`, err);
+      } finally {
+        setLoadingLedgers((prev) => ({ ...prev, [ledger]: false }));
+      }
+    });
   }, [isUnlocked, accounts]);
 
   useEffect(() => {
@@ -323,7 +332,10 @@ export const App: React.FC = () => {
             <button
               type="button"
               className="rabby-header-acc-pill"
-              onClick={() => setActiveAccountIndex(activeAccountIndex === 0 ? 1 : 0)}
+              onClick={() => {
+                setPortfolioBalances({});
+                setActiveAccountIndex(activeAccountIndex === 0 ? 1 : 0);
+              }}
               title={
                 displayedAddress
                   ? `Akun aktif: Account #${activeAccountIndex} (${truncateAddress(displayedAddress, 6, 4)}). Klik untuk beralih ke Account #${activeAccountIndex === 0 ? 1 : 0}`
@@ -453,10 +465,16 @@ export const App: React.FC = () => {
                 ) : (
                   <>
                     <div className="rabby-hero-balance">
-                      <span title={singleChainNativeBalance?.formatted}>
-                        {singleChainNativeBalance ? formatDisplayBalance(singleChainNativeBalance.formatted, 5) : '0.00'}
-                      </span>
-                      <span className="rabby-hero-symbol">{singleChainNetwork?.nativeAsset.symbol}</span>
+                      {loadingLedgers[selectedLedger] || !singleChainNativeBalance ? (
+                        <div className="rabby-skeleton rabby-skeleton-hero" />
+                      ) : (
+                        <>
+                          <span title={singleChainNativeBalance.formatted}>
+                            {formatDisplayBalance(singleChainNativeBalance.formatted, 5)}
+                          </span>
+                          <span className="rabby-hero-symbol">{singleChainNetwork?.nativeAsset.symbol}</span>
+                        </>
+                      )}
                     </div>
                     <div style={{ fontSize: '12px', color: 'var(--text-dim)' }}>
                       Testnet Balance (Auto-refreshed via RPC)
@@ -585,30 +603,36 @@ export const App: React.FC = () => {
                               </span>
                             </div>
                             <div className="rabby-token-balance-row">
-                              <span className="rabby-token-balance-val">
-                                {bal ? formatDisplayBalance(bal.formatted) : '0.00'} {asset.symbol}
-                              </span>
-                              {asset.kind === 'token' && (() => {
-                                const activeTok = getActiveTokenAsset(asset.ledger);
-                                if (activeTok && 'address' in activeTok) {
-                                  return (
-                                    <button
-                                      type="button"
-                                      className="rabby-contract-chip"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        setModalTargetLedger(asset.ledger);
-                                        setIsMintOpen(true);
-                                      }}
-                                      title="Klik untuk melihat atau mengganti alamat kontrak HTT"
-                                    >
-                                      {activeTok.address.slice(0, 6)}...{activeTok.address.slice(-4)}
-                                      <ExternalLink size={9} />
-                                    </button>
-                                  );
-                                }
-                                return null;
-                              })()}
+                              {loadingLedgers[asset.ledger] || bal === undefined ? (
+                                <div className="rabby-skeleton rabby-skeleton-token-bal" />
+                              ) : (
+                                <>
+                                  <span className="rabby-token-balance-val">
+                                    {bal ? formatDisplayBalance(bal.formatted) : '0.00'} {asset.symbol}
+                                  </span>
+                                  {asset.kind === 'token' && (() => {
+                                    const activeTok = getActiveTokenAsset(asset.ledger);
+                                    if (activeTok && 'address' in activeTok) {
+                                      return (
+                                        <button
+                                          type="button"
+                                          className="rabby-contract-chip"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            setModalTargetLedger(asset.ledger);
+                                            setIsMintOpen(true);
+                                          }}
+                                          title="Klik untuk melihat atau mengganti alamat kontrak HTT"
+                                        >
+                                          {activeTok.address.slice(0, 6)}...{activeTok.address.slice(-4)}
+                                          <ExternalLink size={9} />
+                                        </button>
+                                      );
+                                    }
+                                    return null;
+                                  })()}
+                                </>
+                              )}
                             </div>
                           </div>
                         </div>
