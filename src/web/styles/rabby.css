@@ -714,7 +714,8 @@ textarea {
   flex-shrink: 0;
 }
 
-.rabby-token-balance-row {
+.rabby-token-balance-row,
+.rabby-token-crypto-row {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -726,11 +727,71 @@ textarea {
   white-space: nowrap;
 }
 
-.rabby-token-balance-val {
-  font-weight: 600;
+.rabby-token-balance-val,
+.rabby-token-crypto-amount {
+  font-weight: 500;
   color: var(--text-muted);
   letter-spacing: -0.1px;
   white-space: nowrap;
+}
+
+/* Sisi Kanan: Valuasi Total IDR & Harga Per Unit Token */
+.rabby-token-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  gap: 4px;
+  flex-shrink: 0;
+  margin-left: 12px;
+  transition: opacity 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.rabby-token-item:hover .rabby-token-right {
+  opacity: 0.12;
+}
+
+.rabby-token-valuation-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  line-height: 1.25;
+}
+
+.rabby-token-fiat-val {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: -0.2px;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.rabby-token-price-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.rabby-token-unit-price {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: -0.1px;
+  white-space: nowrap;
+}
+
+/* Sembunyikan harga unit token di layar kecil / popup sempit agar tidak berdesakan */
+@media (max-width: 400px) {
+  .rabby-token-price-row {
+    display: none;
+  }
 }
 
 /* Skeleton Shimmer Loading */
@@ -755,9 +816,16 @@ textarea {
 
 .rabby-skeleton-token-bal {
   width: 86px;
-  height: 13px;
+  height: 14px;
   border-radius: 4px;
 }
+
+.rabby-skeleton-token-sm {
+  width: 48px;
+  height: 12px;
+  border-radius: 4px;
+}
+
 
 .rabby-skeleton-hero {
   width: 130px;
