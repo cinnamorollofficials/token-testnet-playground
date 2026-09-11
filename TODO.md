@@ -168,7 +168,7 @@ Legenda: `👤` = butuh kamu (manual, tidak bisa saya kerjakan sendiri) · `🌐
 
 ## Dokumentasi
 
-- [ ] `README.md` — setup, `.env`, daftar faucet, contoh sesi end-to-end
+- [x] `README.md` — setup, `.env`, daftar faucet, contoh sesi end-to-end
 - [ ] Catat address token test per chain + link explorer-nya
 - [ ] Catat hasil cross-check Fase 1 (wallet apa, address apa) sebagai bukti
 - [ ] Update `ledger.md` — tandai status tiap ledger
