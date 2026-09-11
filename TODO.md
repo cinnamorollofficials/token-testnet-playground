@@ -115,6 +115,49 @@ Legenda: `👤` = butuh tindakan manual user · `🌐` = butuh network/testnet R
 
 ---
 
+## Fase 6 — Web Extension Migration (Chrome / Brave Manifest V3) 🧩
+
+### 1. Bundler & Manifest Setup
+- [ ] Install dependency: `@crxjs/vite-plugin` (atau sesuaikan multi-input Rollup di `vite.config.ts`)
+- [ ] Buat file `manifest.json` (Manifest V3):
+  - Action popup: `index.html`
+  - Side panel: `index.html` (opsional untuk Chrome 114+)
+  - Permissions: `["storage"]` (dan `["sidePanel"]` jika menggunakan side panel)
+  - Host permissions: `["https://*/*", "wss://*/*"]` (untuk RPC EVM, Solana, XRPL WebSocket, Esplora API)
+  - Icons: siapkan aset icon ekstensi (16x16, 48x48, 128x128 di folder `public/icons`)
+- [ ] Update `vite.config.ts`: Integrasikan plugin CRX / konfigurasi build ekstensi
+- [ ] Update `package.json`: Tambahkan script `npm run build:ext`
+
+### 2. Penyesuaian UI & Layout Extension
+- [ ] Sesuaikan style container utama di `src/web/styles/index.css` agar pas di viewport popup (~400px x 600px)
+- [ ] Pastikan modal (`MintTokenModal`, `FaucetModal`, `SendModal`, `QRGeneratorModal`, `QRScannerModal`) tidak overflow dan memiliki vertical scrolling yang rapi di dalam jendela popup
+- [ ] Tambahkan tombol **"Expand to Tab"** (`chrome.tabs.create`) di header agar pengguna bisa membuka dashboard dalam mode layar penuh (full-tab) kapan saja
+
+### 3. Adaptasi Sesi Runtime (Mnemonic & Keamanan Memory)
+- [ ] Integrasikan `chrome.storage.session` ke dalam `src/web/context/SessionContext.tsx`:
+  - Mnemonic disimpan di RAM browser runtime via `chrome.storage.session` agar tidak ter-reset saat jendela popup tertutup (unmount)
+  - Tetap mematuhi prinsip non-persistent di disk: sesi otomatis terhapus saat browser di-close
+- [ ] Perbarui tombol **"Lock / Clear Memory"** agar seketika menghapus state React sekaligus membersihkan `chrome.storage.session`
+
+### 4. Kamera & Pemindai QR di Extension
+- [ ] Evaluasi izin `getUserMedia` di popup:
+  - Jika popup memicu dialog izin yang menutup jendela popup, sediakan fallback:
+    - Tombol "Open Scanner in Tab" (buka tab sementara untuk memindai kamera HP)
+    - Tab Upload Gambar QR dan Input Teks manual tetap aktif sebagai opsi utama
+
+### 5. Pengujian & Verifikasi
+- [ ] Jalankan `npm run build:ext` dan pastikan build bersih tanpa peringatan CSP (Content Security Policy)
+- [ ] Load Unpacked di `chrome://extensions` pada browser Chrome / Brave
+- [ ] **Gate:**
+  - Ekstensi terbuka sebagai popup dari toolbar browser
+  - Mnemonic berhasil di-unlock via QR / teks dan tersimpan di session storage
+  - Popup ditutup lalu dibuka kembali: sesi tetap aktif tanpa meminta scan ulang
+  - Saldo multi-chain ter-refresh via RPC
+  - Klaim faucet (Solana / XRPL) dan mint TST berjalan sukses dari dalam ekstensi
+  - Klik "Lock" berhasil membersihkan sesi seketika
+
+---
+
 ## Ditunda (Backlog)
 
 - [ ] 👤 **Kaia — putuskan coin type** (coin type 60 vs 8217 di Kaia Wallet)
@@ -123,3 +166,4 @@ Legenda: `👤` = butuh tindakan manual user · `🌐` = butuh network/testnet R
 - [ ] Batch / sweep multi-index transfer
 - [ ] Kaia fee delegation
 - [ ] EIP-2612 permit
+
