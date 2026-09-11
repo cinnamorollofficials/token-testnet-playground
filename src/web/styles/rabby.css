@@ -322,12 +322,13 @@ textarea {
   color: var(--primary);
 }
 
-/* Quick Action Squircles (2 per row) */
+/* Quick Action Squircles (3 per row) */
 .rabby-actions-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 18px;
 }
 
 .rabby-action-squircle {
@@ -335,18 +336,14 @@ textarea {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 14px;
-  height: 56px;
+  width: calc((100% - 20px) / 3);
+  height: 50px;
   background: #ffffff;
   border: 1px solid var(--border-subtle);
   border-radius: 14px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
   transition: all 0.2s ease;
   cursor: pointer;
-}
-
-.rabby-action-squircle.rabby-action-wide {
-  grid-column: span 2;
 }
 
 .rabby-action-squircle:hover {
@@ -357,27 +354,28 @@ textarea {
 }
 
 .rabby-action-squircle:hover .rabby-action-icon {
-  transform: scale(1.12);
+  transform: scale(1.1);
 }
 
 .rabby-action-icon {
-  width: 26px;
-  height: 26px;
+  width: 22px;
+  height: 22px;
   color: var(--primary);
   transition: transform 0.2s ease;
 }
 
 .rabby-action-tx-badge {
   position: absolute;
-  top: 8px;
-  right: 14px;
-  font-size: 10px;
+  top: 6px;
+  right: 10px;
+  font-size: 9px;
   font-weight: 700;
   color: #ffffff;
   background: var(--primary);
-  padding: 2px 7px;
+  padding: 1px 6px;
   border-radius: var(--radius-pill);
   box-shadow: 0 2px 6px rgba(112, 91, 255, 0.35);
+  line-height: 1.2;
 }
 
 /* Account Info Pill */

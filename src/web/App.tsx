@@ -526,7 +526,7 @@ export const App: React.FC = () => {
                   </>
                 )}
 
-                {/* Rabby Squircles Action Bar */}
+                {/* Rabby Squircles Action Bar (3 per row) */}
                 <div className="rabby-actions-grid">
                   <button
                     type="button"
@@ -535,6 +535,14 @@ export const App: React.FC = () => {
                     title="Send"
                   >
                     <Send className="rabby-action-icon" />
+                  </button>
+                  <button
+                    type="button"
+                    className="rabby-action-squircle"
+                    onClick={handleOpenGeneralReceive}
+                    title="Receive"
+                  >
+                    <QrCode className="rabby-action-icon" />
                   </button>
                   <button
                     type="button"
@@ -555,14 +563,6 @@ export const App: React.FC = () => {
                   <button
                     type="button"
                     className="rabby-action-squircle"
-                    onClick={handleOpenGeneralReceive}
-                    title="Receive"
-                  >
-                    <QrCode className="rabby-action-icon" />
-                  </button>
-                  <button
-                    type="button"
-                    className="rabby-action-squircle rabby-action-wide"
                     onClick={() => setIsTxModalOpen(true)}
                     title="Riwayat Transaksi"
                   >
