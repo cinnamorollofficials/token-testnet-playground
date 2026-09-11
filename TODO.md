@@ -173,12 +173,12 @@ Legenda: `👤` = butuh tindakan manual user · `🌐` = butuh network/testnet R
   - [x] `.rabby-account-pill`: ubah dari 14px $\rightarrow$ `var(--radius-base)` (8px)
   - [x] `.rabby-card`: selaraskan border-radius ke `var(--radius-outer)` (12px)
   - [x] Pastikan avatar token koin (`.rabby-token-avatar-img`) & chain badge tetap `50%` (bulat)
-- [ ] **3. Standarisasi Modal & Form Controls (`rabby.css` & Modal Components)**
-  - [ ] `.rabby-modal-card`: selaraskan ke `var(--radius-outer)` (12px)
-  - [ ] `.rabby-btn-primary`, `.rabby-btn-secondary`: selaraskan ke `var(--radius-base)` (8px)
-  - [ ] `.rabby-input`, `.rabby-select`, `.rabby-chain-btn`: selaraskan ke `var(--radius-base)` (8px)
-  - [ ] `.rabby-shield-box`, `.rabby-qr-box`: selaraskan ke `var(--radius-base)` (8px)
-  - [ ] Selaraskan inline `borderRadius` di `SendModal.tsx`, `ReceiveModal.tsx`, `MintTokenModal.tsx`, `QRScannerModal.tsx`, `QRGeneratorModal.tsx` ke `var(--radius-base)` (8px)
+- [x] **3. Standarisasi Modal & Form Controls (`rabby.css` & Modal Components)**
+  - [x] `.rabby-modal-card`: selaraskan ke `var(--radius-outer)` (12px)
+  - [x] `.rabby-btn-primary`, `.rabby-btn-secondary`: selaraskan ke `var(--radius-base)` (8px)
+  - [x] `.rabby-input`, `.rabby-select`, `.rabby-chain-btn`: selaraskan ke `var(--radius-base)` (8px)
+  - [x] `.rabby-shield-box`, `.rabby-qr-box`: selaraskan ke `var(--radius-base)` (8px)
+  - [x] Selaraskan inline `borderRadius` di `SendModal.tsx`, `ReceiveModal.tsx`, `MintTokenModal.tsx`, `QRScannerModal.tsx`, `QRGeneratorModal.tsx` ke `var(--radius-base)` (8px)
 - [ ] **4. Verifikasi, Uji & Build**
   - [ ] Validasi linter: `npm run lint` (0 error, 0 warning)
   - [ ] Jalankan unit tests: `npm run test` (39 tests hijau)

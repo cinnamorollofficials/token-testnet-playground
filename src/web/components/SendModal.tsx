@@ -304,7 +304,7 @@ export const SendModal: React.FC<Props> = ({
                   width: '100%',
                   background: 'var(--bg-input)',
                   border: '1px solid var(--border-subtle)',
-                  borderRadius: 'var(--radius-md)',
+                  borderRadius: 'var(--radius-base)',
                   color: 'var(--text-main)',
                   padding: '12px',
                   fontSize: '13px',
@@ -335,7 +335,7 @@ export const SendModal: React.FC<Props> = ({
                   width: '100%',
                   background: 'var(--bg-input)',
                   border: '1px solid var(--border-subtle)',
-                  borderRadius: 'var(--radius-md)',
+                  borderRadius: 'var(--radius-base)',
                   color: 'var(--text-main)',
                   padding: '12px',
                   fontSize: '16px',
@@ -384,7 +384,7 @@ export const SendModal: React.FC<Props> = ({
               style={{
                 background: 'var(--bg-input)',
                 border: '1px solid var(--border-subtle)',
-                borderRadius: 'var(--radius-md)',
+                borderRadius: 'var(--radius-base)',
                 padding: '16px',
                 marginBottom: '16px',
               }}
@@ -402,7 +402,7 @@ export const SendModal: React.FC<Props> = ({
                   marginBottom: '8px',
                   padding: '10px 12px',
                   background: 'var(--danger-bg)',
-                  borderRadius: 'var(--radius-sm)',
+                  borderRadius: 'var(--radius-base)',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}>
@@ -428,7 +428,7 @@ export const SendModal: React.FC<Props> = ({
                   alignItems: 'center',
                   padding: '10px 12px',
                   background: 'var(--success-bg)',
-                  borderRadius: 'var(--radius-sm)',
+                  borderRadius: 'var(--radius-base)',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}>
@@ -455,7 +455,7 @@ export const SendModal: React.FC<Props> = ({
                 fontSize: '13px',
                 padding: '10px 14px',
                 background: 'var(--bg-card-sub)',
-                borderRadius: 'var(--radius-md)',
+                borderRadius: 'var(--radius-base)',
                 marginBottom: '16px',
               }}
             >

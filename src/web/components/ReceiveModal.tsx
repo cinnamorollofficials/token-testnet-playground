@@ -98,7 +98,7 @@ export const ReceiveModal: React.FC<Props> = ({ isOpen, onClose, initialLedger }
           style={{
             background: 'var(--bg-input)',
             border: '1px solid var(--border-subtle)',
-            borderRadius: 'var(--radius-md)',
+            borderRadius: 'var(--radius-base)',
             padding: '12px',
             fontFamily: 'var(--font-mono)',
             fontSize: '12px',

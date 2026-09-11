@@ -262,7 +262,7 @@ export const MintTokenModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, in
           style={{
             background: 'var(--bg-secondary)',
             border: '1px solid var(--border-color)',
-            borderRadius: 'var(--radius-sm)',
+            borderRadius: 'var(--radius-base)',
             padding: '12px',
             marginBottom: '16px',
           }}

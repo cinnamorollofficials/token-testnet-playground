@@ -176,7 +176,7 @@ export const QRScannerModal: React.FC<Props> = ({ isOpen, onClose }) => {
               id="qr-reader-viewport"
               style={{
                 width: '100%',
-                borderRadius: 'var(--radius-md)',
+                borderRadius: 'var(--radius-base)',
                 overflow: 'hidden',
                 background: '#000',
                 border: '1px solid var(--border-subtle)',
@@ -216,7 +216,7 @@ export const QRScannerModal: React.FC<Props> = ({ isOpen, onClose }) => {
                 gap: '12px',
                 padding: '36px 20px',
                 border: '2px dashed var(--border-subtle)',
-                borderRadius: 'var(--radius-md)',
+                borderRadius: 'var(--radius-base)',
                 background: 'var(--bg-input)',
                 cursor: 'pointer',
                 transition: 'border-color 0.2s',
@@ -254,7 +254,7 @@ export const QRScannerModal: React.FC<Props> = ({ isOpen, onClose }) => {
                 background: 'var(--bg-input)',
                 color: 'var(--text-main)',
                 border: '1px solid var(--border-subtle)',
-                borderRadius: 'var(--radius-md)',
+                borderRadius: 'var(--radius-base)',
                 padding: '12px',
                 fontSize: '13px',
                 lineHeight: '1.5',
