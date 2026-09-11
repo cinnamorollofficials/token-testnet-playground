@@ -30,9 +30,6 @@ import {
   QrCode,
   Layers,
   ArrowLeftRight,
-  TrendingUp,
-  TrendingDown,
-  Minus,
 } from 'lucide-react';
 
 const SUPPORTED_LEDGERS: { id: ChainFilter; label: string }[] = [
@@ -545,38 +542,9 @@ export const App: React.FC = () => {
                   </div>
                 )}
 
-                {/* 24h Glass Effect Chart Card */}
+                {/* Glass Effect Chart Card */}
                 <div className="rabby-chart-glass-card">
                   <div className="rabby-chart-glass-top">
-                    <div className="rabby-chart-glass-header-row">
-                      <div className="rabby-chart-glass-tag">
-                        <span className="rabby-chart-glass-dot" />
-                        <span>
-                          {hoveredChartPoint
-                            ? hoveredChartPoint.label
-                            : selectedLedger === 'all'
-                            ? '24H Total Portfolio'
-                            : 'Nilai Aset (IDR)'}
-                        </span>
-                      </div>
-
-                      <div className="rabby-pnl-row">
-                        <span className={`rabby-pnl-chip ${change24h.direction}`}>
-                          {change24h.direction === 'positive' ? (
-                            <TrendingUp size={11} />
-                          ) : change24h.direction === 'negative' ? (
-                            <TrendingDown size={11} />
-                          ) : (
-                            <Minus size={11} />
-                          )}
-                          <span>
-                            {change24h.direction === 'positive' ? '+' : ''}
-                            {change24h.percentage.toFixed(2)}% ({change24h.formattedDiff})
-                          </span>
-                        </span>
-                      </div>
-                    </div>
-
                     <div className="rabby-chart-glass-balance">
                       {selectedLedger !== 'all' && '≈ '}
                       {hoveredChartPoint ? hoveredChartPoint.formattedValue : formatIDR(currentValuationIdr)}
