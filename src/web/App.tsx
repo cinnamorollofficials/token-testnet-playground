@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useSession } from './context/SessionContext.js';
+import { useSession, ACTIVE_LEDGERS, type ChainFilter } from './context/SessionContext.js';
 import { NETWORKS } from '../config/networks.js';
 import { getAdapter } from '../core/registry.js';
 import { DEFAULT_TEST_TOKENS } from '../config/tokens.js';
@@ -23,14 +23,123 @@ import {
   ShieldCheck,
   ExternalLink,
   RefreshCw,
+  Layers,
 } from 'lucide-react';
 
-const SUPPORTED_LEDGERS: { id: LedgerId; label: string }[] = [
+const SUPPORTED_LEDGERS: { id: ChainFilter; label: string }[] = [
+  { id: 'all', label: 'All Chains (Default)' },
   { id: 'ethereum', label: 'Sepolia (ETH)' },
   { id: 'polygon', label: 'Amoy (POL)' },
   { id: 'solana', label: 'Devnet (SOL)' },
   { id: 'xrpl', label: 'XRPL Testnet (XRP)' },
   { id: 'bitcoin', label: 'BTC Signet (sBTC)' },
+];
+
+interface AssetItem {
+  id: string;
+  ledger: LedgerId;
+  name: string;
+  symbol: string;
+  kind: 'native' | 'token';
+  networkName: string;
+  testnetName: string;
+  badge: string;
+  decimals: number;
+  avatarBg?: string;
+  explorerUrl: string;
+}
+
+const ALL_ASSETS: AssetItem[] = [
+  {
+    id: 'ethereum-native',
+    ledger: 'ethereum',
+    name: 'Ethereum Sepolia',
+    symbol: 'ETH',
+    kind: 'native',
+    networkName: 'Ethereum',
+    testnetName: 'Sepolia',
+    badge: 'Sepolia',
+    decimals: 18,
+    explorerUrl: 'https://sepolia.etherscan.io',
+  },
+  {
+    id: 'ethereum-token',
+    ledger: 'ethereum',
+    name: 'TestToken (ERC-20)',
+    symbol: 'TST',
+    kind: 'token',
+    networkName: 'Ethereum',
+    testnetName: 'Sepolia',
+    badge: 'Sepolia ERC20',
+    decimals: 18,
+    avatarBg: 'linear-gradient(135deg, #FF9F43 0%, #FF6B6B 100%)',
+    explorerUrl: 'https://sepolia.etherscan.io',
+  },
+  {
+    id: 'polygon-native',
+    ledger: 'polygon',
+    name: 'Polygon Amoy',
+    symbol: 'POL',
+    kind: 'native',
+    networkName: 'Polygon',
+    testnetName: 'Amoy',
+    badge: 'Amoy',
+    decimals: 18,
+    avatarBg: 'linear-gradient(135deg, #8247E5 0%, #A855F7 100%)',
+    explorerUrl: 'https://amoy.polygonscan.com',
+  },
+  {
+    id: 'polygon-token',
+    ledger: 'polygon',
+    name: 'TestToken (Amoy)',
+    symbol: 'TST',
+    kind: 'token',
+    networkName: 'Polygon',
+    testnetName: 'Amoy',
+    badge: 'Amoy ERC20',
+    decimals: 18,
+    avatarBg: 'linear-gradient(135deg, #FF9F43 0%, #FF6B6B 100%)',
+    explorerUrl: 'https://amoy.polygonscan.com',
+  },
+  {
+    id: 'solana-native',
+    ledger: 'solana',
+    name: 'Solana Devnet',
+    symbol: 'SOL',
+    kind: 'native',
+    networkName: 'Solana',
+    testnetName: 'Devnet',
+    badge: 'Devnet',
+    decimals: 9,
+    avatarBg: 'linear-gradient(135deg, #14F195 0%, #9945FF 100%)',
+    explorerUrl: 'https://explorer.solana.com/?cluster=devnet',
+  },
+  {
+    id: 'xrpl-native',
+    ledger: 'xrpl',
+    name: 'XRPL Testnet',
+    symbol: 'XRP',
+    kind: 'native',
+    networkName: 'XRPL',
+    testnetName: 'Testnet',
+    badge: 'XRPL',
+    decimals: 6,
+    avatarBg: 'linear-gradient(135deg, #23292F 0%, #008CE7 100%)',
+    explorerUrl: 'https://testnet.xrpl.org',
+  },
+  {
+    id: 'bitcoin-native',
+    ledger: 'bitcoin',
+    name: 'Bitcoin Signet',
+    symbol: 'sBTC',
+    kind: 'native',
+    networkName: 'Bitcoin',
+    testnetName: 'Signet',
+    badge: 'Signet',
+    decimals: 8,
+    avatarBg: 'linear-gradient(135deg, #F7931A 0%, #FFA834 100%)',
+    explorerUrl: 'https://mempool.space/signet',
+  },
 ];
 
 export const App: React.FC = () => {
@@ -40,6 +149,7 @@ export const App: React.FC = () => {
     selectedLedger,
     activeAccountIndex,
     activeAccount,
+    accounts,
     setSelectedLedger,
     setActiveAccountIndex,
     lockSession,
@@ -52,42 +162,62 @@ export const App: React.FC = () => {
   const [isMintOpen, setIsMintOpen] = useState<boolean>(false);
   const [isSendOpen, setIsSendOpen] = useState<boolean>(false);
 
-  const [balance, setBalance] = useState<Balance | null>(null);
-  const [tokenBalance, setTokenBalance] = useState<Balance | null>(null);
+  // Target ledger/asset for modals
+  const [modalTargetLedger, setModalTargetLedger] = useState<LedgerId | undefined>(undefined);
+  const [modalTargetAsset, setModalTargetAsset] = useState<'native' | 'token'>('native');
+
+  const [portfolioBalances, setPortfolioBalances] = useState<Record<string, Balance | null>>({});
   const [loadingBalance, setLoadingBalance] = useState<boolean>(false);
   const [copiedAddr, setCopiedAddr] = useState<boolean>(false);
 
-  const currentNetwork = NETWORKS[selectedLedger];
-  const defaultToken = DEFAULT_TEST_TOKENS[selectedLedger];
-
-  const fetchBalance = useCallback(async () => {
-    if (!activeAccount) return;
+  const fetchAllBalances = useCallback(async () => {
+    if (!isUnlocked) return;
     setLoadingBalance(true);
-    try {
-      const adapter = getAdapter(selectedLedger);
-      // Fetch Native Balance
-      const bal = await adapter.getBalance(activeAccount.address, { kind: 'native' });
-      setBalance(bal);
 
-      // Fetch Token Balance if supported
-      if (defaultToken) {
-        const tBal = await adapter.getBalance(activeAccount.address, defaultToken);
-        setTokenBalance(tBal);
-      } else {
-        setTokenBalance(null);
+    try {
+      const promises = ACTIVE_LEDGERS.map(async (ledger) => {
+        const acc = accounts[ledger];
+        if (!acc) return null;
+        try {
+          const adapter = getAdapter(ledger);
+          const nativeBal = await adapter.getBalance(acc.address, { kind: 'native' });
+
+          let tokenBal: Balance | null = null;
+          const defToken = DEFAULT_TEST_TOKENS[ledger];
+          if (defToken) {
+            tokenBal = await adapter.getBalance(acc.address, defToken);
+          }
+          return { ledger, nativeBal, tokenBal };
+        } catch (err) {
+          console.warn(`Balance fetch warning for ${ledger}:`, err);
+          return null;
+        }
+      });
+
+      const settled = await Promise.all(promises);
+      const newBalances: Record<string, Balance | null> = {};
+
+      for (const res of settled) {
+        if (!res) continue;
+        newBalances[`${res.ledger}-native`] = res.nativeBal;
+        if (res.tokenBal !== null) {
+          newBalances[`${res.ledger}-token`] = res.tokenBal;
+        }
       }
+
+      setPortfolioBalances((prev) => ({ ...prev, ...newBalances }));
     } catch (err) {
-      console.warn('Failed to fetch balance:', err);
+      console.warn('Failed fetching balances:', err);
     } finally {
       setLoadingBalance(false);
     }
-  }, [activeAccount, selectedLedger, defaultToken]);
+  }, [isUnlocked, accounts]);
 
   useEffect(() => {
-    if (activeAccount) {
-      fetchBalance();
+    if (isUnlocked) {
+      fetchAllBalances();
     }
-  }, [activeAccount, fetchBalance]);
+  }, [isUnlocked, fetchAllBalances]);
 
   const handleCopyAddress = (addr: string) => {
     navigator.clipboard.writeText(addr);
@@ -100,6 +230,48 @@ export const App: React.FC = () => {
     return `${addr.slice(0, 8)}...${addr.slice(-6)}`;
   };
 
+  const handleOpenSendForAsset = (ledger: LedgerId, kind: 'native' | 'token') => {
+    setModalTargetLedger(ledger);
+    setModalTargetAsset(kind);
+    setIsSendOpen(true);
+  };
+
+  const handleOpenGeneralSend = () => {
+    setModalTargetLedger(selectedLedger !== 'all' ? selectedLedger : 'ethereum');
+    setModalTargetAsset('native');
+    setIsSendOpen(true);
+  };
+
+  const handleOpenGeneralFaucet = () => {
+    setModalTargetLedger(selectedLedger !== 'all' ? selectedLedger : 'solana');
+    setIsFaucetOpen(true);
+  };
+
+  const handleOpenGeneralReceive = () => {
+    setModalTargetLedger(selectedLedger !== 'all' ? selectedLedger : 'ethereum');
+    setIsReceiveOpen(true);
+  };
+
+  const handleOpenMint = () => {
+    setModalTargetLedger(selectedLedger === 'polygon' ? 'polygon' : 'ethereum');
+    setIsMintOpen(true);
+  };
+
+  // Filter assets based on selectedLedger
+  const filteredAssets = selectedLedger === 'all'
+    ? ALL_ASSETS
+    : ALL_ASSETS.filter((a) => a.ledger === selectedLedger);
+
+  // Account address to display in top pill
+  const displayedAddress = selectedLedger === 'all'
+    ? (accounts.ethereum?.address || activeAccount?.address || '')
+    : (accounts[selectedLedger]?.address || activeAccount?.address || '');
+
+  const singleChainNetwork = selectedLedger !== 'all' ? NETWORKS[selectedLedger] : null;
+  const singleChainNativeBalance = selectedLedger !== 'all'
+    ? portfolioBalances[`${selectedLedger}-native`]
+    : null;
+
   return (
     <div className="rabby-app-container">
       {/* Header Bar */}
@@ -108,9 +280,15 @@ export const App: React.FC = () => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <select
             value={selectedLedger}
-            onChange={(e) => setSelectedLedger(e.target.value as LedgerId)}
+            onChange={(e) => setSelectedLedger(e.target.value as ChainFilter)}
             className="rabby-network-badge"
-            style={{ appearance: 'none', WebkitAppearance: 'none', cursor: 'pointer', paddingRight: '28px', position: 'relative' }}
+            style={{
+              appearance: 'none',
+              WebkitAppearance: 'none',
+              cursor: 'pointer',
+              paddingRight: '28px',
+              position: 'relative',
+            }}
           >
             {SUPPORTED_LEDGERS.map((l) => (
               <option key={l.id} value={l.id} style={{ background: '#FFFFFF', color: '#0F172A' }}>
@@ -118,7 +296,10 @@ export const App: React.FC = () => {
               </option>
             ))}
           </select>
-          <div className="rabby-network-dot" title="Testnet Connected" />
+          <div
+            className="rabby-network-dot"
+            title={selectedLedger === 'all' ? 'All Testnets Connected (5 Chains)' : `${singleChainNetwork?.name} Testnet Connected`}
+          />
         </div>
 
         {/* Session Status Pill */}
@@ -126,7 +307,7 @@ export const App: React.FC = () => {
           <button
             className="rabby-session-btn active"
             onClick={lockSession}
-            title="Sesi aktif di memori browser. Klik untuk menghapus mnemonic dari memori (Lock)."
+            title="Sesi aktif di memori browser. Klik untuk menghapus frasa dari memori (Lock)."
           >
             <Unlock size={14} />
             <span>Active ({fingerprint})</span>
@@ -183,11 +364,21 @@ export const App: React.FC = () => {
           <div className="rabby-account-pill">
             <div className="rabby-account-info">
               <div className="rabby-account-name">
-                <span>Account #{activeAccountIndex}</span>
-                <span className="rabby-account-path">({activeAccount?.path})</span>
+                <span>
+                  Account #{activeAccountIndex}
+                  {selectedLedger === 'all' ? ' (Multi-Chain)' : ` • ${singleChainNetwork?.name}`}
+                </span>
+                <span className="rabby-account-path">
+                  ({selectedLedger === 'all' ? '5 Testnets' : accounts[selectedLedger]?.path})
+                </span>
               </div>
               <div className="rabby-account-addr">
-                {activeAccount ? truncateAddress(activeAccount.address) : 'Deriving...'}
+                {displayedAddress ? truncateAddress(displayedAddress) : 'Deriving...'}
+                {selectedLedger === 'all' && (
+                  <span style={{ fontSize: '11px', color: 'var(--text-dim)', marginLeft: '6px' }}>
+                    (EVM Primary)
+                  </span>
+                )}
               </div>
             </div>
 
@@ -203,7 +394,7 @@ export const App: React.FC = () => {
               <button
                 className="rabby-btn-secondary"
                 style={{ padding: '8px 10px' }}
-                onClick={() => activeAccount && handleCopyAddress(activeAccount.address)}
+                onClick={() => displayedAddress && handleCopyAddress(displayedAddress)}
                 title="Copy Address"
               >
                 {copiedAddr ? <Check size={14} color="var(--success)" /> : <Copy size={14} />}
@@ -213,40 +404,68 @@ export const App: React.FC = () => {
 
           {/* Hero Portfolio Card */}
           <div className="rabby-card rabby-hero-card">
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
-              <span className="rabby-hero-label">{currentNetwork.name} ({currentNetwork.testnetName})</span>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: '6px',
+                marginBottom: '6px',
+              }}
+            >
+              <span className="rabby-hero-label">
+                {selectedLedger === 'all'
+                  ? 'Multi-Chain Testnet Portfolio'
+                  : `${singleChainNetwork?.name} (${singleChainNetwork?.testnetName})`}
+              </span>
               <button
-                onClick={fetchBalance}
-                title="Refresh Saldo"
+                onClick={fetchAllBalances}
+                title="Refresh Seluruh Saldo"
                 style={{ color: 'var(--text-dim)', verticalAlign: 'middle', padding: '2px' }}
               >
-                <RefreshCw size={14} style={{ animation: loadingBalance ? 'spin 1s linear infinite' : 'none' }} />
+                <RefreshCw
+                  size={14}
+                  style={{ animation: loadingBalance ? 'spin 1s linear infinite' : 'none' }}
+                />
               </button>
             </div>
 
-            <div className="rabby-hero-balance">
-              <span>{balance ? balance.formatted : '0.00'}</span>
-              <span className="rabby-hero-symbol">{currentNetwork.nativeAsset.symbol}</span>
-            </div>
-            <div style={{ fontSize: '12px', color: 'var(--text-dim)' }}>
-              Testnet Balance (Auto-refreshed via RPC)
-            </div>
+            {selectedLedger === 'all' ? (
+              <>
+                <div className="rabby-hero-balance" style={{ fontSize: '24px' }}>
+                  <span>5 Active Testnets</span>
+                </div>
+                <div style={{ fontSize: '12px', color: 'var(--text-dim)', marginBottom: '4px' }}>
+                  Sepolia • Amoy • Solana Devnet • XRPL • BTC Signet
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="rabby-hero-balance">
+                  <span>{singleChainNativeBalance ? singleChainNativeBalance.formatted : '0.00'}</span>
+                  <span className="rabby-hero-symbol">{singleChainNetwork?.nativeAsset.symbol}</span>
+                </div>
+                <div style={{ fontSize: '12px', color: 'var(--text-dim)' }}>
+                  Testnet Balance (Auto-refreshed via RPC)
+                </div>
+              </>
+            )}
 
             {/* Rabby Squircles Action Bar */}
             <div className="rabby-actions-grid">
-              <button className="rabby-action-squircle" onClick={() => setIsSendOpen(true)}>
+              <button className="rabby-action-squircle" onClick={handleOpenGeneralSend}>
                 <Send className="rabby-action-icon" />
                 <span>Send</span>
               </button>
-              <button className="rabby-action-squircle" onClick={() => setIsFaucetOpen(true)}>
+              <button className="rabby-action-squircle" onClick={handleOpenGeneralFaucet}>
                 <Droplets className="rabby-action-icon" />
                 <span>Faucet</span>
               </button>
-              <button className="rabby-action-squircle" onClick={() => setIsMintOpen(true)}>
+              <button className="rabby-action-squircle" onClick={handleOpenMint}>
                 <Coins className="rabby-action-icon" />
                 <span>Mint TST</span>
               </button>
-              <button className="rabby-action-squircle" onClick={() => setIsReceiveOpen(true)}>
+              <button className="rabby-action-squircle" onClick={handleOpenGeneralReceive}>
                 <QrCode className="rabby-action-icon" />
                 <span>Receive</span>
               </button>
@@ -266,52 +485,100 @@ export const App: React.FC = () => {
 
           {/* Token List Card */}
           <div className="rabby-card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <div style={{ fontWeight: 700, fontSize: '15px' }}>Assets & Tokens</div>
-              <a
-                href={currentNetwork.explorerUrl}
-                target="_blank"
-                rel="noreferrer"
-                style={{ fontSize: '12px', color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '4px', textDecoration: 'none' }}
-              >
-                Explorer <ExternalLink size={12} />
-              </a>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '16px',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Layers size={16} color="var(--primary)" />
+                <span style={{ fontWeight: 700, fontSize: '15px' }}>
+                  {selectedLedger === 'all' ? 'All Chain Assets' : `${singleChainNetwork?.name} Assets`}
+                </span>
+                <span
+                  style={{
+                    fontSize: '11px',
+                    fontWeight: 700,
+                    color: 'var(--primary)',
+                    background: 'var(--primary-glow)',
+                    padding: '2px 8px',
+                    borderRadius: 'var(--radius-pill)',
+                  }}
+                >
+                  {filteredAssets.length}
+                </span>
+              </div>
+
+              {singleChainNetwork ? (
+                <a
+                  href={singleChainNetwork.explorerUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{
+                    fontSize: '12px',
+                    color: 'var(--primary)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    textDecoration: 'none',
+                  }}
+                >
+                  Explorer <ExternalLink size={12} />
+                </a>
+              ) : (
+                <span style={{ fontSize: '11px', color: 'var(--text-dim)' }}>
+                  Default Filter: All Chains
+                </span>
+              )}
             </div>
 
             <div className="rabby-token-list">
-              {/* Native Coin Row */}
-              <div className="rabby-token-item">
-                <div className="rabby-token-left">
-                  <div className="rabby-token-avatar">
-                    {currentNetwork.nativeAsset.symbol.slice(0, 2)}
-                  </div>
-                  <div>
-                    <div className="rabby-token-name">{currentNetwork.nativeAsset.symbol}</div>
-                    <div className="rabby-token-chain">Native Coin • {currentNetwork.name}</div>
-                  </div>
-                </div>
-                <div className="rabby-token-amount">
-                  {balance ? balance.formatted : '0.00'} {currentNetwork.nativeAsset.symbol}
-                </div>
-              </div>
+              {filteredAssets.map((asset) => {
+                const bal = portfolioBalances[asset.id];
+                return (
+                  <div key={asset.id} className="rabby-token-item">
+                    <div className="rabby-token-left">
+                      <div
+                        className="rabby-token-avatar"
+                        style={asset.avatarBg ? { background: asset.avatarBg } : undefined}
+                      >
+                        {asset.symbol.slice(0, 3)}
+                      </div>
+                      <div>
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                          }}
+                        >
+                          <span className="rabby-token-name">{asset.name}</span>
+                          <span className="rabby-chain-badge-tag">{asset.badge}</span>
+                        </div>
+                        <div className="rabby-token-chain">
+                          {asset.kind === 'native' ? 'Native Testnet Coin' : 'Custom Test Token'} • {asset.networkName}
+                        </div>
+                      </div>
+                    </div>
 
-              {/* Test Token Row */}
-              {defaultToken && (
-                <div className="rabby-token-item">
-                  <div className="rabby-token-left">
-                    <div className="rabby-token-avatar" style={{ background: 'linear-gradient(135deg, #FF9F43 0%, #FF6B6B 100%)' }}>
-                      TST
-                    </div>
-                    <div>
-                      <div className="rabby-token-name">TestToken (TST)</div>
-                      <div className="rabby-token-chain">Custom Test Token • {defaultToken.decimals} Decimals</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <div className="rabby-token-amount">
+                        {bal ? bal.formatted : '0.00'} {asset.symbol}
+                      </div>
+                      <button
+                        className="rabby-quick-send-btn"
+                        onClick={() => handleOpenSendForAsset(asset.ledger, asset.kind)}
+                        title={`Kirim ${asset.symbol} di ${asset.networkName}`}
+                      >
+                        <Send size={11} /> Send
+                      </button>
                     </div>
                   </div>
-                  <div className="rabby-token-amount">
-                    {tokenBalance ? tokenBalance.formatted : '0.00'} TST
-                  </div>
-                </div>
-              )}
+                );
+              })}
             </div>
           </div>
         </>
@@ -320,10 +587,30 @@ export const App: React.FC = () => {
       {/* Modals */}
       <QRGeneratorModal isOpen={isGeneratorOpen} onClose={() => setIsGeneratorOpen(false)} />
       <QRScannerModal isOpen={isScannerOpen} onClose={() => setIsScannerOpen(false)} />
-      <FaucetModal isOpen={isFaucetOpen} onClose={() => setIsFaucetOpen(false)} onSuccess={fetchBalance} />
-      <ReceiveModal isOpen={isReceiveOpen} onClose={() => setIsReceiveOpen(false)} />
-      <MintTokenModal isOpen={isMintOpen} onClose={() => setIsMintOpen(false)} onSuccess={fetchBalance} />
-      <SendModal isOpen={isSendOpen} onClose={() => setIsSendOpen(false)} onSuccess={fetchBalance} />
+      <FaucetModal
+        isOpen={isFaucetOpen}
+        onClose={() => setIsFaucetOpen(false)}
+        onSuccess={fetchAllBalances}
+        initialLedger={modalTargetLedger}
+      />
+      <ReceiveModal
+        isOpen={isReceiveOpen}
+        onClose={() => setIsReceiveOpen(false)}
+        initialLedger={modalTargetLedger}
+      />
+      <MintTokenModal
+        isOpen={isMintOpen}
+        onClose={() => setIsMintOpen(false)}
+        onSuccess={fetchAllBalances}
+        initialLedger={modalTargetLedger}
+      />
+      <SendModal
+        isOpen={isSendOpen}
+        onClose={() => setIsSendOpen(false)}
+        onSuccess={fetchAllBalances}
+        initialLedger={modalTargetLedger}
+        initialAsset={modalTargetAsset}
+      />
     </div>
   );
 };

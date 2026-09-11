@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { useSession } from '../context/SessionContext.js';
+import React, { useState, useEffect } from 'react';
+import { useSession, ACTIVE_LEDGERS } from '../context/SessionContext.js';
 import { NETWORKS } from '../../config/networks.js';
 import { getAdapter } from '../../core/registry.js';
 import { DEFAULT_TEST_TOKENS } from '../../config/tokens.js';
 import { parseAmount } from '../../core/amount.js';
 import { validateAddress } from '../../core/validate.js';
-import type { Asset, UnsignedTx } from '../../core/types.js';
+import type { Asset, UnsignedTx, LedgerId } from '../../core/types.js';
 import {
   X,
   Send,
@@ -23,15 +23,26 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  initialLedger?: LedgerId;
+  initialAsset?: 'native' | 'token';
 }
 
-export const SendModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
-  const { selectedLedger, activeAccount, recipientAccount } = useSession();
+export const SendModal: React.FC<Props> = ({
+  isOpen,
+  onClose,
+  onSuccess,
+  initialLedger,
+  initialAsset = 'native',
+}) => {
+  const { selectedLedger, accounts, recipientAccounts } = useSession();
 
+  const [targetLedger, setTargetLedger] = useState<LedgerId>(
+    initialLedger || (selectedLedger !== 'all' ? selectedLedger : 'ethereum')
+  );
   const [step, setStep] = useState<'form' | 'simulate' | 'submitting' | 'confirmed'>('form');
-  const [assetType, setAssetType] = useState<'native' | 'token'>('token');
+  const [assetType, setAssetType] = useState<'native' | 'token'>(initialAsset);
   const [recipient, setRecipient] = useState<string>('');
-  const [amountStr, setAmountStr] = useState<string>('10');
+  const [amountStr, setAmountStr] = useState<string>('1');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   // Simulation preview state
@@ -39,14 +50,37 @@ export const SendModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
   const [txHash, setTxHash] = useState<string | null>(null);
   const [loadingSim, setLoadingSim] = useState<boolean>(false);
 
-  if (!isOpen || !activeAccount) return null;
+  useEffect(() => {
+    if (initialLedger) {
+      setTargetLedger(initialLedger);
+    } else if (selectedLedger !== 'all') {
+      setTargetLedger(selectedLedger);
+    }
+  }, [initialLedger, selectedLedger]);
 
-  const currentNetwork = NETWORKS[selectedLedger];
-  const defaultToken = DEFAULT_TEST_TOKENS[selectedLedger];
+  useEffect(() => {
+    if (initialAsset) {
+      setAssetType(initialAsset);
+    }
+  }, [initialAsset]);
+
+  const currentAccount = accounts[targetLedger];
+  const currentRecipient = recipientAccounts[targetLedger];
+  const currentNetwork = NETWORKS[targetLedger];
+  const defaultToken = DEFAULT_TEST_TOKENS[targetLedger];
+
+  // If switched to a ledger that has no defaultToken, force native asset
+  useEffect(() => {
+    if (!defaultToken && assetType === 'token') {
+      setAssetType('native');
+    }
+  }, [targetLedger, defaultToken, assetType]);
+
+  if (!isOpen || !currentAccount) return null;
 
   const handleSelectQuickRecipient = () => {
-    if (recipientAccount) {
-      setRecipient(recipientAccount.address);
+    if (currentRecipient) {
+      setRecipient(currentRecipient.address);
     }
   };
 
@@ -59,7 +93,7 @@ export const SendModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
       return;
     }
 
-    const valResult = validateAddress(selectedLedger, recipient.trim());
+    const valResult = validateAddress(targetLedger, recipient.trim());
     if (!valResult.valid) {
       setErrorMsg(valResult.error || 'Address penerima tidak valid.');
       return;
@@ -93,9 +127,9 @@ export const SendModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
 
     setLoadingSim(true);
     try {
-      const adapter = getAdapter(selectedLedger);
+      const adapter = getAdapter(targetLedger);
       const tx = await adapter.buildTransfer({
-        from: activeAccount,
+        from: currentAccount,
         to: recipient.trim(),
         asset,
         amount: parsedBigInt,
@@ -112,15 +146,15 @@ export const SendModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
   };
 
   const handleSignAndSubmit = async () => {
-    if (!unsignedTx || !activeAccount.privateKey) return;
+    if (!unsignedTx || !currentAccount.privateKey) return;
 
     setStep('submitting');
     setErrorMsg(null);
 
     try {
-      const adapter = getAdapter(selectedLedger);
+      const adapter = getAdapter(targetLedger);
       // Step 1: Sign in-memory (offline)
-      const signed = await adapter.sign(unsignedTx, activeAccount.privateKey);
+      const signed = await adapter.sign(unsignedTx, currentAccount.privateKey);
       // Step 2: Broadcast to testnet
       const { hash } = await adapter.broadcast(signed);
       setTxHash(hash);
@@ -144,6 +178,7 @@ export const SendModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
   const getAssetSymbol = () => {
     return assetType === 'native' ? currentNetwork.nativeAsset.symbol : (defaultToken?.symbol || 'TST');
   };
+
 
   return (
     <div className="rabby-modal-overlay">
@@ -170,15 +205,37 @@ export const SendModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
         {/* STEP 1: FORM INPUT */}
         {step === 'form' && (
           <form onSubmit={handleSimulate}>
+            {/* Chain Selector Tabs */}
+            <div className="rabby-chain-tabs">
+              {ACTIVE_LEDGERS.map((ledger) => (
+                <button
+                  key={ledger}
+                  type="button"
+                  className={`rabby-chain-tab ${targetLedger === ledger ? 'active' : ''}`}
+                  onClick={() => {
+                    setTargetLedger(ledger);
+                    setErrorMsg(null);
+                    if (!DEFAULT_TEST_TOKENS[ledger]) {
+                      setAssetType('native');
+                    }
+                  }}
+                >
+                  {NETWORKS[ledger].nativeAsset.symbol} ({NETWORKS[ledger].testnetName})
+                </button>
+              ))}
+            </div>
+
             {/* Asset Selector Tabs */}
             <div className="rabby-tabs">
-              <button
-                type="button"
-                className={`rabby-tab-btn ${assetType === 'token' ? 'active' : ''}`}
-                onClick={() => setAssetType('token')}
-              >
-                Test Token (TST)
-              </button>
+              {defaultToken && (
+                <button
+                  type="button"
+                  className={`rabby-tab-btn ${assetType === 'token' ? 'active' : ''}`}
+                  onClick={() => setAssetType('token')}
+                >
+                  Test Token ({defaultToken.symbol})
+                </button>
+              )}
               <button
                 type="button"
                 className={`rabby-tab-btn ${assetType === 'native' ? 'active' : ''}`}
@@ -192,7 +249,7 @@ export const SendModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
             <div style={{ marginBottom: '14px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                 <label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-muted)' }}>Penerima</label>
-                {recipientAccount && (
+                {currentRecipient && (
                   <button
                     type="button"
                     onClick={handleSelectQuickRecipient}
@@ -228,7 +285,7 @@ export const SendModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
               </label>
               <input
                 type="text"
-                placeholder="10.0"
+                placeholder="1.0"
                 value={amountStr}
                 onChange={(e) => setAmountStr(e.target.value)}
                 style={{
@@ -299,12 +356,13 @@ export const SendModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}>
                   <ArrowUpRight size={16} color="var(--danger)" />
-                  <span style={{ color: 'var(--text-main)', fontWeight: 600 }}>Akun #{activeAccount.index} (Pengirim)</span>
+                  <span style={{ color: 'var(--text-main)', fontWeight: 600 }}>Akun #{currentAccount.index} (Pengirim)</span>
                 </div>
                 <div style={{ color: 'var(--danger)', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
                   -{amountStr} {getAssetSymbol()}
                 </div>
               </div>
+
 
               {/* Recipient change */}
               <div

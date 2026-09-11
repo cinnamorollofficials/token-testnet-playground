@@ -1,33 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSession } from '../context/SessionContext.js';
 import { NETWORKS } from '../../config/networks.js';
 import { TEST_TOKEN_ABI, TEST_TOKEN_BYTECODE } from '../../contracts/TestTokenArtifact.js';
 import { ContractFactory, Contract, JsonRpcProvider, Wallet } from 'ethers';
+import type { LedgerId } from '../../core/types.js';
 import { X, Coins, Sparkles, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  initialLedger?: LedgerId;
 }
 
-export const MintTokenModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
-  const { selectedLedger, activeAccount } = useSession();
+export const MintTokenModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, initialLedger }) => {
+  const { selectedLedger, accounts } = useSession();
+  const [targetLedger, setTargetLedger] = useState<'ethereum' | 'polygon'>('ethereum');
   const [loading, setLoading] = useState<boolean>(false);
   const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error'; text: string; hash?: string } | null>(null);
   const [deployedContractAddr, setDeployedContractAddr] = useState<string>('');
 
-  if (!isOpen || !activeAccount) return null;
+  useEffect(() => {
+    if (initialLedger === 'polygon' || selectedLedger === 'polygon') {
+      setTargetLedger('polygon');
+    } else {
+      setTargetLedger('ethereum');
+    }
+  }, [initialLedger, selectedLedger]);
 
-  const currentNetwork = NETWORKS[selectedLedger];
+  const currentAccount = accounts[targetLedger];
+  const currentNetwork = NETWORKS[targetLedger];
+
+  if (!isOpen || !currentAccount) return null;
 
   const handleDeployEVM = async () => {
-    if (selectedLedger !== 'ethereum' && selectedLedger !== 'polygon') {
-      setStatusMsg({ type: 'error', text: 'Fitur deploy ERC-20 hanya untuk Ethereum Sepolia atau Polygon Amoy.' });
-      return;
-    }
-
-    if (!activeAccount.privateKey) {
+    if (!currentAccount.privateKey) {
       setStatusMsg({ type: 'error', text: 'Private key tidak ditemukan di sesi memori.' });
       return;
     }
@@ -37,7 +44,7 @@ export const MintTokenModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) 
 
     try {
       const provider = new JsonRpcProvider(currentNetwork.rpcUrl);
-      const wallet = new Wallet(activeAccount.privateKey, provider);
+      const wallet = new Wallet(currentAccount.privateKey, provider);
       const factory = new ContractFactory(TEST_TOKEN_ABI, TEST_TOKEN_BYTECODE, wallet);
 
       const contract = await factory.deploy();
@@ -62,23 +69,23 @@ export const MintTokenModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) 
   };
 
   const handleMintEVM = async () => {
-    if (!activeAccount.privateKey) return;
+    if (!currentAccount.privateKey) return;
     setLoading(true);
     setStatusMsg(null);
 
     try {
       const targetContract = deployedContractAddr || '0x3865296839352c86E8EbFfaA427845f2E0Eea046';
       const provider = new JsonRpcProvider(currentNetwork.rpcUrl);
-      const wallet = new Wallet(activeAccount.privateKey, provider);
+      const wallet = new Wallet(currentAccount.privateKey, provider);
       const contract = new Contract(targetContract, TEST_TOKEN_ABI, wallet);
 
       const mintAmount = 1000n * 10n ** 18n; // 1,000 TST
-      const tx = await contract.mint(activeAccount.address, mintAmount);
+      const tx = await contract.mint(currentAccount.address, mintAmount);
       await tx.wait(1);
 
       setStatusMsg({
         type: 'success',
-        text: `Berhasil mint 1,000 TST ke akun #${activeAccount.index}!`,
+        text: `Berhasil mint 1,000 TST ke akun #${currentAccount.index} di ${currentNetwork.name}!`,
         hash: tx.hash,
       });
       onSuccess();
@@ -106,8 +113,32 @@ export const MintTokenModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) 
           </button>
         </div>
 
+        {/* EVM Chain tabs */}
+        <div className="rabby-chain-tabs">
+          <button
+            type="button"
+            className={`rabby-chain-tab ${targetLedger === 'ethereum' ? 'active' : ''}`}
+            onClick={() => {
+              setTargetLedger('ethereum');
+              setStatusMsg(null);
+            }}
+          >
+            Ethereum Sepolia (ETH)
+          </button>
+          <button
+            type="button"
+            className={`rabby-chain-tab ${targetLedger === 'polygon' ? 'active' : ''}`}
+            onClick={() => {
+              setTargetLedger('polygon');
+              setStatusMsg(null);
+            }}
+          >
+            Polygon Amoy (POL)
+          </button>
+        </div>
+
         <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '16px', lineHeight: '1.5' }}>
-          Buat supply token uji <strong>TestToken (TST)</strong> sendiri di jaringan <strong>{currentNetwork.name}</strong> tanpa batas untuk keperluan pengetesan transaksi.
+          Buat supply token uji <strong>TestToken (TST)</strong> sendiri di jaringan <strong>{currentNetwork.name} ({currentNetwork.testnetName})</strong> tanpa batas untuk keperluan pengetesan transaksi.
         </p>
 
         {statusMsg && (
@@ -150,18 +181,17 @@ export const MintTokenModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) 
               </>
             ) : (
               <>
-                <Sparkles size={16} /> Mint 1,000 TST ke Akun Ini
+                <Sparkles size={16} /> Mint 1,000 TST di {currentNetwork.name}
               </>
             )}
           </button>
 
-          {(selectedLedger === 'ethereum' || selectedLedger === 'polygon') && (
-            <button className="rabby-btn-secondary" onClick={handleDeployEVM} disabled={loading}>
-              Deploy Kontrak Baru TestToken.sol
-            </button>
-          )}
+          <button className="rabby-btn-secondary" onClick={handleDeployEVM} disabled={loading}>
+            Deploy Kontrak Baru TestToken.sol di {currentNetwork.name}
+          </button>
         </div>
       </div>
     </div>
   );
 };
+

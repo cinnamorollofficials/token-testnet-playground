@@ -1,25 +1,39 @@
 import React, { useEffect, useRef, useState } from 'react';
 import QRCode from 'qrcode';
-import { useSession } from '../context/SessionContext.js';
+import { useSession, ACTIVE_LEDGERS } from '../context/SessionContext.js';
 import { NETWORKS } from '../../config/networks.js';
+import type { LedgerId } from '../../core/types.js';
 import { X, QrCode, Copy, Check } from 'lucide-react';
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  initialLedger?: LedgerId;
 }
 
-export const ReceiveModal: React.FC<Props> = ({ isOpen, onClose }) => {
-  const { selectedLedger, activeAccount } = useSession();
+export const ReceiveModal: React.FC<Props> = ({ isOpen, onClose, initialLedger }) => {
+  const { selectedLedger, accounts } = useSession();
+  const [targetLedger, setTargetLedger] = useState<LedgerId>(
+    initialLedger || (selectedLedger !== 'all' ? selectedLedger : 'ethereum')
+  );
   const [copied, setCopied] = useState<boolean>(false);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  const currentNetwork = NETWORKS[selectedLedger];
+  useEffect(() => {
+    if (initialLedger) {
+      setTargetLedger(initialLedger);
+    } else if (selectedLedger !== 'all') {
+      setTargetLedger(selectedLedger);
+    }
+  }, [initialLedger, selectedLedger]);
+
+  const currentAccount = accounts[targetLedger];
+  const currentNetwork = NETWORKS[targetLedger];
 
   useEffect(() => {
-    if (isOpen && activeAccount && canvasRef.current) {
-      QRCode.toCanvas(canvasRef.current, activeAccount.address, {
-        width: 220,
+    if (isOpen && currentAccount && canvasRef.current) {
+      QRCode.toCanvas(canvasRef.current, currentAccount.address, {
+        width: 200,
         margin: 2,
         color: {
           dark: '#0C0D14',
@@ -27,12 +41,12 @@ export const ReceiveModal: React.FC<Props> = ({ isOpen, onClose }) => {
         },
       });
     }
-  }, [isOpen, activeAccount]);
+  }, [isOpen, currentAccount, targetLedger]);
 
-  if (!isOpen || !activeAccount) return null;
+  if (!isOpen || !currentAccount) return null;
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(activeAccount.address);
+    navigator.clipboard.writeText(currentAccount.address);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -43,11 +57,28 @@ export const ReceiveModal: React.FC<Props> = ({ isOpen, onClose }) => {
         <div className="rabby-modal-header">
           <div className="rabby-modal-title">
             <QrCode className="rabby-shield-icon" size={22} />
-            Receive {currentNetwork.nativeAsset.symbol} ({currentNetwork.name})
+            Receive Asset ({currentNetwork.nativeAsset.symbol})
           </div>
           <button className="rabby-close-btn" onClick={onClose}>
             <X size={20} />
           </button>
+        </div>
+
+        {/* Chain selector tabs */}
+        <div className="rabby-chain-tabs">
+          {ACTIVE_LEDGERS.map((ledger) => (
+            <button
+              key={ledger}
+              type="button"
+              className={`rabby-chain-tab ${targetLedger === ledger ? 'active' : ''}`}
+              onClick={() => {
+                setTargetLedger(ledger);
+                setCopied(false);
+              }}
+            >
+              {NETWORKS[ledger].nativeAsset.symbol} ({NETWORKS[ledger].testnetName})
+            </button>
+          ))}
         </div>
 
         <div className="rabby-qr-box">
@@ -55,7 +86,7 @@ export const ReceiveModal: React.FC<Props> = ({ isOpen, onClose }) => {
         </div>
 
         <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '8px' }}>
-          Derivation Path: <span style={{ fontFamily: 'var(--font-mono)' }}>{activeAccount.path}</span>
+          Jaringan: <strong>{currentNetwork.name} ({currentNetwork.testnetName})</strong> • Path: <span style={{ fontFamily: 'var(--font-mono)' }}>{currentAccount.path}</span>
         </div>
 
         <div
@@ -71,14 +102,15 @@ export const ReceiveModal: React.FC<Props> = ({ isOpen, onClose }) => {
             color: 'var(--text-main)',
           }}
         >
-          {activeAccount.address}
+          {currentAccount.address}
         </div>
 
         <button className="rabby-btn-primary" onClick={handleCopy}>
           {copied ? <Check size={16} /> : <Copy size={16} />}
-          {copied ? 'Address Tersalin!' : 'Salin Address'}
+          {copied ? 'Address Tersalin!' : `Salin Address ${currentNetwork.nativeAsset.symbol}`}
         </button>
       </div>
     </div>
   );
 };
+

@@ -1,29 +1,43 @@
-import React, { useState } from 'react';
-import { useSession } from '../context/SessionContext.js';
+import React, { useState, useEffect } from 'react';
+import { useSession, ACTIVE_LEDGERS } from '../context/SessionContext.js';
 import { NETWORKS } from '../../config/networks.js';
 import { getAdapter } from '../../core/registry.js';
 import type { SolanaAdapter } from '../../adapters/solana.js';
 import type { XRPLAdapter } from '../../adapters/xrpl.js';
+import type { LedgerId } from '../../core/types.js';
 import { X, Droplets, ExternalLink, Copy, Check, Sparkles, Loader2 } from 'lucide-react';
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  initialLedger?: LedgerId;
 }
 
-export const FaucetModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
-  const { selectedLedger, activeAccount } = useSession();
+export const FaucetModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, initialLedger }) => {
+  const { selectedLedger, accounts } = useSession();
+  const [targetLedger, setTargetLedger] = useState<LedgerId>(
+    initialLedger || (selectedLedger !== 'all' ? selectedLedger : 'ethereum')
+  );
   const [loading, setLoading] = useState<boolean>(false);
   const [resultMsg, setResultMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [copied, setCopied] = useState<boolean>(false);
 
-  if (!isOpen || !activeAccount) return null;
+  useEffect(() => {
+    if (initialLedger) {
+      setTargetLedger(initialLedger);
+    } else if (selectedLedger !== 'all') {
+      setTargetLedger(selectedLedger);
+    }
+  }, [initialLedger, selectedLedger]);
 
-  const currentNetwork = NETWORKS[selectedLedger];
+  const currentAccount = accounts[targetLedger];
+  const currentNetwork = NETWORKS[targetLedger];
+
+  if (!isOpen || !currentAccount) return null;
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(activeAccount.address);
+    navigator.clipboard.writeText(currentAccount.address);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -33,17 +47,17 @@ export const FaucetModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => 
     setResultMsg(null);
 
     try {
-      if (selectedLedger === 'solana') {
+      if (targetLedger === 'solana') {
         const solanaAdapter = getAdapter('solana') as SolanaAdapter;
-        const sig = await solanaAdapter.requestAirdrop(activeAccount.address, 1);
+        const sig = await solanaAdapter.requestAirdrop(currentAccount.address, 1);
         setResultMsg({
           type: 'success',
           text: `Airdrop 1 SOL berhasil! Signature: ${sig.slice(0, 16)}...`,
         });
         onSuccess();
-      } else if (selectedLedger === 'xrpl') {
+      } else if (targetLedger === 'xrpl') {
         const xrplAdapter = getAdapter('xrpl') as XRPLAdapter;
-        const res = await xrplAdapter.fundWallet(activeAccount);
+        const res = await xrplAdapter.fundWallet(currentAccount);
         setResultMsg({
           type: 'success',
           text: `Dompet XRPL berhasil didanai! Saldo: ${res.balance} XRP`,
@@ -74,11 +88,33 @@ export const FaucetModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => 
           </button>
         </div>
 
+        {/* Chain selector tabs */}
+        <div className="rabby-chain-tabs">
+          {ACTIVE_LEDGERS.map((ledger) => (
+            <button
+              key={ledger}
+              type="button"
+              className={`rabby-chain-tab ${targetLedger === ledger ? 'active' : ''}`}
+              onClick={() => {
+                setTargetLedger(ledger);
+                setResultMsg(null);
+                setCopied(false);
+              }}
+            >
+              {NETWORKS[ledger].nativeAsset.symbol} ({NETWORKS[ledger].testnetName})
+            </button>
+          ))}
+        </div>
+
         {/* Address info */}
         <div className="rabby-account-pill" style={{ marginBottom: '16px' }}>
           <div className="rabby-account-info">
-            <div className="rabby-account-name">Target Address (Account #{activeAccount.index})</div>
-            <div className="rabby-account-addr" style={{ fontSize: '12px' }}>{activeAccount.address}</div>
+            <div className="rabby-account-name">
+              Target Address (Account #{currentAccount.index} • {currentNetwork.name})
+            </div>
+            <div className="rabby-account-addr" style={{ fontSize: '12px' }}>
+              {currentAccount.address}
+            </div>
           </div>
           <button className="rabby-btn-secondary" style={{ padding: '6px 10px' }} onClick={handleCopy}>
             {copied ? <Check size={14} color="var(--success)" /> : <Copy size={14} />}
@@ -118,7 +154,7 @@ export const FaucetModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => 
                 </>
               ) : (
                 <>
-                  <Sparkles size={16} /> Klaim Faucet Otomatis ({selectedLedger === 'solana' ? '1 SOL' : 'Test XRP'})
+                  <Sparkles size={16} /> Klaim Faucet Otomatis ({targetLedger === 'solana' ? '1 SOL' : 'Test XRP'})
                 </>
               )}
             </button>
@@ -141,7 +177,7 @@ export const FaucetModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => 
 
             <button className="rabby-btn-secondary" onClick={handleCopy}>
               {copied ? <Check size={16} color="var(--success)" /> : <Copy size={16} />}
-              {copied ? 'Address Berhasil Dicopy!' : 'Copy Address Anda untuk di-paste di Faucet'}
+              {copied ? 'Address Berhasil Dicopy!' : `Copy Address ${currentNetwork.nativeAsset.symbol} untuk di-paste di Faucet`}
             </button>
           </div>
         )}
@@ -149,3 +185,4 @@ export const FaucetModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => 
     </div>
   );
 };
+
