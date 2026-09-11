@@ -1,188 +1,168 @@
-# TODO — Token Testing & Faucet Playground
+# TODO — Token Testing & Faucet Playground (Web UI Primary)
 
-Turunan dari [PLAN.md](PLAN.md). Urutan dari atas ke bawah; jangan lompat fase.
+**Goal Utama:** Transaksi kirim aset melalui **Web UI**. CLI menjadi opsi kedua (secondary).
+**Keamanan Mnemonic:** Mnemonic **hanya di-load di runtime** (in-memory session). Mnemonic di-generate bersama QR code (untuk difoto/disimpan), dan di-load via Scan QR (kamera/file) saat aplikasi dijalankan.
 
-Legenda: `👤` = butuh kamu (manual, tidak bisa saya kerjakan sendiri) · `🌐` = butuh network · sisanya offline.
-
----
-
-## Fase 0 — Scaffold (≈1 jam)
-
-- [ ] `git init` (direktori ini belum repo git)
-- [ ] `npm init -y`, set `"type": "module"`, Node 22+
-- [ ] Install runtime deps: `@scure/bip39@2.4.0` `@scure/bip32@2.4.0` `micro-key-producer@0.10.2` `@scure/btc-signer@2.4.1` `ethers@6.17.0` `@solana/web3.js@1.99.0` `@solana/spl-token@0.4.15` `xrpl@5.1.0` `commander` `dotenv`
-- [ ] Install dev deps: `typescript` `@types/node` `vitest` `oxlint`
-- [ ] `tsconfig.json` — strict, ESM, target ES2023, `moduleResolution: bundler`
-- [ ] Salin `.oxlintrc.json` dari `tennet-custody-v4/portal` biar konsisten
-- [ ] `.gitignore` — `node_modules/`, `.env`, `*.key`, `keys/`, `dist/`
-- [ ] `.env.example` — `MNEMONIC=`, RPC URL per chain (kosong = pakai default publik)
-- [ ] Script npm: `build`, `test`, `lint`, `pg` (entry CLI)
-- [ ] `src/core/types.ts` — `LedgerId`, `Account`, `Asset`, `UnsignedTx`, `SignedTx`, `Balance`, `TxStatus`
-- [ ] `src/config/networks.ts` — RPC, explorer, faucet, chainId per ledger
-- [ ] `assertTestnet()` + **allowlist chainId** (11155111, 80002, solana-devnet, xrpl-testnet, btc-signet)
-- [ ] **Gate:** `npm run build` & `npm test` hijau
+Legenda: `👤` = butuh tindakan manual user · `🌐` = butuh network/testnet RPC · sisanya offline.
 
 ---
 
-## Fase 1 — Seed & address (offline) — GATE PALING PENTING (≈0.5 hari)
+## Fase 0 — Scaffold (Selesai ✅)
 
-### Core
-- [ ] `src/core/mnemonic.ts` — `generate(words: 12|24)`, `validate()`, `toSeed()` (passphrase kosong)
-- [ ] `seed info` cetak **fingerprint**, jangan pernah cetak mnemonic-nya
-- [ ] `src/core/amount.ts` — `parseAmount`/`formatAmount` pakai `bigint`; **dilarang `number`**
-- [ ] `src/core/derive.ts` — dua jalur: BIP-32 (secp256k1) & SLIP-0010 (ed25519)
-- [ ] `src/core/registry.ts` — map `LedgerId` → adapter
-
-### Derivasi per ledger (ikut Path Registry §1a)
-- [ ] Ethereum — `m/44'/60'/0'/0/{i}` → address EIP-55 checksummed
-- [ ] Polygon — path & address sama persis dengan Ethereum (verifikasi memang identik)
-- [ ] Solana — SLIP-0010 ed25519, `m/44'/501'/{i}'/0'`, **all-hardened**, address base58
-- [ ] XRPL — `m/44'/144'/0'/0/{i}`, secp256k1, **encoding di-set eksplisit `bip39`**, classic address `r…`
-- [ ] Bitcoin — BIP-84 `m/84'/1'/0'/0/{i}`, bech32 `tb1q…` (signet)
-
-### CLI
-- [ ] `pg seed new [--words 12|24]` + banner peringatan "TESTNET ONLY"
-- [ ] `pg seed info`
-- [ ] `pg address --ledger all|<id> --index <n>` → tabel **ledger / path / address** (path wajib tercetak)
-
-### Verifikasi
-- [ ] `test/vectors.test.ts` — mnemonic standar `abandon abandon … about`, snapshot address 5 ledger
-- [ ] Test: mnemonic invalid (checksum salah) ditolak
-- [ ] Test: index 0 vs 1 menghasilkan address berbeda di semua ledger
-- [ ] Test: path Solana all-hardened — `0'/0` (salah) ≠ `0'/0'` (benar)
-- [ ] 👤 Cross-check MetaMask — address `0x…` cocok, dan sama untuk Ethereum & Polygon
-- [ ] 👤 Cross-check Phantom — address Solana account #1 cocok
-- [ ] 👤 Cross-check Sparrow (Native SegWit) — address `tb1q…` cocok
-- [ ] 👤 Cross-check XRPL tool / Ledger Live — classic address `r…` cocok
-- [ ] **Gate:** semua test vector hijau **dan** semua cross-check cocok → baru lanjut Fase 2
+- [x] `git init` (branch `dev`)
+- [x] `npm init -y`, set `"type": "module"`, Node 22+
+- [x] Install runtime deps: `@scure/bip39`, `@scure/bip32`, `micro-key-producer`, `@scure/btc-signer`, `ethers`, `@solana/web3.js`, `@solana/spl-token`, `xrpl`, `commander`, `dotenv`
+- [x] Install dev deps: `typescript`, `@types/node`, `vitest`, `oxlint`
+- [x] `tsconfig.json` — strict, ESM, target ES2023, `moduleResolution: bundler`
+- [x] `.oxlintrc.json` & `.gitignore`
+- [x] `.env.example`
+- [x] Script npm: `build`, `test`, `lint`, `pg`
+- [x] `src/core/types.ts` — `LedgerId`, `Account`, `Asset`, `UnsignedTx`, `SignedTx`, `Balance`, `TxStatus`
+- [x] `src/config/networks.ts` — RPC, explorer, faucet, chainId per ledger
+- [x] `assertTestnet()` + **allowlist chainId** (11155111, 80002, solana-devnet, xrpl-testnet, btc-signet)
+- [x] **Gate:** `npm run build` & `npm test` hijau
 
 ---
 
-## Fase 2 — Faucet native (≈0.5 hari) 🌐
+## Fase 1 — Seed, Derivasi Multi-Chain & Test Vectors (Selesai ✅)
 
-- [ ] `src/adapters/evm.ts` — `getBalance` native (config-driven: chainId/RPC/explorer sebagai data)
-- [ ] `src/adapters/solana.ts` — `getBalance` native
-- [ ] `src/adapters/xrpl.ts` — `getBalance` native + baca `reserve_base_xrp` dari `server_info`
-- [ ] `src/adapters/bitcoin.ts` — `getBalance` via Esplora/mempool.space (derive + balance saja)
-- [ ] `pg balance --ledger all` — saldo native semua address
-- [ ] `pg faucet --ledger solana` — otomatis via `requestAirdrop`
-- [ ] `pg faucet --ledger xrpl` — otomatis via `fundWallet` (langsung funded + reserve)
-- [ ] `pg faucet --ledger ethereum|polygon|bitcoin` — cetak link faucet + address siap copy
-- [ ] 👤 Klaim faucet manual: Sepolia (Google Cloud / Alchemy), Amoy (faucet.polygon.technology), signet
-- [ ] Retry + backoff untuk RPC publik (rate limit)
-- [ ] **Gate:** 5 address punya saldo native > 0
+- [x] `src/core/mnemonic.ts` — `generate()`, `validate()`, `toSeed()`, `getFingerprint()`
+- [x] `src/core/amount.ts` — `parseAmount`/`formatAmount` pakai `bigint` (dilarang `number`)
+- [x] `src/core/derive.ts` — BIP-32 (secp256k1) & SLIP-0010 (ed25519 all-hardened)
+- [x] `src/core/registry.ts` — adapter registry
+- [x] Derivasi 5 chain aktif: Ethereum, Polygon, Solana, XRPL, Bitcoin Signet
+- [x] CLI commands: `pg seed new`, `pg seed info`, `pg address --ledger all|<id> --index <n>`
+- [x] `test/vectors.test.ts` — deterministik test vectors mnemonic baku `abandon ... about`
+- [x] **Gate:** 16 unit tests hijau, linting bersih, commit per task rapi
 
 ---
 
-## Fase 3 — Bikin token test (≈1 hari) 🌐
+## Fase 2 — Web App Setup, QR Generator & Camera Scanner (Prioritas Utama 🚀)
 
-### EVM
-- [ ] `src/contracts/TestToken.sol` — ERC-20 minimal, 18 desimal, `mint(address,uint256)` terbuka
-- [ ] Compile (solc atau bytecode pre-compiled — hindari nambah toolchain berat)
-- [ ] `pg token deploy --ledger ethereum|polygon` → deploy, simpan address ke `config/tokens.ts`
-- [ ] `pg token mint --ledger ethereum|polygon --to <addr> --amount <n>`
+### Setup Frontend
+- [x] Setup Vite + React (TypeScript) untuk Web UI
+- [x] Konfigurasi Vite polyfills (`buffer`, `crypto`) agar library blockchain berjalan di browser
+- [x] Install library QR: `qrcode` (generate QR) & `html5-qrcode` (kamera & file scanner)
+- [x] In-Memory Session Store — state runtime saja; frasa hilang saat tab ditutup / di-lock
 
-### Solana
-- [ ] `pg token create --ledger solana` — `createMint`, decimals 6, mint authority = index 0
-- [ ] Buat ATA + `mintTo` → `pg token mint --ledger solana`
-
-### XRPL
-- [ ] `pg token setup --ledger xrpl` — index 0 = issuer, index 1 = holder
-- [ ] `pg trustline set` — holder → issuer, currency `TST`
-- [ ] `pg token mint --ledger xrpl` — issuer kirim `Payment` IOU ke holder
-
-### Umum
-- [ ] `config/tokens.ts` — registry token test (address/mint/issuer + decimals + symbol) per chain
-- [ ] `pg balance --ledger <id> --token TST` — saldo token
-- [ ] **Gate:** saldo token > 0 terbaca di 4 ledger
+### Komponen QR & Runtime Session
+- [x] **QR Generator Modal / View**: Tampilkan frasa 12/24 kata + render gambar QR Code + tombol "Download QR"
+- [x] **QR Scanner Modal**:
+  - Tab 1: Pemindai Kamera/Webcam (scan foto QR dari layar HP)
+  - Tab 2: Upload Gambar Foto QR (drag & drop file foto)
+  - Tab 3: Paste frasa manual
+- [x] **Header Bar & Status Sesi**: Indikator "Locked" / "Active (Fingerprint: ae0d...)" + tombol **"Lock / Clear Memory"**
+- [x] **Desain Terinspirasi Rabby Wallet UI** (Palet Rabby Blue `#705BFF`, Dark Slate `#13141E`, rounded squircles, kartu portfolio, badge security shield, simulasi pre-flight transaksi, Google Font Inter/Outfit)
+- [x] **Gate:** Generate seed -> Download/Foto QR -> Lock -> Scan QR via kamera/file -> Mnemonic ter-load di memori
 
 ---
 
-## Fase 4 — Transfer token antar address (≈1–2 hari) 🌐
+## Fase 3 — Web UI Dashboard: Multi-Chain Accounts, Faucet & Balance 🌐
 
-### Fondasi
-- [ ] Implement `buildTransfer` / `sign` / `broadcast` / `waitConfirm` terpisah di tiap adapter
-- [ ] `--dry-run` global — cetak unsigned tx + estimasi fee, **tidak** broadcast
-- [ ] Konfirmasi interaktif sebelum broadcast (kecuali `--yes`)
-- [ ] `explorerTx()` per ledger — cetak link setelah broadcast
+### Client-Side Adapters
+- [x] `src/adapters/evm.ts` — Browser JSON-RPC provider (Sepolia & Amoy)
+- [x] `src/adapters/solana.ts` — Browser Connection (Devnet)
+- [x] `src/adapters/xrpl.ts` — Browser WebSocket client (Testnet)
+- [x] `src/adapters/bitcoin.ts` — Fetch Esplora API (Signet)
 
-### EVM (kerjakan pertama — paling cepat menang)
-- [ ] `transfer(address,uint256)`, baca `decimals()`/`symbol()` on-chain
-- [ ] Fee EIP-1559 (`maxFeePerGas` / `maxPriorityFeePerGas`), `estimateGas` + buffer 20%
-- [ ] Pre-flight: saldo native cukup untuk gas? saldo token cukup?
-- [ ] Kelola nonce (pending vs latest)
-- [ ] Uji: Ethereum index 0 → 1, lalu Polygon index 0 → 1
-
-### XRPL
-- [ ] `Payment` dengan `{currency, issuer, value}` + `autofill`
-- [ ] Pre-flight: penerima punya trustline? reserve cukup?
-- [ ] Handle currency code 3-char vs 40-hex
-- [ ] Opsional: `DestinationTag`
-- [ ] Uji: index 0 → 1
-
-### Solana
-- [ ] Resolve ATA pengirim & penerima
-- [ ] Buat ATA penerima kalau belum ada — **tampilkan biaya rent ≈0.00204 SOL di preview**
-- [ ] Pakai `transferChecked` (bawa decimals → aman dari salah desimal)
-- [ ] Deteksi `TOKEN_PROGRAM_ID` vs `TOKEN_2022_PROGRAM_ID` dari owner akun mint
-- [ ] Priority fee via `ComputeBudget`
-- [ ] Retry saat blockhash expired (`lastValidBlockHeight`)
-- [ ] Uji: index 0 → 1
-
-### Bitcoin
-- [ ] `buildTransfer` dengan asset token → lempar `TokensNotSupported` (eksplisit, bukan diam-diam gagal)
-
-- [ ] **Gate:** transfer token index 0 → 1 sukses & terkonfirmasi di 4 ledger, link explorer tercetak
+### Komponen Dashboard
+- [x] **Chain Selector**: Dropdown / Tabs untuk berganti jaringan (Ethereum, Polygon, Solana, XRPL, Bitcoin)
+- [x] **Account Card**: Tampilkan address Index 0 (Utama) dan Index 1 (Penerima) + Derivation Path + tombol copy
+- [x] **Balance Card**: Tampilkan saldo Native Coin & Test Token (real-time refresh)
+- [x] **Integrated Faucet Card**:
+  - Tombol 1-klik `Airdrop SOL` (Devnet)
+  - Tombol 1-klik `Fund XRP` (Testnet)
+  - Tautan Faucet eksternal + tombol copy address untuk Sepolia ETH, Amoy POL, Signet sBTC
+- [x] **Gate:** Saldo native > 0 terbaca di dashboard Web UI untuk akun aktif
 
 ---
 
-## Fase 5 — Kekokohan (≈0.5 hari)
+## Fase 4 — Web UI Transaksi: Deploy/Mint Token & Kirim Aset (Goal Utama 🎯) 🌐
 
-### Validasi address penerima (cegah salah paste lintas chain)
-- [ ] EVM — checksum EIP-55
-- [ ] Bitcoin — bech32 + HRP `tb` (tolak address mainnet `bc1`)
-- [ ] Solana — base58, panjang 32 byte
-- [ ] XRPL — checksum classic address
-- [ ] Tolak address yang valid di chain lain tapi salah chain, dengan pesan jelas
+### Bikin Token Test via UI
+- [x] Tab/Modal **Token Creator**:
+  - EVM: Deploy kontrak ERC-20 `TestToken.sol` & minting
+  - Solana: Create SPL Mint & minting ke Associated Token Account (ATA)
+  - XRPL: Set Trustline (Holder Index 1 → Issuer Index 0) & Issue TST IOU
+- [x] Simpan registry token aktif di session storage / config
 
-### Keamanan
-- [ ] Mnemonic hanya dari `.env` / prompt — **tidak pernah** lewat argv (bocor ke shell history)
-- [ ] Redaksi otomatis mnemonic & private key di semua error handler / log
-- [ ] `assertTestnet()` dipanggil di **setiap** jalur broadcast
-- [ ] Banner peringatan di `seed new`
-
-### Operasional
-- [ ] `pg status --ledger <id> --hash <h>`
-- [ ] `waitConfirm` bertimeout + pesan jelas saat timeout
-
-### Uji negatif (semua harus error dengan pesan yang bisa dipahami)
-- [ ] Kirim ke address salah-chain
-- [ ] Saldo token kurang
-- [ ] Saldo native kurang untuk gas
-- [ ] XRPL tanpa trustline
-- [ ] Token ke Bitcoin
-- [ ] RPC mati / timeout
-- [ ] **Gate:** semua uji negatif lolos
+### Form Transaksi Kirim Aset (Send Asset)
+- [x] Pilihan Aset: Native Coin atau Test Token
+- [x] Pilihan Penerima: Quick-select "Akun Index 1 (Milik Sendiri)" atau input manual address lain
+- [x] Input Jumlah (Amount) dengan validasi presisi `bigint` + tombol "Max"
+- [x] Preview Biaya (Gas Fee, ATA Rent warning di Solana, Reserve requirement di XRPL)
+- [x] Tombol **Kirim & Tanda Tangan** (offline signing di memori browser -> broadcast ke testnet)
+- [x] Modal Konfirmasi Transaksi: Status Real-time (Pending → Confirmed) + Link ke Block Explorer
+- [x] **Gate:** Berhasil kirim token dari Index 0 ke Index 1 di 4 ledger via Web UI, tautan explorer terverifikasi
 
 ---
 
-## Dokumentasi
+## Fase 5 — CLI Parity (Opsi Kedua) & Kekokohan
 
-- [ ] `README.md` — setup, `.env`, daftar faucet, contoh sesi end-to-end
-- [ ] Catat address token test per chain + link explorer-nya
-- [ ] Catat hasil cross-check Fase 1 (wallet apa, address apa) sebagai bukti
-- [ ] Update `ledger.md` — tandai status tiap ledger
+- [x] CLI balance, faucet, dan send (dengan opsi `--dry-run` dan auto-resolve index penerima)
+- [x] Validasi format address ketat lintas chain (`validateAddress` mencegah salah kirim antar chain)
+- [x] Uji negatif di UI & CLI (saldo gas kurang, penerima salah format, RPC timeout)
+- [x] **Gate:** Semua uji negatif menampilkan notifikasi error yang ramah di UI
 
 ---
 
-## Ditunda (backlog, jangan dikerjakan sekarang)
+## Dokumentasi & Finalisasi
 
-- [ ] 👤 **Kaia — putuskan coin type** (≈10 menit): import mnemonic test ke Kaia Wallet, bandingkan address dengan address Ethereum. Sama → coin type 60; beda → 8217. Detail & opsi di [PLAN.md](PLAN.md) Lampiran A (rekomendasi: turunkan dua-duanya)
-- [ ] Kaia — aktifkan setelah diputuskan: tambah entri `config/networks.ts` (chainId 1001, RPC Kairos, KaiaScan) + path pilihan
-- [ ] Transfer BTC native — UTXO, coin selection, PSBT, fee sat/vB, change, dust limit
+- [x] `README.md` — setup & arsitektur awal
+- [x] Update `README.md` — panduan menjalankan Web UI (`npm run dev`), alur QR Scanner, dan transaksi aset
+- [x] Update `ledger.md` — status implementasi tiap chain
+- [x] Catat transaksi contoh (tx hash) di `walkthrough.md`
+
+---
+
+## Fase 6 — Web Extension Migration (Chrome / Brave Manifest V3) 🧩
+
+### 1. Bundler & Manifest Setup
+- [x] Install dependency: `@types/chrome` & exclude `vm` polyfill untuk pencegahan error `eval` CSP
+- [x] Buat file `manifest.json` (Manifest V3) di `public/manifest.json`:
+  - Action popup: `index.html`
+  - Side panel: `index.html` (Chrome 114+)
+  - Permissions: `["storage", "sidePanel"]`
+  - Host permissions: `["https://*/*", "wss://*/*"]` (untuk RPC EVM, Solana, XRPL WebSocket, Esplora API)
+  - Icons: siapkan aset icon ekstensi (16x16, 48x48, 128x128 di `public/icons`)
+- [x] Update `vite.config.ts`: Konfigurasi polyfill aman tanpa `eval` & build ekstensi
+- [x] Update `package.json`: Tambahkan script `npm run build:ext`
+
+### 2. Penyesuaian UI & Layout Extension
+- [x] Sesuaikan style container utama di `src/web/styles/rabby.css` agar pas di viewport popup (~400px x 600px)
+- [x] Pastikan modal (`MintTokenModal`, `FaucetModal`, `SendModal`, `QRGeneratorModal`, `QRScannerModal`) tidak overflow dan memiliki vertical scrolling yang rapi di dalam jendela popup
+- [x] Tambahkan tombol **"Expand to Tab"** (`chrome.tabs.create`) di header agar pengguna bisa membuka dashboard dalam mode layar penuh (full-tab) kapan saja
+
+### 3. Adaptasi Sesi Runtime (Mnemonic & Keamanan Memory)
+- [x] Integrasikan `chrome.storage.session` ke dalam `src/web/context/SessionContext.tsx`:
+  - Mnemonic disimpan di RAM browser runtime via `chrome.storage.session` agar tidak ter-reset saat jendela popup tertutup (unmount)
+  - Tetap mematuhi prinsip non-persistent di disk: sesi otomatis terhapus saat browser di-close
+- [x] Perbarui tombol **"Lock / Clear Memory"** agar seketika menghapus state React sekaligus membersihkan `chrome.storage.session`
+
+### 4. Kamera & Pemindai QR di Extension
+- [x] Evaluasi izin `getUserMedia` di popup:
+  - Sediakan tombol "Buka Scanner di Tab Penuh" (`index.html?action=scan`) agar scan webcam laptop bebas hambatan dialog izin browser
+  - Tab Upload Gambar QR dan Input Teks manual tetap aktif sebagai opsi utama
+
+### 5. Pengujian & Verifikasi
+- [x] Jalankan `npm run build:ext` dan pastikan build bersih tanpa peringatan CSP (Content Security Policy)
+- [x] Siapkan instruksi Load Unpacked di `chrome://extensions` pada browser Chrome / Brave
+- [x] Update `README.md` dengan panduan instalasi & pengujian Web Extension
+- [x] **Gate:**
+  - Verifikasi otomatis seluruh file bundle `dist/ext` (manifest.json, HTML popup, icons 16/48/128)
+  - Mnemonic persistence via `chrome.storage.session` (RAM runtime session)
+  - Responsiveness popup wallet viewport (~400px x 600px) & modal vertical scroll
+  - Tombol "Expand to Tab" & fallback scanner tab berfungsi
+  - Build dan linter 100% bersih, 22 unit tests passed hijau
+
+---
+
+## Ditunda (Backlog)
+
+- [ ] 👤 **Kaia — putuskan coin type** (coin type 60 vs 8217 di Kaia Wallet)
+- [ ] Transfer BTC native (UTXO / PSBT / Fee sat/vB)
 - [ ] Runes / BRC-20
-- [ ] UI web — Vite + React 19 + antd 6 + zustand, reuse `core` + `adapters`
-- [ ] Batch / sweep multi-index
-- [ ] Kaia fee delegation (`@kaiachain/ethers-ext`)
+- [ ] Batch / sweep multi-index transfer
+- [ ] Kaia fee delegation
 - [ ] EIP-2612 permit
-- [ ] Simulasi air-gapped — export unsigned JSON → sign di mesin lain → import signed
+
