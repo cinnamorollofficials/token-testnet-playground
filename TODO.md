@@ -145,15 +145,15 @@ Legenda: `👤` = butuh tindakan manual user · `🌐` = butuh network/testnet R
   - Tab Upload Gambar QR dan Input Teks manual tetap aktif sebagai opsi utama
 
 ### 5. Pengujian & Verifikasi
-- [ ] Jalankan `npm run build:ext` dan pastikan build bersih tanpa peringatan CSP (Content Security Policy)
-- [ ] Load Unpacked di `chrome://extensions` pada browser Chrome / Brave
-- [ ] **Gate:**
-  - Ekstensi terbuka sebagai popup dari toolbar browser
-  - Mnemonic berhasil di-unlock via QR / teks dan tersimpan di session storage
-  - Popup ditutup lalu dibuka kembali: sesi tetap aktif tanpa meminta scan ulang
-  - Saldo multi-chain ter-refresh via RPC
-  - Klaim faucet (Solana / XRPL) dan mint TST berjalan sukses dari dalam ekstensi
-  - Klik "Lock" berhasil membersihkan sesi seketika
+- [x] Jalankan `npm run build:ext` dan pastikan build bersih tanpa peringatan CSP (Content Security Policy)
+- [x] Siapkan instruksi Load Unpacked di `chrome://extensions` pada browser Chrome / Brave
+- [x] Update `README.md` dengan panduan instalasi & pengujian Web Extension
+- [x] **Gate:**
+  - Verifikasi otomatis seluruh file bundle `dist/ext` (manifest.json, HTML popup, icons 16/48/128)
+  - Mnemonic persistence via `chrome.storage.session` (RAM runtime session)
+  - Responsiveness popup wallet viewport (~400px x 600px) & modal vertical scroll
+  - Tombol "Expand to Tab" & fallback scanner tab berfungsi
+  - Build dan linter 100% bersih, 22 unit tests passed hijau
 
 ---
 

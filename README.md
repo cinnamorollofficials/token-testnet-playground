@@ -71,6 +71,30 @@ Buka browser di `http://localhost:3000`.
 
 ---
 
+## Menjalankan sebagai Web Extension (Chrome / Brave Manifest V3) 🧩
+
+Aplikasi ini dapat langsung dipasang sebagai **ekstensi browser** (popup toolbar atau side panel):
+
+```bash
+# 1. Build bundle ekstensi (output ke dist/ext)
+npm run build:ext
+```
+
+### Cara Memasang di Chrome / Brave:
+1. Buka `chrome://extensions/` (atau `brave://extensions/`) di browser Anda.
+2. Aktifkan sakelar **"Developer mode"** di pojok kanan atas.
+3. Klik tombol **"Load unpacked"** di pojok kiri atas.
+4. Pilih folder **`dist/ext`** dari repository ini.
+5. Selesai! Pin ikon **Token Testnet Playground** ke toolbar browser Anda.
+
+### Fitur di Lingkungan Ekstensi:
+* **Popup Viewport yang Pas**: Desain responsif otomatis menyesuaikan dimensi popup wallet (~400px x 600px).
+* **In-Memory Session Persistence (`chrome.storage.session`)**: Mnemonic sesi disimpan di RAM runtime browser selama browser dibuka, sehingga sesi tetap aktif saat popup ditutup dan dibuka kembali tanpa menyimpan plaintext di disk.
+* **Tombol Expand to Tab**: Klik ikon tautan eksternal di header kapan saja untuk membuka dashboard playground dalam mode tab penuh.
+* **Side Panel Ready**: Mendukung Chrome Side Panel API (`chrome.sidePanel`) untuk pengujian berdampingan dengan web dApp/explorer.
+
+---
+
 ## Menggunakan CLI (`pg`) (Secondary)
 
 CLI dapat digunakan jika Anda lebih menyukai antarmuka terminal:
