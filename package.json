@@ -10,6 +10,7 @@
     "dev": "vite",
     "build": "tsc",
     "build:web": "vite build",
+    "build:ext": "vite build --outDir dist/ext",
     "test": "vitest run",
     "lint": "oxlint",
     "pg": "node dist/index.js"
@@ -36,6 +37,7 @@
     "xrpl": "^5.1.0"
   },
   "devDependencies": {
+    "@types/chrome": "^0.2.9",
     "@types/node": "^22.20.2",
     "@types/qrcode": "^1.5.6",
     "@types/react": "^19.3.0",

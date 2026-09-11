@@ -118,15 +118,15 @@ Legenda: `👤` = butuh tindakan manual user · `🌐` = butuh network/testnet R
 ## Fase 6 — Web Extension Migration (Chrome / Brave Manifest V3) 🧩
 
 ### 1. Bundler & Manifest Setup
-- [ ] Install dependency: `@crxjs/vite-plugin` (atau sesuaikan multi-input Rollup di `vite.config.ts`)
-- [ ] Buat file `manifest.json` (Manifest V3):
+- [x] Install dependency: `@types/chrome` & exclude `vm` polyfill untuk pencegahan error `eval` CSP
+- [x] Buat file `manifest.json` (Manifest V3) di `public/manifest.json`:
   - Action popup: `index.html`
-  - Side panel: `index.html` (opsional untuk Chrome 114+)
-  - Permissions: `["storage"]` (dan `["sidePanel"]` jika menggunakan side panel)
+  - Side panel: `index.html` (Chrome 114+)
+  - Permissions: `["storage", "sidePanel"]`
   - Host permissions: `["https://*/*", "wss://*/*"]` (untuk RPC EVM, Solana, XRPL WebSocket, Esplora API)
-  - Icons: siapkan aset icon ekstensi (16x16, 48x48, 128x128 di folder `public/icons`)
-- [ ] Update `vite.config.ts`: Integrasikan plugin CRX / konfigurasi build ekstensi
-- [ ] Update `package.json`: Tambahkan script `npm run build:ext`
+  - Icons: siapkan aset icon ekstensi (16x16, 48x48, 128x128 di `public/icons`)
+- [x] Update `vite.config.ts`: Konfigurasi polyfill aman tanpa `eval` & build ekstensi
+- [x] Update `package.json`: Tambahkan script `npm run build:ext`
 
 ### 2. Penyesuaian UI & Layout Extension
 - [ ] Sesuaikan style container utama di `src/web/styles/index.css` agar pas di viewport popup (~400px x 600px)

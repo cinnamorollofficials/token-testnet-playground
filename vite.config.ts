@@ -11,6 +11,7 @@ export default defineConfig({
         global: true,
         process: true,
       },
+      include: ['buffer', 'crypto', 'stream', 'util', 'process', 'events', 'string_decoder', 'path'],
       protocolImports: true,
     }),
   ],
