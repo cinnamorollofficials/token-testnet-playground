@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSession } from './context/SessionContext.js';
 import { NETWORKS } from '../config/networks.js';
-import type { LedgerId } from '../core/types.js';
+import { getAdapter } from '../core/registry.js';
+import type { LedgerId, Balance } from '../core/types.js';
 import { QRGeneratorModal } from './components/QRGeneratorModal.js';
 import { QRScannerModal } from './components/QRScannerModal.js';
+import { FaucetModal } from './components/FaucetModal.js';
+import { ReceiveModal } from './components/ReceiveModal.js';
 import {
   Wallet,
   Lock,
@@ -16,6 +19,7 @@ import {
   QrCode,
   ShieldCheck,
   ExternalLink,
+  RefreshCw,
 } from 'lucide-react';
 
 const SUPPORTED_LEDGERS: { id: LedgerId; label: string }[] = [
@@ -40,9 +44,34 @@ export const App: React.FC = () => {
 
   const [isGeneratorOpen, setIsGeneratorOpen] = useState<boolean>(false);
   const [isScannerOpen, setIsScannerOpen] = useState<boolean>(false);
+  const [isFaucetOpen, setIsFaucetOpen] = useState<boolean>(false);
+  const [isReceiveOpen, setIsReceiveOpen] = useState<boolean>(false);
+
+  const [balance, setBalance] = useState<Balance | null>(null);
+  const [loadingBalance, setLoadingBalance] = useState<boolean>(false);
   const [copiedAddr, setCopiedAddr] = useState<boolean>(false);
 
   const currentNetwork = NETWORKS[selectedLedger];
+
+  const fetchBalance = useCallback(async () => {
+    if (!activeAccount) return;
+    setLoadingBalance(true);
+    try {
+      const adapter = getAdapter(selectedLedger);
+      const bal = await adapter.getBalance(activeAccount.address, { kind: 'native' });
+      setBalance(bal);
+    } catch (err) {
+      console.warn('Failed to fetch balance:', err);
+    } finally {
+      setLoadingBalance(false);
+    }
+  }, [activeAccount, selectedLedger]);
+
+  useEffect(() => {
+    if (activeAccount) {
+      fetchBalance();
+    }
+  }, [activeAccount, fetchBalance]);
 
   const handleCopyAddress = (addr: string) => {
     navigator.clipboard.writeText(addr);
@@ -119,7 +148,7 @@ export const App: React.FC = () => {
             Rabby-Style Testnet Playground
           </h2>
           <p style={{ fontSize: '13px', color: 'var(--text-muted)', lineHeight: '1.6', marginBottom: '28px' }}>
-            Keamanan in-memory: Mnemonic tidak disimpan permanen di disk. Masuk dengan memindai foto QR Code atau buat frasa baru.
+            Keamanan in-memory: Mnemonic tidak disimpan di disk. Masuk dengan memindai foto QR Code atau buat frasa baru.
           </p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -168,9 +197,19 @@ export const App: React.FC = () => {
 
           {/* Hero Portfolio Card */}
           <div className="rabby-card rabby-hero-card">
-            <div className="rabby-hero-label">{currentNetwork.name} ({currentNetwork.testnetName})</div>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+              <span className="rabby-hero-label">{currentNetwork.name} ({currentNetwork.testnetName})</span>
+              <button
+                onClick={fetchBalance}
+                title="Refresh Saldo"
+                style={{ color: 'var(--text-dim)', verticalAlign: 'middle', padding: '2px' }}
+              >
+                <RefreshCw size={14} style={{ animation: loadingBalance ? 'spin 1s linear infinite' : 'none' }} />
+              </button>
+            </div>
+
             <div className="rabby-hero-balance">
-              <span>0.00</span>
+              <span>{balance ? balance.formatted : '0.00'}</span>
               <span className="rabby-hero-symbol">{currentNetwork.nativeAsset.symbol}</span>
             </div>
             <div style={{ fontSize: '12px', color: 'var(--text-dim)' }}>
@@ -183,7 +222,7 @@ export const App: React.FC = () => {
                 <Send className="rabby-action-icon" />
                 <span>Send</span>
               </button>
-              <button className="rabby-action-squircle" onClick={() => alert('Fitur Faucet akan aktif di Fase 3!')}>
+              <button className="rabby-action-squircle" onClick={() => setIsFaucetOpen(true)}>
                 <Droplets className="rabby-action-icon" />
                 <span>Faucet</span>
               </button>
@@ -191,10 +230,7 @@ export const App: React.FC = () => {
                 <Coins className="rabby-action-icon" />
                 <span>Mint TST</span>
               </button>
-              <button
-                className="rabby-action-squircle"
-                onClick={() => activeAccount && handleCopyAddress(activeAccount.address)}
-              >
+              <button className="rabby-action-squircle" onClick={() => setIsReceiveOpen(true)}>
                 <QrCode className="rabby-action-icon" />
                 <span>Receive</span>
               </button>
@@ -239,7 +275,7 @@ export const App: React.FC = () => {
                   </div>
                 </div>
                 <div className="rabby-token-amount">
-                  0.00 {currentNetwork.nativeAsset.symbol}
+                  {balance ? balance.formatted : '0.00'} {currentNetwork.nativeAsset.symbol}
                 </div>
               </div>
 
@@ -266,6 +302,8 @@ export const App: React.FC = () => {
       {/* Modals */}
       <QRGeneratorModal isOpen={isGeneratorOpen} onClose={() => setIsGeneratorOpen(false)} />
       <QRScannerModal isOpen={isScannerOpen} onClose={() => setIsScannerOpen(false)} />
+      <FaucetModal isOpen={isFaucetOpen} onClose={() => setIsFaucetOpen(false)} onSuccess={fetchBalance} />
+      <ReceiveModal isOpen={isReceiveOpen} onClose={() => setIsReceiveOpen(false)} />
     </div>
   );
 };

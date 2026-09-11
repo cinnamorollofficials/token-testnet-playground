@@ -60,20 +60,20 @@ Legenda: `👤` = butuh tindakan manual user · `🌐` = butuh network/testnet R
 ## Fase 3 — Web UI Dashboard: Multi-Chain Accounts, Faucet & Balance 🌐
 
 ### Client-Side Adapters
-- [ ] `src/adapters/evm.ts` — Browser JSON-RPC provider (Sepolia & Amoy)
-- [ ] `src/adapters/solana.ts` — Browser Connection (Devnet)
-- [ ] `src/adapters/xrpl.ts` — Browser WebSocket client (Testnet)
-- [ ] `src/adapters/bitcoin.ts` — Fetch Esplora API (Signet)
+- [x] `src/adapters/evm.ts` — Browser JSON-RPC provider (Sepolia & Amoy)
+- [x] `src/adapters/solana.ts` — Browser Connection (Devnet)
+- [x] `src/adapters/xrpl.ts` — Browser WebSocket client (Testnet)
+- [x] `src/adapters/bitcoin.ts` — Fetch Esplora API (Signet)
 
 ### Komponen Dashboard
-- [ ] **Chain Selector**: Dropdown / Tabs untuk berganti jaringan (Ethereum, Polygon, Solana, XRPL, Bitcoin)
-- [ ] **Account Card**: Tampilkan address Index 0 (Utama) dan Index 1 (Penerima) + Derivation Path + tombol copy
-- [ ] **Balance Card**: Tampilkan saldo Native Coin & Test Token (real-time refresh)
-- [ ] **Integrated Faucet Card**:
+- [x] **Chain Selector**: Dropdown / Tabs untuk berganti jaringan (Ethereum, Polygon, Solana, XRPL, Bitcoin)
+- [x] **Account Card**: Tampilkan address Index 0 (Utama) dan Index 1 (Penerima) + Derivation Path + tombol copy
+- [x] **Balance Card**: Tampilkan saldo Native Coin & Test Token (real-time refresh)
+- [x] **Integrated Faucet Card**:
   - Tombol 1-klik `Airdrop SOL` (Devnet)
   - Tombol 1-klik `Fund XRP` (Testnet)
   - Tautan Faucet eksternal + tombol copy address untuk Sepolia ETH, Amoy POL, Signet sBTC
-- [ ] **Gate:** Saldo native > 0 terbaca di dashboard Web UI untuk akun aktif
+- [x] **Gate:** Saldo native > 0 terbaca di dashboard Web UI untuk akun aktif
 
 ---
 
