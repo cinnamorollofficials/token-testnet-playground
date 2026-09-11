@@ -501,7 +501,6 @@ export const App: React.FC = () => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   marginBottom: '20px',
-                  boxShadow: 'var(--shadow-glow)',
                 }}
               >
                 <Wallet size={34} color="#fff" />
