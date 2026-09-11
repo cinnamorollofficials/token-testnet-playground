@@ -352,12 +352,7 @@ textarea {
 .rabby-action-squircle:hover {
   background: var(--bg-card-hover);
   border-color: var(--border-focus);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(112, 91, 255, 0.12);
-}
-
-.rabby-action-squircle:hover .rabby-action-icon {
-  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(112, 91, 255, 0.08);
 }
 
 .rabby-action-squircle:hover .rabby-action-label {
