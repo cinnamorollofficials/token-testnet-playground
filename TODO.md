@@ -200,10 +200,10 @@ Legenda: `👤` = butuh tindakan manual user · `🌐` = butuh network/testnet R
   - [x] Konversi `SendModal` menjadi `SendView` (menggunakan `SubpageLayout` untuk form transfer, estimasi fee, simulasi saldo)
   - [x] Konversi `MintTokenModal` menjadi `MintTokenView` (menggunakan `SubpageLayout` untuk deploy smart contract & minting)
   - [x] Konversi `TransactionModal` menjadi `TransactionView` (menggunakan `SubpageLayout` untuk filter & riwayat transaksi panjang)
-- [ ] **4. Integrasi Screen Routing di App.tsx & Penyelarasan Onboarding**
-  - [ ] Tambahkan state navigasi `currentScreen` (`dashboard`, `send`, `mint`, `transactions`, `scanner`, `generator`) di `App.tsx`
-  - [ ] Hubungkan aksi tombol Quick Actions & Asset rows untuk berpindah screen atau memunculkan bottom sheet
-  - [ ] Hubungkan tombol Back pada setiap subpage untuk kembali ke `dashboard`
+- [x] **4. Integrasi Screen Routing di App.tsx & Penyelarasan Onboarding**
+  - [x] Tambahkan state navigasi `currentScreen` (`dashboard`, `send`, `mint`, `transactions`, `scanner`, `generator`) di `App.tsx`
+  - [x] Hubungkan aksi tombol Quick Actions & Asset rows untuk berpindah screen atau memunculkan bottom sheet
+  - [x] Hubungkan tombol Back pada setiap subpage untuk kembali ke `dashboard`
 - [ ] **5. Pengujian, Verifikasi & Dokumentasi**
   - [ ] Validasi linter `npm run lint` (0 error, 0 warning)
   - [ ] Validasi 39 unit tests `npm run test` (seluruh tes hijau)

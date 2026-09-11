@@ -7,11 +7,11 @@ import type { LedgerId, Balance } from '../core/types.js';
 import { fetchIndodaxRates, formatIDR, calculateIDRValue, type RatesMap } from '../core/rates.js';
 import { QRGeneratorModal } from './components/QRGeneratorModal';
 import { QRScannerModal } from './components/QRScannerModal';
-import { FaucetModal } from './components/FaucetModal';
-import { ReceiveModal } from './components/ReceiveModal';
-import { MintTokenModal } from './components/MintTokenModal';
-import { SendModal } from './components/SendModal';
-import { TransactionModal } from './components/TransactionModal';
+import { FaucetSheet } from './components/FaucetModal';
+import { ReceiveSheet } from './components/ReceiveModal';
+import { MintTokenView } from './components/MintTokenModal';
+import { SendView } from './components/SendModal';
+import { TransactionView } from './components/TransactionModal';
 import { PortfolioChart } from './components/PortfolioChart';
 import { getTransactions } from '../core/history.js';
 import {
@@ -206,15 +206,15 @@ export const App: React.FC = () => {
     lockSession,
   } = useSession();
 
+  type AppScreen = 'dashboard' | 'send' | 'mint' | 'transactions';
+  const [currentScreen, setCurrentScreen] = useState<AppScreen>('dashboard');
+
   const [isGeneratorOpen, setIsGeneratorOpen] = useState<boolean>(false);
   const [isScannerOpen, setIsScannerOpen] = useState<boolean>(false);
   const [isFaucetOpen, setIsFaucetOpen] = useState<boolean>(false);
   const [isReceiveOpen, setIsReceiveOpen] = useState<boolean>(false);
-  const [isMintOpen, setIsMintOpen] = useState<boolean>(false);
-  const [isSendOpen, setIsSendOpen] = useState<boolean>(false);
-  const [isTxModalOpen, setIsTxModalOpen] = useState<boolean>(false);
 
-  // Target ledger/asset for modals
+  // Target ledger/asset for subpages & sheets
   const [modalTargetLedger, setModalTargetLedger] = useState<LedgerId | undefined>(undefined);
   const [modalTargetAsset, setModalTargetAsset] = useState<'native' | 'token'>('native');
   const [hoveredChartPoint, setHoveredChartPoint] = useState<ChartPoint | null>(null);
@@ -225,7 +225,7 @@ export const App: React.FC = () => {
       ledger: selectedLedger,
       address: activeAccount?.address,
     }).length;
-  }, [selectedLedger, activeAccount, isSendOpen, isFaucetOpen, isMintOpen]);
+  }, [selectedLedger, activeAccount, currentScreen, isFaucetOpen]);
 
   const [portfolioBalances, setPortfolioBalances] = useState<Record<string, Balance | null>>({});
   const [loadingLedgers, setLoadingLedgers] = useState<Partial<Record<LedgerId, boolean>>>({
@@ -316,13 +316,13 @@ export const App: React.FC = () => {
   const handleOpenSendForAsset = (ledger: LedgerId, kind: 'native' | 'token') => {
     setModalTargetLedger(ledger);
     setModalTargetAsset(kind);
-    setIsSendOpen(true);
+    setCurrentScreen('send');
   };
 
   const handleOpenGeneralSend = () => {
     setModalTargetLedger(selectedLedger !== 'all' ? selectedLedger : 'ethereum');
     setModalTargetAsset('native');
-    setIsSendOpen(true);
+    setCurrentScreen('send');
   };
 
   const handleOpenGeneralFaucet = () => {
@@ -337,7 +337,7 @@ export const App: React.FC = () => {
 
   const handleOpenMint = () => {
     setModalTargetLedger(selectedLedger === 'polygon' ? 'polygon' : 'ethereum');
-    setIsMintOpen(true);
+    setCurrentScreen('mint');
   };
 
 
@@ -406,14 +406,15 @@ export const App: React.FC = () => {
     <div className="rabby-app-container">
       {/* Unified All-in-One Wallet Card */}
       <div className="rabby-card rabby-unified-card">
-        {/* Card Top Header */}
-        {/* Card Top Header - Option 1: Single-Row Unified Header */}
-        <header className="rabby-header">
-          {/* Left Zone: Account Switcher Pill (if unlocked) OR Brand Title (if locked) */}
-          {isUnlocked ? (
-            <button
-              type="button"
-              className="rabby-header-acc-pill"
+        {currentScreen === 'dashboard' ? (
+          <>
+            {/* Header (Unified Single Row) */}
+            <header className="rabby-header">
+              {/* Left Zone: Account Switcher Pill (if unlocked) OR Brand Title (if locked) */}
+              {isUnlocked ? (
+                <button
+                  type="button"
+                  className="rabby-header-acc-pill"
               onClick={() => {
                 setPortfolioBalances({});
                 setActiveAccountIndex(activeAccountIndex === 0 ? 1 : 0);
@@ -473,7 +474,7 @@ export const App: React.FC = () => {
             <button
               type="button"
               className={`rabby-header-lock-btn ${isUnlocked ? 'active' : 'locked'}`}
-              onClick={isUnlocked ? lockSession : () => setIsScannerOpen(true)}
+              onClick={isUnlocked ? () => { lockSession(); setCurrentScreen('dashboard'); } : () => setIsScannerOpen(true)}
               title={
                 isUnlocked
                   ? `Sesi aktif (${fingerprint}). Klik untuk mengunci wallet.`
@@ -599,7 +600,7 @@ export const App: React.FC = () => {
                   <button
                     type="button"
                     className="rabby-action-squircle"
-                    onClick={() => setIsTxModalOpen(true)}
+                    onClick={() => setCurrentScreen('transactions')}
                     title="Riwayat Transaksi"
                   >
                     <ArrowLeftRight className="rabby-action-icon" />
@@ -738,45 +739,52 @@ export const App: React.FC = () => {
             </>
           )}
         </div>
-      </div>
-
-      {/* Modals */}
-      <QRGeneratorModal isOpen={isGeneratorOpen} onClose={() => setIsGeneratorOpen(false)} />
-      <QRScannerModal isOpen={isScannerOpen} onClose={() => setIsScannerOpen(false)} />
-      <TransactionModal
-        isOpen={isTxModalOpen}
-        onClose={() => setIsTxModalOpen(false)}
+      </>
+    ) : currentScreen === 'send' ? (
+      <SendView
+        isOpen={true}
+        onClose={() => setCurrentScreen('dashboard')}
+        onSuccess={fetchAllBalances}
+        initialLedger={modalTargetLedger}
+        initialAsset={modalTargetAsset}
+        rates={rates}
+      />
+    ) : currentScreen === 'mint' ? (
+      <MintTokenView
+        isOpen={true}
+        onClose={() => setCurrentScreen('dashboard')}
+        onSuccess={fetchAllBalances}
+        initialLedger={modalTargetLedger}
+      />
+    ) : currentScreen === 'transactions' ? (
+      <TransactionView
+        isOpen={true}
+        onClose={() => setCurrentScreen('dashboard')}
         selectedLedger={selectedLedger}
         currentAccount={activeAccount}
         rates={rates}
         onOpenSend={handleOpenGeneralSend}
         onOpenFaucet={handleOpenGeneralFaucet}
       />
-      <FaucetModal
-        isOpen={isFaucetOpen}
-        onClose={() => setIsFaucetOpen(false)}
-        onSuccess={fetchAllBalances}
-        initialLedger={modalTargetLedger}
-      />
-      <ReceiveModal
-        isOpen={isReceiveOpen}
-        onClose={() => setIsReceiveOpen(false)}
-        initialLedger={modalTargetLedger}
-      />
-      <MintTokenModal
-        isOpen={isMintOpen}
-        onClose={() => setIsMintOpen(false)}
-        onSuccess={fetchAllBalances}
-        initialLedger={modalTargetLedger}
-      />
-      <SendModal
-        isOpen={isSendOpen}
-        onClose={() => setIsSendOpen(false)}
-        onSuccess={fetchAllBalances}
-        initialLedger={modalTargetLedger}
-        initialAsset={modalTargetAsset}
-        rates={rates}
-      />
-    </div>
-  );
+    ) : null}
+  </div>
+
+  {/* Bottom Sheets (Compact Data & Quick Actions) */}
+  <ReceiveSheet
+    isOpen={isReceiveOpen}
+    onClose={() => setIsReceiveOpen(false)}
+    initialLedger={modalTargetLedger}
+  />
+  <FaucetSheet
+    isOpen={isFaucetOpen}
+    onClose={() => setIsFaucetOpen(false)}
+    onSuccess={fetchAllBalances}
+    initialLedger={modalTargetLedger}
+  />
+
+  {/* Onboarding Modals */}
+  <QRGeneratorModal isOpen={isGeneratorOpen} onClose={() => setIsGeneratorOpen(false)} />
+  <QRScannerModal isOpen={isScannerOpen} onClose={() => setIsScannerOpen(false)} />
+</div>
+);
 };
