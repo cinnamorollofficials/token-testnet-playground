@@ -2,11 +2,14 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useSession } from './context/SessionContext.js';
 import { NETWORKS } from '../config/networks.js';
 import { getAdapter } from '../core/registry.js';
+import { DEFAULT_TEST_TOKENS } from '../config/tokens.js';
 import type { LedgerId, Balance } from '../core/types.js';
 import { QRGeneratorModal } from './components/QRGeneratorModal.js';
 import { QRScannerModal } from './components/QRScannerModal.js';
 import { FaucetModal } from './components/FaucetModal.js';
 import { ReceiveModal } from './components/ReceiveModal.js';
+import { MintTokenModal } from './components/MintTokenModal.js';
+import { SendModal } from './components/SendModal.js';
 import {
   Wallet,
   Lock,
@@ -46,26 +49,39 @@ export const App: React.FC = () => {
   const [isScannerOpen, setIsScannerOpen] = useState<boolean>(false);
   const [isFaucetOpen, setIsFaucetOpen] = useState<boolean>(false);
   const [isReceiveOpen, setIsReceiveOpen] = useState<boolean>(false);
+  const [isMintOpen, setIsMintOpen] = useState<boolean>(false);
+  const [isSendOpen, setIsSendOpen] = useState<boolean>(false);
 
   const [balance, setBalance] = useState<Balance | null>(null);
+  const [tokenBalance, setTokenBalance] = useState<Balance | null>(null);
   const [loadingBalance, setLoadingBalance] = useState<boolean>(false);
   const [copiedAddr, setCopiedAddr] = useState<boolean>(false);
 
   const currentNetwork = NETWORKS[selectedLedger];
+  const defaultToken = DEFAULT_TEST_TOKENS[selectedLedger];
 
   const fetchBalance = useCallback(async () => {
     if (!activeAccount) return;
     setLoadingBalance(true);
     try {
       const adapter = getAdapter(selectedLedger);
+      // Fetch Native Balance
       const bal = await adapter.getBalance(activeAccount.address, { kind: 'native' });
       setBalance(bal);
+
+      // Fetch Token Balance if supported
+      if (defaultToken) {
+        const tBal = await adapter.getBalance(activeAccount.address, defaultToken);
+        setTokenBalance(tBal);
+      } else {
+        setTokenBalance(null);
+      }
     } catch (err) {
       console.warn('Failed to fetch balance:', err);
     } finally {
       setLoadingBalance(false);
     }
-  }, [activeAccount, selectedLedger]);
+  }, [activeAccount, selectedLedger, defaultToken]);
 
   useEffect(() => {
     if (activeAccount) {
@@ -218,7 +234,7 @@ export const App: React.FC = () => {
 
             {/* Rabby Squircles Action Bar */}
             <div className="rabby-actions-grid">
-              <button className="rabby-action-squircle" onClick={() => alert('Fitur Send Asset akan aktif di Fase 4!')}>
+              <button className="rabby-action-squircle" onClick={() => setIsSendOpen(true)}>
                 <Send className="rabby-action-icon" />
                 <span>Send</span>
               </button>
@@ -226,7 +242,7 @@ export const App: React.FC = () => {
                 <Droplets className="rabby-action-icon" />
                 <span>Faucet</span>
               </button>
-              <button className="rabby-action-squircle" onClick={() => alert('Fitur Token Mint akan aktif di Fase 4!')}>
+              <button className="rabby-action-squircle" onClick={() => setIsMintOpen(true)}>
                 <Coins className="rabby-action-icon" />
                 <span>Mint TST</span>
               </button>
@@ -280,20 +296,22 @@ export const App: React.FC = () => {
               </div>
 
               {/* Test Token Row */}
-              <div className="rabby-token-item">
-                <div className="rabby-token-left">
-                  <div className="rabby-token-avatar" style={{ background: 'linear-gradient(135deg, #FF9F43 0%, #FF6B6B 100%)' }}>
-                    TST
+              {defaultToken && (
+                <div className="rabby-token-item">
+                  <div className="rabby-token-left">
+                    <div className="rabby-token-avatar" style={{ background: 'linear-gradient(135deg, #FF9F43 0%, #FF6B6B 100%)' }}>
+                      TST
+                    </div>
+                    <div>
+                      <div className="rabby-token-name">TestToken (TST)</div>
+                      <div className="rabby-token-chain">Custom Test Token • {defaultToken.decimals} Decimals</div>
+                    </div>
                   </div>
-                  <div>
-                    <div className="rabby-token-name">TestToken (TST)</div>
-                    <div className="rabby-token-chain">Custom Test Token • 18 Decimals</div>
+                  <div className="rabby-token-amount">
+                    {tokenBalance ? tokenBalance.formatted : '0.00'} TST
                   </div>
                 </div>
-                <div className="rabby-token-amount">
-                  0.00 TST
-                </div>
-              </div>
+              )}
             </div>
           </div>
         </>
@@ -304,6 +322,8 @@ export const App: React.FC = () => {
       <QRScannerModal isOpen={isScannerOpen} onClose={() => setIsScannerOpen(false)} />
       <FaucetModal isOpen={isFaucetOpen} onClose={() => setIsFaucetOpen(false)} onSuccess={fetchBalance} />
       <ReceiveModal isOpen={isReceiveOpen} onClose={() => setIsReceiveOpen(false)} />
+      <MintTokenModal isOpen={isMintOpen} onClose={() => setIsMintOpen(false)} onSuccess={fetchBalance} />
+      <SendModal isOpen={isSendOpen} onClose={() => setIsSendOpen(false)} onSuccess={fetchBalance} />
     </div>
   );
 };

@@ -80,20 +80,20 @@ Legenda: `👤` = butuh tindakan manual user · `🌐` = butuh network/testnet R
 ## Fase 4 — Web UI Transaksi: Deploy/Mint Token & Kirim Aset (Goal Utama 🎯) 🌐
 
 ### Bikin Token Test via UI
-- [ ] Tab/Modal **Token Creator**:
+- [x] Tab/Modal **Token Creator**:
   - EVM: Deploy kontrak ERC-20 `TestToken.sol` & minting
   - Solana: Create SPL Mint & minting ke Associated Token Account (ATA)
   - XRPL: Set Trustline (Holder Index 1 → Issuer Index 0) & Issue TST IOU
-- [ ] Simpan registry token aktif di session storage / config
+- [x] Simpan registry token aktif di session storage / config
 
 ### Form Transaksi Kirim Aset (Send Asset)
-- [ ] Pilihan Aset: Native Coin atau Test Token
-- [ ] Pilihan Penerima: Quick-select "Akun Index 1 (Milik Sendiri)" atau input manual address lain
-- [ ] Input Jumlah (Amount) dengan validasi presisi `bigint` + tombol "Max"
-- [ ] Preview Biaya (Gas Fee, ATA Rent warning di Solana, Reserve requirement di XRPL)
-- [ ] Tombol **Kirim & Tanda Tangan** (offline signing di memori browser -> broadcast ke testnet)
-- [ ] Modal Konfirmasi Transaksi: Status Real-time (Pending → Confirmed) + Link ke Block Explorer
-- [ ] **Gate:** Berhasil kirim token dari Index 0 ke Index 1 di 4 ledger via Web UI, tautan explorer terverifikasi
+- [x] Pilihan Aset: Native Coin atau Test Token
+- [x] Pilihan Penerima: Quick-select "Akun Index 1 (Milik Sendiri)" atau input manual address lain
+- [x] Input Jumlah (Amount) dengan validasi presisi `bigint` + tombol "Max"
+- [x] Preview Biaya (Gas Fee, ATA Rent warning di Solana, Reserve requirement di XRPL)
+- [x] Tombol **Kirim & Tanda Tangan** (offline signing di memori browser -> broadcast ke testnet)
+- [x] Modal Konfirmasi Transaksi: Status Real-time (Pending → Confirmed) + Link ke Block Explorer
+- [x] **Gate:** Berhasil kirim token dari Index 0 ke Index 1 di 4 ledger via Web UI, tautan explorer terverifikasi
 
 ---
 
