@@ -8,48 +8,48 @@ Legenda: `👤` = butuh kamu (manual, tidak bisa saya kerjakan sendiri) · `🌐
 
 ## Fase 0 — Scaffold (≈1 jam)
 
-- [ ] `git init` (direktori ini belum repo git)
-- [ ] `npm init -y`, set `"type": "module"`, Node 22+
-- [ ] Install runtime deps: `@scure/bip39@2.4.0` `@scure/bip32@2.4.0` `micro-key-producer@0.10.2` `@scure/btc-signer@2.4.1` `ethers@6.17.0` `@solana/web3.js@1.99.0` `@solana/spl-token@0.4.15` `xrpl@5.1.0` `commander` `dotenv`
-- [ ] Install dev deps: `typescript` `@types/node` `vitest` `oxlint`
-- [ ] `tsconfig.json` — strict, ESM, target ES2023, `moduleResolution: bundler`
-- [ ] Salin `.oxlintrc.json` dari `tennet-custody-v4/portal` biar konsisten
-- [ ] `.gitignore` — `node_modules/`, `.env`, `*.key`, `keys/`, `dist/`
-- [ ] `.env.example` — `MNEMONIC=`, RPC URL per chain (kosong = pakai default publik)
-- [ ] Script npm: `build`, `test`, `lint`, `pg` (entry CLI)
-- [ ] `src/core/types.ts` — `LedgerId`, `Account`, `Asset`, `UnsignedTx`, `SignedTx`, `Balance`, `TxStatus`
-- [ ] `src/config/networks.ts` — RPC, explorer, faucet, chainId per ledger
-- [ ] `assertTestnet()` + **allowlist chainId** (11155111, 80002, solana-devnet, xrpl-testnet, btc-signet)
-- [ ] **Gate:** `npm run build` & `npm test` hijau
+- [x] `git init` (direktori ini belum repo git)
+- [x] `npm init -y`, set `"type": "module"`, Node 22+
+- [x] Install runtime deps: `@scure/bip39@2.4.0` `@scure/bip32@2.4.0` `micro-key-producer@0.10.2` `@scure/btc-signer@2.4.1` `ethers@6.17.0` `@solana/web3.js@1.99.0` `@solana/spl-token@0.4.15` `xrpl@5.1.0` `commander` `dotenv`
+- [x] Install dev deps: `typescript` `@types/node` `vitest` `oxlint`
+- [x] `tsconfig.json` — strict, ESM, target ES2023, `moduleResolution: bundler`
+- [x] Salin `.oxlintrc.json` dari `tennet-custody-v4/portal` biar konsisten
+- [x] `.gitignore` — `node_modules/`, `.env`, `*.key`, `keys/`, `dist/`
+- [x] `.env.example` — `MNEMONIC=`, RPC URL per chain (kosong = pakai default publik)
+- [x] Script npm: `build`, `test`, `lint`, `pg` (entry CLI)
+- [x] `src/core/types.ts` — `LedgerId`, `Account`, `Asset`, `UnsignedTx`, `SignedTx`, `Balance`, `TxStatus`
+- [x] `src/config/networks.ts` — RPC, explorer, faucet, chainId per ledger
+- [x] `assertTestnet()` + **allowlist chainId** (11155111, 80002, solana-devnet, xrpl-testnet, btc-signet)
+- [x] **Gate:** `npm run build` & `npm test` hijau
 
 ---
 
 ## Fase 1 — Seed & address (offline) — GATE PALING PENTING (≈0.5 hari)
 
 ### Core
-- [ ] `src/core/mnemonic.ts` — `generate(words: 12|24)`, `validate()`, `toSeed()` (passphrase kosong)
-- [ ] `seed info` cetak **fingerprint**, jangan pernah cetak mnemonic-nya
-- [ ] `src/core/amount.ts` — `parseAmount`/`formatAmount` pakai `bigint`; **dilarang `number`**
-- [ ] `src/core/derive.ts` — dua jalur: BIP-32 (secp256k1) & SLIP-0010 (ed25519)
-- [ ] `src/core/registry.ts` — map `LedgerId` → adapter
+- [x] `src/core/mnemonic.ts` — `generate(words: 12|24)`, `validate()`, `toSeed()` (passphrase kosong)
+- [x] `seed info` cetak **fingerprint**, jangan pernah cetak mnemonic-nya
+- [x] `src/core/amount.ts` — `parseAmount`/`formatAmount` pakai `bigint`; **dilarang `number`**
+- [x] `src/core/derive.ts` — dua jalur: BIP-32 (secp256k1) & SLIP-0010 (ed25519)
+- [x] `src/core/registry.ts` — map `LedgerId` → adapter
 
 ### Derivasi per ledger (ikut Path Registry §1a)
-- [ ] Ethereum — `m/44'/60'/0'/0/{i}` → address EIP-55 checksummed
-- [ ] Polygon — path & address sama persis dengan Ethereum (verifikasi memang identik)
-- [ ] Solana — SLIP-0010 ed25519, `m/44'/501'/{i}'/0'`, **all-hardened**, address base58
-- [ ] XRPL — `m/44'/144'/0'/0/{i}`, secp256k1, **encoding di-set eksplisit `bip39`**, classic address `r…`
-- [ ] Bitcoin — BIP-84 `m/84'/1'/0'/0/{i}`, bech32 `tb1q…` (signet)
+- [x] Ethereum — `m/44'/60'/0'/0/{i}` → address EIP-55 checksummed
+- [x] Polygon — path & address sama persis dengan Ethereum (verifikasi memang identik)
+- [x] Solana — SLIP-0010 ed25519, `m/44'/501'/{i}'/0'`, **all-hardened**, address base58
+- [x] XRPL — `m/44'/144'/0'/0/{i}`, secp256k1, **encoding di-set eksplisit `bip39`**, classic address `r…`
+- [x] Bitcoin — BIP-84 `m/84'/1'/0'/0/{i}`, bech32 `tb1q…` (signet)
 
 ### CLI
-- [ ] `pg seed new [--words 12|24]` + banner peringatan "TESTNET ONLY"
-- [ ] `pg seed info`
-- [ ] `pg address --ledger all|<id> --index <n>` → tabel **ledger / path / address** (path wajib tercetak)
+- [x] `pg seed new [--words 12|24]` + banner peringatan "TESTNET ONLY"
+- [x] `pg seed info`
+- [x] `pg address --ledger all|<id> --index <n>` → tabel **ledger / path / address** (path wajib tercetak)
 
 ### Verifikasi
-- [ ] `test/vectors.test.ts` — mnemonic standar `abandon abandon … about`, snapshot address 5 ledger
-- [ ] Test: mnemonic invalid (checksum salah) ditolak
-- [ ] Test: index 0 vs 1 menghasilkan address berbeda di semua ledger
-- [ ] Test: path Solana all-hardened — `0'/0` (salah) ≠ `0'/0'` (benar)
+- [x] `test/vectors.test.ts` — mnemonic standar `abandon abandon … about`, snapshot address 5 ledger
+- [x] Test: mnemonic invalid (checksum salah) ditolak
+- [x] Test: index 0 vs 1 menghasilkan address berbeda di semua ledger
+- [x] Test: path Solana all-hardened — `0'/0` (salah) ≠ `0'/0'` (benar)
 - [ ] 👤 Cross-check MetaMask — address `0x…` cocok, dan sama untuk Ethereum & Polygon
 - [ ] 👤 Cross-check Phantom — address Solana account #1 cocok
 - [ ] 👤 Cross-check Sparrow (Native SegWit) — address `tb1q…` cocok
