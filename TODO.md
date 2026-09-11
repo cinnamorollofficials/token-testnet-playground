@@ -187,6 +187,31 @@ Legenda: `👤` = butuh tindakan manual user · `🌐` = butuh network/testnet R
 
 ---
 
+## Fase 8 — Transisi UI: Bottom Sheet (Data Pendek) & Halaman Baru (Data Panjang) 📱
+
+- [ ] **1. Komponen Fondasi BottomSheet & SubpageLayout + Styling CSS**
+  - [ ] Buat `src/web/components/BottomSheet.tsx` (backdrop blur, slide-up animation, handle pill, header, close handlers)
+  - [ ] Buat `src/web/components/SubpageLayout.tsx` (sticky top bar, tombol Back `<ArrowLeft />`, title, right action, scrollable body)
+  - [ ] Tambahkan styling & animasi `.rabby-sheet-*` dan `.rabby-subpage-*` di `src/web/styles/rabby.css`
+- [ ] **2. Konversi Aksi Cepat ke Bottom Sheet (Data Pendek)**
+  - [ ] Konversi `ReceiveModal` menjadi `ReceiveSheet` (menggunakan `BottomSheet` untuk QR code & address copy)
+  - [ ] Konversi `FaucetModal` menjadi `FaucetSheet` (menggunakan `BottomSheet` untuk 1-click testnet funding)
+- [ ] **3. Konversi Alur Panjang ke Halaman Baru / Subpage (Data Panjang)**
+  - [ ] Konversi `SendModal` menjadi `SendView` (menggunakan `SubpageLayout` untuk form transfer, estimasi fee, simulasi saldo)
+  - [ ] Konversi `MintTokenModal` menjadi `MintTokenView` (menggunakan `SubpageLayout` untuk deploy smart contract & minting)
+  - [ ] Konversi `TransactionModal` menjadi `TransactionView` (menggunakan `SubpageLayout` untuk filter & riwayat transaksi panjang)
+- [ ] **4. Integrasi Screen Routing di App.tsx & Penyelarasan Onboarding**
+  - [ ] Tambahkan state navigasi `currentScreen` (`dashboard`, `send`, `mint`, `transactions`, `scanner`, `generator`) di `App.tsx`
+  - [ ] Hubungkan aksi tombol Quick Actions & Asset rows untuk berpindah screen atau memunculkan bottom sheet
+  - [ ] Hubungkan tombol Back pada setiap subpage untuk kembali ke `dashboard`
+- [ ] **5. Pengujian, Verifikasi & Dokumentasi**
+  - [ ] Validasi linter `npm run lint` (0 error, 0 warning)
+  - [ ] Validasi 39 unit tests `npm run test` (seluruh tes hijau)
+  - [ ] Validasi build web dan Chrome extension (`npm run build:web`, `npm run build:ext`)
+  - [ ] Update `walkthrough.md` dan commit per task
+
+---
+
 ## Ditunda (Backlog)
 
 - [ ] 👤 **Kaia — putuskan coin type** (coin type 60 vs 8217 di Kaia Wallet)
