@@ -462,7 +462,7 @@ export const App: React.FC = () => {
                 aria-label="Pilih Jaringan"
               >
                 {SUPPORTED_LEDGERS.map((l) => (
-                  <option key={l.id} value={l.id} style={{ background: '#FFFFFF', color: '#0F172A' }}>
+                  <option key={l.id} value={l.id} style={{ background: 'var(--bg-card)', color: 'var(--text-main)' }}>
                     {l.label}
                   </option>
                 ))}
