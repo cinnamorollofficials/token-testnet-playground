@@ -134,10 +134,10 @@ Legenda: `👤` = butuh tindakan manual user · `🌐` = butuh network/testnet R
 - [x] Tambahkan tombol **"Expand to Tab"** (`chrome.tabs.create`) di header agar pengguna bisa membuka dashboard dalam mode layar penuh (full-tab) kapan saja
 
 ### 3. Adaptasi Sesi Runtime (Mnemonic & Keamanan Memory)
-- [ ] Integrasikan `chrome.storage.session` ke dalam `src/web/context/SessionContext.tsx`:
+- [x] Integrasikan `chrome.storage.session` ke dalam `src/web/context/SessionContext.tsx`:
   - Mnemonic disimpan di RAM browser runtime via `chrome.storage.session` agar tidak ter-reset saat jendela popup tertutup (unmount)
   - Tetap mematuhi prinsip non-persistent di disk: sesi otomatis terhapus saat browser di-close
-- [ ] Perbarui tombol **"Lock / Clear Memory"** agar seketika menghapus state React sekaligus membersihkan `chrome.storage.session`
+- [x] Perbarui tombol **"Lock / Clear Memory"** agar seketika menghapus state React sekaligus membersihkan `chrome.storage.session`
 
 ### 4. Kamera & Pemindai QR di Extension
 - [ ] Evaluasi izin `getUserMedia` di popup:
