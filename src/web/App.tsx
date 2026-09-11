@@ -533,16 +533,27 @@ export const App: React.FC = () => {
                         <div className="rabby-token-left">
                           <div className="rabby-token-avatar-wrap">
                             {asset.kind === 'native' ? (
-                              <img
-                                src={LEDGER_LOGOS[asset.ledger]}
-                                alt={asset.symbol}
-                                className="rabby-token-avatar-img"
-                                onError={(e) => {
-                                  (e.currentTarget as HTMLElement).style.display = 'none';
-                                  const fallback = e.currentTarget.parentElement?.querySelector('.rabby-token-avatar') as HTMLElement;
-                                  if (fallback) fallback.style.display = 'flex';
-                                }}
-                              />
+                              <>
+                                <img
+                                  src={LEDGER_LOGOS[asset.ledger]}
+                                  alt={asset.symbol}
+                                  className="rabby-token-avatar-img"
+                                  onError={(e) => {
+                                    (e.currentTarget as HTMLElement).style.display = 'none';
+                                    const fallback = e.currentTarget.parentElement?.querySelector('.rabby-token-avatar') as HTMLElement;
+                                    if (fallback) fallback.style.display = 'flex';
+                                  }}
+                                />
+                                <div
+                                  className="rabby-token-avatar"
+                                  style={{
+                                    display: 'none',
+                                    ...(asset.avatarBg ? { background: asset.avatarBg } : {}),
+                                  }}
+                                >
+                                  {asset.symbol.slice(0, 3)}
+                                </div>
+                              </>
                             ) : (
                               <>
                                 <div
@@ -556,18 +567,10 @@ export const App: React.FC = () => {
                                   alt={asset.networkName}
                                   className="rabby-token-chain-badge"
                                   title={`Network: ${asset.networkName}`}
+                                  style={{ width: 16, height: 16, objectFit: 'cover' }}
                                 />
                               </>
                             )}
-                            <div
-                              className="rabby-token-avatar"
-                              style={{
-                                display: 'none',
-                                ...(asset.avatarBg ? { background: asset.avatarBg } : {}),
-                              }}
-                            >
-                              {asset.symbol.slice(0, 3)}
-                            </div>
                           </div>
                           <div className="rabby-token-info">
                             <div className="rabby-token-title-row">
