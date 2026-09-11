@@ -395,16 +395,6 @@ export const App: React.FC = () => {
               </select>
             </div>
 
-            {/* Expand to Tab */}
-            <button
-              type="button"
-              className="rabby-header-action-btn"
-              onClick={handleExpandTab}
-              title="Buka di tab penuh (Expand to Tab)"
-            >
-              <ExternalLink size={14} />
-            </button>
-
             {/* Header Lock Icon */}
             <button
               type="button"
