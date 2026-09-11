@@ -17,6 +17,13 @@ export default defineConfig({
   ],
   server: {
     port: 3000,
+    proxy: {
+      '/api/indodax': {
+        target: 'https://indodax.com/api',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/indodax/, ''),
+      },
+    },
   },
   build: {
     outDir: 'dist/web',

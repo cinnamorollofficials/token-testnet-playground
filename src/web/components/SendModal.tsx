@@ -6,6 +6,7 @@ import { DEFAULT_TEST_TOKENS, getActiveTokenAsset } from '../../config/tokens.js
 import { parseAmount } from '../../core/amount.js';
 import { validateAddress } from '../../core/validate.js';
 import type { Asset, UnsignedTx, LedgerId } from '../../core/types.js';
+import { formatIDR, calculateIDRValue, type RatesMap } from '../../core/rates.js';
 import {
   X,
   Send,
@@ -25,6 +26,7 @@ interface Props {
   onSuccess: () => void;
   initialLedger?: LedgerId;
   initialAsset?: 'native' | 'token';
+  rates?: RatesMap;
 }
 
 export const SendModal: React.FC<Props> = ({
@@ -33,6 +35,7 @@ export const SendModal: React.FC<Props> = ({
   onSuccess,
   initialLedger,
   initialAsset = 'native',
+  rates,
 }) => {
   const { selectedLedger, accounts, recipientAccounts } = useSession();
 
@@ -285,9 +288,16 @@ export const SendModal: React.FC<Props> = ({
 
             {/* Amount Input */}
             <div style={{ marginBottom: '20px' }}>
-              <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '6px' }}>
-                Jumlah ({getAssetSymbol()})
-              </label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                <label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-muted)' }}>
+                  Jumlah ({getAssetSymbol()})
+                </label>
+                {rates && (
+                  <span className="rabby-live-indicator" style={{ fontSize: '10px', padding: '1px 6px' }}>
+                    <span className="rabby-live-dot" /> Indodax
+                  </span>
+                )}
+              </div>
               <input
                 type="text"
                 placeholder="1.0"
@@ -305,6 +315,14 @@ export const SendModal: React.FC<Props> = ({
                   outline: 'none',
                 }}
               />
+              {rates && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '6px', fontSize: '12px', color: 'var(--text-muted)' }}>
+                  <span>Estimasi Nilai Pasar:</span>
+                  <span style={{ fontWeight: 700, color: 'var(--text-main)', fontFamily: 'var(--font-mono)' }}>
+                    ≈ {formatIDR(calculateIDRValue(amountStr, getAssetSymbol(), rates))}
+                  </span>
+                </div>
+              )}
             </div>
 
             <button type="submit" className="rabby-btn-primary" disabled={loadingSim}>
@@ -363,8 +381,13 @@ export const SendModal: React.FC<Props> = ({
                   <ArrowUpRight size={16} color="var(--danger)" />
                   <span style={{ color: 'var(--text-main)', fontWeight: 600 }}>Akun #{currentAccount.index} (Pengirim)</span>
                 </div>
-                <div style={{ color: 'var(--danger)', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
-                  -{amountStr} {getAssetSymbol()}
+                <div style={{ color: 'var(--danger)', fontWeight: 700, fontFamily: 'var(--font-mono)', textAlign: 'right' }}>
+                  <div>-{amountStr} {getAssetSymbol()}</div>
+                  {rates && (
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 500 }}>
+                      ≈ {formatIDR(calculateIDRValue(amountStr, getAssetSymbol(), rates))}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -384,8 +407,13 @@ export const SendModal: React.FC<Props> = ({
                   <ArrowDownLeft size={16} color="var(--success)" />
                   <span style={{ color: 'var(--text-main)', fontWeight: 600 }}>Penerima</span>
                 </div>
-                <div style={{ color: 'var(--success)', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
-                  +{amountStr} {getAssetSymbol()}
+                <div style={{ color: 'var(--success)', fontWeight: 700, fontFamily: 'var(--font-mono)', textAlign: 'right' }}>
+                  <div>+{amountStr} {getAssetSymbol()}</div>
+                  {rates && (
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 500 }}>
+                      ≈ {formatIDR(calculateIDRValue(amountStr, getAssetSymbol(), rates))}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -395,6 +423,7 @@ export const SendModal: React.FC<Props> = ({
               style={{
                 display: 'flex',
                 justifyContent: 'space-between',
+                alignItems: 'center',
                 fontSize: '13px',
                 padding: '10px 14px',
                 background: 'var(--bg-card-sub)',
@@ -403,9 +432,22 @@ export const SendModal: React.FC<Props> = ({
               }}
             >
               <span style={{ color: 'var(--text-muted)' }}>Estimasi Network Fee:</span>
-              <span style={{ fontWeight: 600, color: 'var(--warning)', fontFamily: 'var(--font-mono)' }}>
-                ~{unsignedTx.fee.formatted} {unsignedTx.fee.symbol}
-              </span>
+              <div style={{ textAlign: 'right' }}>
+                <span style={{ fontWeight: 600, color: 'var(--warning)', fontFamily: 'var(--font-mono)' }}>
+                  ~{unsignedTx.fee.formatted} {unsignedTx.fee.symbol}
+                </span>
+                {rates && (() => {
+                  const feeIdr = calculateIDRValue(unsignedTx.fee.formatted, unsignedTx.fee.symbol, rates);
+                  if (feeIdr > 0) {
+                    return (
+                      <span style={{ fontSize: '11px', color: 'var(--text-dim)', marginLeft: '6px' }}>
+                        (≈ {formatIDR(feeIdr)})
+                      </span>
+                    );
+                  }
+                  return null;
+                })()}
+              </div>
             </div>
 
             {/* Warnings if any */}

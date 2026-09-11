@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSession, ACTIVE_LEDGERS, type ChainFilter } from './context/SessionContext';
 import { NETWORKS, LEDGER_LOGOS } from '../config/networks.js';
 import { getAdapter } from '../core/registry.js';
 import { getActiveTokenAsset } from '../config/tokens.js';
 import type { LedgerId, Balance } from '../core/types.js';
+import { fetchIndodaxRates, formatIDR, calculateIDRValue, type RatesMap } from '../core/rates.js';
 import { QRGeneratorModal } from './components/QRGeneratorModal';
 import { QRScannerModal } from './components/QRScannerModal';
 import { FaucetModal } from './components/FaucetModal';
@@ -208,13 +209,25 @@ export const App: React.FC = () => {
   const [modalTargetAsset, setModalTargetAsset] = useState<'native' | 'token'>('native');
 
   const [portfolioBalances, setPortfolioBalances] = useState<Record<string, Balance | null>>({});
-  const [loadingLedgers, setLoadingLedgers] = useState<Record<LedgerId, boolean>>({
+  const [loadingLedgers, setLoadingLedgers] = useState<Partial<Record<LedgerId, boolean>>>({
     ethereum: true,
     polygon: true,
     solana: true,
     xrpl: true,
     bitcoin: true,
+    kaia: false,
   });
+
+  const [rates, setRates] = useState<RatesMap>({});
+
+  const fetchRates = useCallback(async (force = false) => {
+    try {
+      const r = await fetchIndodaxRates(force);
+      setRates(r);
+    } catch (err) {
+      console.warn('Indodax rate fetch warning:', err);
+    }
+  }, []);
 
   // Auto-open scanner modal when opened with ?action=scan (e.g. from extension popup redirect)
   useEffect(() => {
@@ -232,7 +245,10 @@ export const App: React.FC = () => {
       solana: true,
       xrpl: true,
       bitcoin: true,
+      kaia: false,
     });
+
+    fetchRates();
 
     ACTIVE_LEDGERS.forEach(async (ledger) => {
       const acc = accounts[ledger];
@@ -263,13 +279,14 @@ export const App: React.FC = () => {
         setLoadingLedgers((prev) => ({ ...prev, [ledger]: false }));
       }
     });
-  }, [isUnlocked, accounts]);
+  }, [isUnlocked, accounts, fetchRates]);
 
   useEffect(() => {
     if (isUnlocked) {
       fetchAllBalances();
+      fetchRates();
     }
-  }, [isUnlocked, fetchAllBalances]);
+  }, [isUnlocked, fetchAllBalances, fetchRates]);
 
 
   const truncateAddress = (addr: string, start = 6, end = 4) => {
@@ -319,6 +336,25 @@ export const App: React.FC = () => {
   const singleChainNativeBalance = selectedLedger !== 'all'
     ? portfolioBalances[`${selectedLedger}-native`]
     : null;
+
+  // Calculators for IDR Valuations
+  const totalPortfolioIdr = useMemo(() => {
+    let sum = 0;
+    for (const asset of ALL_ASSETS) {
+      const bal = portfolioBalances[asset.id];
+      if (bal) {
+        sum += calculateIDRValue(bal.formatted, asset.symbol, rates);
+      }
+    }
+    return sum;
+  }, [portfolioBalances, rates]);
+
+  const singleChainIdr = useMemo(() => {
+    if (selectedLedger === 'all') return 0;
+    const bal = portfolioBalances[`${selectedLedger}-native`];
+    if (!bal) return 0;
+    return calculateIDRValue(bal.formatted, bal.symbol, rates);
+  }, [selectedLedger, portfolioBalances, rates]);
 
   return (
     <div className="rabby-app-container">
@@ -457,11 +493,9 @@ export const App: React.FC = () => {
                 </div>
 
                 {selectedLedger === 'all' ? (
-                  <>
-                    <div className="rabby-hero-balance" style={{ fontSize: '24px' }}>
-                      <span>5 Active Testnets</span>
-                    </div>
-                  </>
+                  <div className="rabby-hero-balance" style={{ fontSize: '28px' }}>
+                    <span>{formatIDR(totalPortfolioIdr)}</span>
+                  </div>
                 ) : (
                   <>
                     <div className="rabby-hero-balance">
@@ -476,8 +510,8 @@ export const App: React.FC = () => {
                         </>
                       )}
                     </div>
-                    <div style={{ fontSize: '12px', color: 'var(--text-dim)' }}>
-                      Testnet Balance (Auto-refreshed via RPC)
+                    <div style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '4px' }}>
+                      ≈ {formatIDR(singleChainIdr)}
                     </div>
                   </>
                 )}
@@ -534,19 +568,19 @@ export const App: React.FC = () => {
                       {filteredAssets.length}
                     </span>
                   </div>
-
-
                 </div>
 
                 <div className="rabby-token-list">
                   {filteredAssets.map((asset) => {
                     const bal = portfolioBalances[asset.id];
+                    const assetIdrVal = calculateIDRValue(bal?.formatted, asset.symbol, rates);
+
                     return (
                       <div
                         key={asset.id}
                         className="rabby-token-item"
                         onClick={() => handleOpenSendForAsset(asset.ledger, asset.kind)}
-                        title={`Klik untuk mengirim ${asset.symbol}`}
+                        title={`${bal ? formatDisplayBalance(bal.formatted) : '0.00'} ${asset.symbol} (${formatIDR(assetIdrVal)}) - Klik untuk mengirim`}
                       >
                         <div className="rabby-token-left">
                           <div className="rabby-token-avatar-wrap">
@@ -601,37 +635,35 @@ export const App: React.FC = () => {
                                 />
                                 {asset.badge.toUpperCase()}
                               </span>
+                              {asset.kind === 'token' && (() => {
+                                const activeTok = getActiveTokenAsset(asset.ledger);
+                                if (activeTok && 'address' in activeTok) {
+                                  return (
+                                    <button
+                                      type="button"
+                                      className="rabby-contract-chip"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setModalTargetLedger(asset.ledger);
+                                        setIsMintOpen(true);
+                                      }}
+                                      title="Klik untuk melihat atau mengganti alamat kontrak HTT"
+                                    >
+                                      {activeTok.address.slice(0, 6)}...{activeTok.address.slice(-4)}
+                                      <ExternalLink size={9} />
+                                    </button>
+                                  );
+                                }
+                                return null;
+                              })()}
                             </div>
                             <div className="rabby-token-balance-row">
                               {loadingLedgers[asset.ledger] || bal === undefined ? (
                                 <div className="rabby-skeleton rabby-skeleton-token-bal" />
                               ) : (
-                                <>
-                                  <span className="rabby-token-balance-val">
-                                    {bal ? formatDisplayBalance(bal.formatted) : '0.00'} {asset.symbol}
-                                  </span>
-                                  {asset.kind === 'token' && (() => {
-                                    const activeTok = getActiveTokenAsset(asset.ledger);
-                                    if (activeTok && 'address' in activeTok) {
-                                      return (
-                                        <button
-                                          type="button"
-                                          className="rabby-contract-chip"
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            setModalTargetLedger(asset.ledger);
-                                            setIsMintOpen(true);
-                                          }}
-                                          title="Klik untuk melihat atau mengganti alamat kontrak HTT"
-                                        >
-                                          {activeTok.address.slice(0, 6)}...{activeTok.address.slice(-4)}
-                                          <ExternalLink size={9} />
-                                        </button>
-                                      );
-                                    }
-                                    return null;
-                                  })()}
-                                </>
+                                <span className="rabby-token-balance-val">
+                                  {formatIDR(assetIdrVal)}
+                                </span>
                               )}
                             </div>
                           </div>
@@ -672,6 +704,7 @@ export const App: React.FC = () => {
         onSuccess={fetchAllBalances}
         initialLedger={modalTargetLedger}
         initialAsset={modalTargetAsset}
+        rates={rates}
       />
     </div>
   );
