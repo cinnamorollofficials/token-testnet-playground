@@ -225,41 +225,55 @@ input, select, textarea {
   flex-shrink: 0;
 }
 
-.rabby-header-network-wrap {
+.rabby-header-network-pill {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 6px;
   background: var(--bg-card-sub);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-pill);
-  padding: 4px 8px 4px 8px;
-  position: relative;
-  transition: border-color 0.2s;
+  padding: 4px 10px 4px 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  height: 30px;
 }
 
-.rabby-header-network-wrap:hover {
-  border-color: var(--border-hover);
+.rabby-header-network-pill:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-focus);
 }
 
-.rabby-header-network-logo {
-  width: 16px;
-  height: 16px;
+.rabby-header-network-all-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.rabby-header-network-all-text {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--primary);
+  letter-spacing: 0.5px;
+}
+
+.rabby-header-network-active-logo {
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   object-fit: cover;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
   flex-shrink: 0;
+  background: #ffffff;
 }
 
-.rabby-header-network-select {
-  appearance: none;
-  -webkit-appearance: none;
-  background: transparent;
-  border: none;
-  outline: none;
+.rabby-header-network-hidden-select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
   cursor: pointer;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-main);
-  padding-right: 2px;
 }
 
 .rabby-network-dot {

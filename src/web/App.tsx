@@ -385,19 +385,34 @@ export const App: React.FC = () => {
 
           {/* Right Zone: Network Selector + Actions */}
           <div className="rabby-header-right-group">
-            {/* Network Selector Pill */}
-            <div className="rabby-header-network-wrap">
-              {selectedLedger !== 'all' && (
+            {/* Network Selector Pill - Logo only with 'ALL' as default */}
+            <div
+              className="rabby-header-network-pill"
+              title={`Jaringan aktif: ${selectedLedger === 'all' ? 'All Chains (5 Testnets)' : singleChainNetwork?.name}. Klik untuk mengganti.`}
+            >
+              {selectedLedger === 'all' ? (
+                <div className="rabby-header-network-all-badge">
+                  <Layers size={13} color="var(--primary)" />
+                  <span className="rabby-header-network-all-text">ALL</span>
+                </div>
+              ) : (
                 <img
                   src={LEDGER_LOGOS[selectedLedger]}
                   alt={singleChainNetwork?.name}
-                  className="rabby-header-network-logo"
+                  className="rabby-header-network-active-logo"
                 />
               )}
+              <div
+                className="rabby-network-dot"
+                title={selectedLedger === 'all' ? 'All Testnets Connected (5 Chains)' : `${singleChainNetwork?.name} Testnet Connected`}
+              />
+
+              {/* Native invisible select covering the pill for seamless click-to-change */}
               <select
                 value={selectedLedger}
                 onChange={(e) => setSelectedLedger(e.target.value as ChainFilter)}
-                className="rabby-header-network-select"
+                className="rabby-header-network-hidden-select"
+                aria-label="Pilih Jaringan"
               >
                 {SUPPORTED_LEDGERS.map((l) => (
                   <option key={l.id} value={l.id} style={{ background: '#FFFFFF', color: '#0F172A' }}>
@@ -405,10 +420,6 @@ export const App: React.FC = () => {
                   </option>
                 ))}
               </select>
-              <div
-                className="rabby-network-dot"
-                title={selectedLedger === 'all' ? 'All Testnets Connected (5 Chains)' : `${singleChainNetwork?.name} Testnet Connected`}
-              />
             </div>
 
             {/* Expand to Tab */}
