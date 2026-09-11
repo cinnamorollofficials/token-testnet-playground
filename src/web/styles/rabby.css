@@ -24,6 +24,7 @@
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
   --text-dim: #64748b;
+  --color-rate: #818cf8;
 
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
@@ -761,7 +762,7 @@ textarea {
 .rabby-token-fiat-val {
   font-size: 15px;
   font-weight: 700;
-  color: var(--text-main);
+  color: #ffffff;
   letter-spacing: -0.2px;
   line-height: 1.25;
   white-space: nowrap;
@@ -774,15 +775,14 @@ textarea {
   gap: 4px;
   font-size: 12px;
   font-weight: 500;
-  color: var(--text-muted);
   line-height: 1.2;
   white-space: nowrap;
 }
 
 .rabby-token-unit-price {
   font-size: 12px;
-  font-weight: 500;
-  color: var(--text-muted);
+  font-weight: 600;
+  color: var(--color-rate);
   letter-spacing: -0.1px;
   white-space: nowrap;
 }
@@ -1340,9 +1340,9 @@ textarea {
 .rabby-rate-tag {
   font-size: 11px;
   font-weight: 600;
-  color: var(--text-muted);
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid var(--border-subtle);
+  color: var(--color-rate);
+  background: rgba(129, 140, 248, 0.08);
+  border: 1px solid rgba(129, 140, 248, 0.2);
   padding: 1px 6px;
   border-radius: 4px;
   line-height: 1.3;
