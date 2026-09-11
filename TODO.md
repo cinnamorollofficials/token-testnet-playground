@@ -189,10 +189,10 @@ Legenda: `👤` = butuh tindakan manual user · `🌐` = butuh network/testnet R
 
 ## Fase 8 — Transisi UI: Bottom Sheet (Data Pendek) & Halaman Baru (Data Panjang) 📱
 
-- [ ] **1. Komponen Fondasi BottomSheet & SubpageLayout + Styling CSS**
-  - [ ] Buat `src/web/components/BottomSheet.tsx` (backdrop blur, slide-up animation, handle pill, header, close handlers)
-  - [ ] Buat `src/web/components/SubpageLayout.tsx` (sticky top bar, tombol Back `<ArrowLeft />`, title, right action, scrollable body)
-  - [ ] Tambahkan styling & animasi `.rabby-sheet-*` dan `.rabby-subpage-*` di `src/web/styles/rabby.css`
+- [x] **1. Komponen Fondasi BottomSheet & SubpageLayout + Styling CSS**
+  - [x] Buat `src/web/components/BottomSheet.tsx` (backdrop blur, slide-up animation, handle pill, header, close handlers)
+  - [x] Buat `src/web/components/SubpageLayout.tsx` (sticky top bar, tombol Back `<ArrowLeft />`, title, right action, scrollable body)
+  - [x] Tambahkan styling & animasi `.rabby-sheet-*` dan `.rabby-subpage-*` di `src/web/styles/rabby.css`
 - [ ] **2. Konversi Aksi Cepat ke Bottom Sheet (Data Pendek)**
   - [ ] Konversi `ReceiveModal` menjadi `ReceiveSheet` (menggunakan `BottomSheet` untuk QR code & address copy)
   - [ ] Konversi `FaucetModal` menjadi `FaucetSheet` (menggunakan `BottomSheet` untuk 1-click testnet funding)
