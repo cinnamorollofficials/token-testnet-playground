@@ -322,26 +322,31 @@ textarea {
   color: var(--primary);
 }
 
-/* Quick Action Squircles */
+/* Quick Action Squircles (2 per row) */
 .rabby-actions-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 12px;
   margin-top: 20px;
 }
 
 .rabby-action-squircle {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 12px;
-  height: 48px;
+  padding: 14px;
+  height: 56px;
   background: #ffffff;
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: 14px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
   transition: all 0.2s ease;
   cursor: pointer;
+}
+
+.rabby-action-squircle.rabby-action-wide {
+  grid-column: span 2;
 }
 
 .rabby-action-squircle:hover {
@@ -352,14 +357,27 @@ textarea {
 }
 
 .rabby-action-squircle:hover .rabby-action-icon {
-  transform: scale(1.1);
+  transform: scale(1.12);
 }
 
 .rabby-action-icon {
-  width: 20px;
-  height: 20px;
+  width: 26px;
+  height: 26px;
   color: var(--primary);
   transition: transform 0.2s ease;
+}
+
+.rabby-action-tx-badge {
+  position: absolute;
+  top: 8px;
+  right: 14px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #ffffff;
+  background: var(--primary);
+  padding: 2px 7px;
+  border-radius: var(--radius-pill);
+  box-shadow: 0 2px 6px rgba(112, 91, 255, 0.35);
 }
 
 /* Account Info Pill */
