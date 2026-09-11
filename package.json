@@ -8,6 +8,7 @@
   },
   "scripts": {
     "dev": "vite",
+    "dev:ext": "vite build --watch --outDir dist/ext",
     "build": "tsc",
     "build:web": "vite build",
     "build:ext": "vite build --outDir dist/ext",
