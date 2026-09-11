@@ -235,17 +235,17 @@ Legenda: `👤` = butuh tindakan manual user · `🌐` = butuh network/testnet R
 
 ## Fase 10 — Penghilangan Seluruh Shadow di `.rabby-app-container` & Elemen Anaknya 🚫✨
 
-- [ ] **1. CSS Design System & Pembersihan Shadow (`src/web/styles/rabby.css`)**
-  - [ ] Set variabel `--shadow-card: none` dan `--shadow-glow: none`
-  - [ ] Tambahkan aturan penegakan flat `.rabby-app-container, .rabby-app-container * { box-shadow: none !important; }`
-  - [ ] Hapus seluruh deklarasi `box-shadow` pada header brand icon, network btn, card utama, chart glass card & hover, action squircle & hover, action tx badge, tombol primary & secondary, avatar wrap, chain badge, bottom sheet, modal dialog, qr box, active tabs, quick send btn & hover, live dot, dan tx item hover
-- [ ] **2. Pembersihan Inline Shadow Style di Komponen (`src/web/App.tsx`)**
-  - [ ] Hapus inline style `boxShadow: 'var(--shadow-glow)'` pada onboarding icon dompet
-- [ ] **3. Pengujian, Verifikasi & Dokumentasi**
-  - [ ] Validasi linter `npm run lint` (0 error, 0 warning)
-  - [ ] Validasi 39 unit tests `npm run test` (seluruh tes hijau)
-  - [ ] Validasi build web dan Chrome extension (`npm run build:web`, `npm run build:ext`)
-  - [ ] Update `walkthrough.md` dan commit per task
+- [x] **1. CSS Design System & Pembersihan Shadow (`src/web/styles/rabby.css`)**
+  - [x] Set variabel `--shadow-card: none` dan `--shadow-glow: none`
+  - [x] Tambahkan aturan penegakan flat `.rabby-app-container, .rabby-app-container * { box-shadow: none !important; }`
+  - [x] Hapus seluruh deklarasi `box-shadow` pada header brand icon, network btn, card utama, chart glass card & hover, action squircle & hover, action tx badge, tombol primary & secondary, avatar wrap, chain badge, bottom sheet, modal dialog, qr box, active tabs, quick send btn & hover, live dot, dan tx item hover
+- [x] **2. Pembersihan Inline Shadow Style di Komponen (`src/web/App.tsx`)**
+  - [x] Hapus inline style `boxShadow: 'var(--shadow-glow)'` pada onboarding icon dompet
+- [x] **3. Pengujian, Verifikasi & Dokumentasi**
+  - [x] Validasi linter `npm run lint` (0 error, 0 warning)
+  - [x] Validasi 39 unit tests `npm run test` (seluruh tes hijau)
+  - [x] Validasi build web dan Chrome extension (`npm run build:web`, `npm run build:ext`)
+  - [x] Update `walkthrough.md` dan commit per task
 
 ---
 

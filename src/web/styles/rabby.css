@@ -752,6 +752,7 @@ textarea {
   letter-spacing: -0.2px;
   line-height: 1.25;
   white-space: nowrap;
+  color: #fff;
 }
 
 .rabby-token-price-row {
