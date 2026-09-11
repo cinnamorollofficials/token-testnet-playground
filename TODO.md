@@ -196,10 +196,10 @@ Legenda: `👤` = butuh tindakan manual user · `🌐` = butuh network/testnet R
 - [x] **2. Konversi Aksi Cepat ke Bottom Sheet (Data Pendek)**
   - [x] Konversi `ReceiveModal` menjadi `ReceiveSheet` (menggunakan `BottomSheet` untuk QR code & address copy)
   - [x] Konversi `FaucetModal` menjadi `FaucetSheet` (menggunakan `BottomSheet` untuk 1-click testnet funding)
-- [ ] **3. Konversi Alur Panjang ke Halaman Baru / Subpage (Data Panjang)**
-  - [ ] Konversi `SendModal` menjadi `SendView` (menggunakan `SubpageLayout` untuk form transfer, estimasi fee, simulasi saldo)
-  - [ ] Konversi `MintTokenModal` menjadi `MintTokenView` (menggunakan `SubpageLayout` untuk deploy smart contract & minting)
-  - [ ] Konversi `TransactionModal` menjadi `TransactionView` (menggunakan `SubpageLayout` untuk filter & riwayat transaksi panjang)
+- [x] **3. Konversi Alur Panjang ke Halaman Baru / Subpage (Data Panjang)**
+  - [x] Konversi `SendModal` menjadi `SendView` (menggunakan `SubpageLayout` untuk form transfer, estimasi fee, simulasi saldo)
+  - [x] Konversi `MintTokenModal` menjadi `MintTokenView` (menggunakan `SubpageLayout` untuk deploy smart contract & minting)
+  - [x] Konversi `TransactionModal` menjadi `TransactionView` (menggunakan `SubpageLayout` untuk filter & riwayat transaksi panjang)
 - [ ] **4. Integrasi Screen Routing di App.tsx & Penyelarasan Onboarding**
   - [ ] Tambahkan state navigasi `currentScreen` (`dashboard`, `send`, `mint`, `transactions`, `scanner`, `generator`) di `App.tsx`
   - [ ] Hubungkan aksi tombol Quick Actions & Asset rows untuk berpindah screen atau memunculkan bottom sheet

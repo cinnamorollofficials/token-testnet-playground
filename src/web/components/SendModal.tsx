@@ -8,8 +8,8 @@ import { validateAddress } from '../../core/validate.js';
 import type { Asset, UnsignedTx, LedgerId } from '../../core/types.js';
 import { formatIDR, calculateIDRValue, TESTNET_TO_INDODAX_MAP, type RatesMap } from '../../core/rates.js';
 import { saveTransaction } from '../../core/history.js';
+import { SubpageLayout } from './SubpageLayout';
 import {
-  X,
   Send,
   ShieldCheck,
   ArrowDownLeft,
@@ -211,19 +211,21 @@ export const SendModal: React.FC<Props> = ({
   };
 
 
+  if (!isOpen) return null;
+
   return (
-    <div className="rabby-modal-overlay">
-      <div className="rabby-modal-card">
-        {/* Header */}
-        <div className="rabby-modal-header">
-          <div className="rabby-modal-title">
-            <Send className="rabby-shield-icon" size={22} />
-            {step === 'simulate' ? 'Pre-execution Simulation' : step === 'confirmed' ? 'Transaksi Terkonfirmasi' : 'Kirim Aset'}
-          </div>
-          <button className="rabby-close-btn" onClick={handleResetAndClose}>
-            <X size={20} />
-          </button>
-        </div>
+    <SubpageLayout
+      title={step === 'simulate' ? 'Pre-execution Simulation' : step === 'confirmed' ? 'Transaksi Terkonfirmasi' : `Kirim Aset (${currentNetwork.name})`}
+      icon={<Send size={18} />}
+      onBack={() => {
+        if (step === 'simulate') {
+          setStep('form');
+        } else {
+          handleResetAndClose();
+        }
+      }}
+      backLabel={step === 'simulate' ? 'Kembali ke Form' : 'Kembali'}
+    >
 
         {/* Error Alert */}
         {errorMsg && (
@@ -552,7 +554,8 @@ export const SendModal: React.FC<Props> = ({
             </button>
           </div>
         )}
-      </div>
-    </div>
+    </SubpageLayout>
   );
 };
+
+export { SendModal as SendView };

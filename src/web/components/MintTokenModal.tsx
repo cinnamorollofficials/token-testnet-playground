@@ -6,7 +6,8 @@ import { TEST_TOKEN_ABI, TEST_TOKEN_BYTECODE } from '../../contracts/TestTokenAr
 import { ContractFactory, Contract, JsonRpcProvider, Wallet, getAddress } from 'ethers';
 import type { LedgerId } from '../../core/types.js';
 import { saveTransaction } from '../../core/history.js';
-import { X, Coins, Sparkles, Loader2, CheckCircle2, AlertCircle, ExternalLink, Check, Save } from 'lucide-react';
+import { SubpageLayout } from './SubpageLayout';
+import { Coins, Sparkles, Loader2, CheckCircle2, AlertCircle, ExternalLink, Check, Save } from 'lucide-react';
 
 interface Props {
   isOpen: boolean;
@@ -216,18 +217,14 @@ export const MintTokenModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, in
     }
   };
 
+  if (!isOpen) return null;
+
   return (
-    <div className="rabby-modal-overlay">
-      <div className="rabby-modal-card" style={{ maxWidth: '520px' }}>
-        <div className="rabby-modal-header">
-          <div className="rabby-modal-title">
-            <Coins className="rabby-shield-icon" size={22} />
-            Kelola & Mint Hadi Token Test (HTT)
-          </div>
-          <button className="rabby-close-btn" onClick={onClose}>
-            <X size={20} />
-          </button>
-        </div>
+    <SubpageLayout
+      title="Kelola & Mint Hadi Token Test (HTT)"
+      icon={<Coins size={18} />}
+      onBack={onClose}
+    >
 
         {/* EVM Chain tabs */}
         <div className="rabby-chain-tabs">
@@ -368,8 +365,9 @@ export const MintTokenModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, in
             Deploy Kontrak Baru HTT dari Akun Ini (Butuh Gas Fee)
           </button>
         </div>
-      </div>
-    </div>
+    </SubpageLayout>
   );
 };
+
+export { MintTokenModal as MintTokenView };
 
