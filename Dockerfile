@@ -1,13 +1,14 @@
 # Stage 1: Build Web App
-FROM node:22-alpine AS builder
+FROM node:22-slim AS builder
 
 WORKDIR /app
 
 # Salin dependencies manifest
 COPY package*.json ./
 
-# Install dependencies secara bersih & reproducible
-RUN npm ci
+# Install dependencies
+# Menggunakan npm install agar optional native dependencies untuk arsitektur Linux (Rolldown, LightningCSS) dapat diunduh otomatis
+RUN npm install
 
 # Salin seluruh source code proyek
 COPY . .
