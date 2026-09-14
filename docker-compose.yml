@@ -1,0 +1,9 @@
+services:
+  test-playground:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: token-testnet-playground
+    ports:
+      - "3000:80"
+    restart: unless-stopped
