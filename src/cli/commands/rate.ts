@@ -11,6 +11,7 @@ interface DisplayAssetItem {
 
 const ASSET_CATALOG: DisplayAssetItem[] = [
   { name: 'Bitcoin', testnet: 'Signet', symbol: 'sBTC' },
+  { name: 'Bitcoin', testnet: 'Testnet 4', symbol: 'tBTC' },
   { name: 'Ethereum', testnet: 'Sepolia', symbol: 'ETH' },
   { name: 'Polygon', testnet: 'Amoy', symbol: 'POL' },
   { name: 'Solana', testnet: 'Devnet', symbol: 'SOL' },
