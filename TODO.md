@@ -298,7 +298,38 @@ Legenda: `👤` = butuh tindakan manual user · `🌐` = butuh network/testnet R
 
 ---
 
+## Fase 12 — Glass Morphism Effect ke Semua Card 🪟✨
+
+- [x] **1. CSS Design Tokens (`src/web/styles/rabby.css`)**
+  - [x] Tambah `--glass-bg-heavy/medium/light` (3 tier gradient semi-transparan)
+  - [x] Tambah `--glass-blur-heavy/medium/light` (blur 16px / 12px / 8px)
+  - [x] Tambah `--glass-border` (`rgba(255,255,255,0.09)`)
+  - [x] Tambah `--glass-border-hover` (`rgba(112,91,255,0.40)` — primary glow)
+- [x] **2. Glass Medium — Card Utama**
+  - [x] `.rabby-card`: solid → `var(--glass-bg-medium)` + `backdrop-filter: blur(12px)` + hover glow
+  - [x] `.rabby-hero-card`: gradient solid → `var(--glass-bg-medium)` + blur + hover glow
+- [x] **3. Glass Medium — Overlay Surfaces**
+  - [x] `.rabby-modal-card`: solid → glass-medium (sangat efektif di atas overlay backdrop)
+  - [x] `.rabby-sheet-card`: solid → glass-medium (efektif di bottom sheet)
+- [x] **4. Glass Light — Elemen Interaktif**
+  - [x] `.rabby-action-squircle`: solid → glass-light; hover escalates ke glass-medium + glow
+  - [x] `.rabby-account-pill`: solid → glass-light + hover glow
+- [x] **5. Glass Light — Asset List**
+  - [x] `.rabby-token-item`: solid → glass-light; hover escalates ke glass-medium + glow
+- [x] **6. Hover System — Semua Card Glass**
+  - [x] Semua card glass punya `border-color: var(--glass-border-hover)` saat hover
+  - [x] `.rabby-chart-glass-card` sudah ada dari sebelumnya (tidak berubah)
+  - [x] Shield box (hijau) & QR box (putih) **tidak disentuh** (intentional)
+- [x] **7. Verifikasi & Gate**
+  - [x] `npm run lint` — 0 error, 0 warning (49 files)
+  - [x] `npm run test` — 39 tests hijau
+  - [x] `npm run build:web` & `npm run build:ext` — build bersih
+  - [x] 6 commit per task: `feat(glass): ...`
+
+---
+
 ## Ditunda (Backlog)
+
 
 - [ ] 👤 **Kaia — putuskan coin type** (coin type 60 vs 8217 di Kaia Wallet)
 - [ ] Transfer BTC native (UTXO / PSBT / Fee sat/vB)
