@@ -474,69 +474,70 @@ export const App: React.FC = () => {
                 </div>
               )}
 
-              {/* Right Zone: Network Selector + Actions */}
-              <div className="rabby-header-right-group">
-                {/* Network Selector Button - Icon only (no text, no dot) */}
-                <div
-                  className="rabby-header-network-btn"
-                  title={`Jaringan: ${selectedLedger === 'all' ? `All Chains (${SUPPORTED_LEDGERS.length - 1} Testnets)` : singleChainNetwork?.name}. Klik untuk mengganti.`}
-                >
-                  {selectedLedger === 'all' ? (
-                    <div className="rabby-header-chain-stack" aria-hidden="true">
-                      {STACKED_HEADER_CHAINS.map((ledgerId, idx) => (
-                        <img
-                          key={ledgerId}
-                          src={LEDGER_LOGOS[ledgerId]}
-                          alt=""
-                          className="rabby-header-chain-stack-item"
-                          style={{ zIndex: STACKED_HEADER_CHAINS.length + 1 - idx }}
-                          loading="lazy"
-                        />
-                      ))}
-                      <div
-                        className="rabby-header-chain-stack-item rabby-header-chain-stack-more"
-                        style={{ zIndex: 1 }}
-                      >
-                        +
-                      </div>
-                    </div>
-                  ) : (
-                    <img
-                      src={LEDGER_LOGOS[selectedLedger]}
-                      alt={singleChainNetwork?.name}
-                      className="rabby-header-network-active-logo"
-                    />
-                  )}
-
-                  {/* Native invisible select covering the button for seamless click-to-change */}
-                  <select
-                    value={selectedLedger}
-                    onChange={(e) => setSelectedLedger(e.target.value as ChainFilter)}
-                    className="rabby-header-network-hidden-select"
-                    aria-label="Pilih Jaringan"
+              {/* Right Zone: Network Selector + Actions (Only when unlocked) */}
+              {isUnlocked && (
+                <div className="rabby-header-right-group">
+                  {/* Network Selector Button - Icon only (no text, no dot) */}
+                  <div
+                    className="rabby-header-network-btn"
+                    title={`Jaringan: ${selectedLedger === 'all' ? `All Chains (${SUPPORTED_LEDGERS.length - 1} Testnets)` : singleChainNetwork?.name}. Klik untuk mengganti.`}
                   >
-                    {SUPPORTED_LEDGERS.map((l) => (
-                      <option key={l.id} value={l.id} style={{ background: 'var(--bg-card)', color: 'var(--text-main)' }}>
-                        {l.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                    {selectedLedger === 'all' ? (
+                      <div className="rabby-header-chain-stack" aria-hidden="true">
+                        {STACKED_HEADER_CHAINS.map((ledgerId, idx) => (
+                          <img
+                            key={ledgerId}
+                            src={LEDGER_LOGOS[ledgerId]}
+                            alt=""
+                            className="rabby-header-chain-stack-item"
+                            style={{ zIndex: STACKED_HEADER_CHAINS.length + 1 - idx }}
+                            loading="lazy"
+                          />
+                        ))}
+                        <div
+                          className="rabby-header-chain-stack-item rabby-header-chain-stack-more"
+                          style={{ zIndex: 1 }}
+                        >
+                          +
+                        </div>
+                      </div>
+                    ) : (
+                      <img
+                        src={LEDGER_LOGOS[selectedLedger]}
+                        alt={singleChainNetwork?.name}
+                        className="rabby-header-network-active-logo"
+                      />
+                    )}
 
-                {/* Header Lock Icon */}
-                <button
-                  type="button"
-                  className={`rabby-header-lock-btn ${isUnlocked ? 'active' : 'locked'}`}
-                  onClick={isUnlocked ? () => { lockSession(); setCurrentScreen('dashboard'); } : () => setIsScannerOpen(true)}
-                  title={
-                    isUnlocked
-                      ? `Sesi aktif (${fingerprint}). Klik untuk mengunci wallet.`
-                      : 'Wallet terkunci. Klik untuk scan QR atau login.'
-                  }
-                >
-                  <Lock size={18} color="#ffffff" />
-                </button>
-              </div>
+                    {/* Native invisible select covering the button for seamless click-to-change */}
+                    <select
+                      value={selectedLedger}
+                      onChange={(e) => setSelectedLedger(e.target.value as ChainFilter)}
+                      className="rabby-header-network-hidden-select"
+                      aria-label="Pilih Jaringan"
+                    >
+                      {SUPPORTED_LEDGERS.map((l) => (
+                        <option key={l.id} value={l.id} style={{ background: 'var(--bg-card)', color: 'var(--text-main)' }}>
+                          {l.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Header Lock Icon */}
+                  <button
+                    type="button"
+                    className="rabby-header-lock-btn active"
+                    onClick={() => {
+                      lockSession();
+                      setCurrentScreen('dashboard');
+                    }}
+                    title={`Sesi aktif (${fingerprint}). Klik untuk mengunci wallet.`}
+                  >
+                    <Lock size={18} color="#ffffff" />
+                  </button>
+                </div>
+              )}
             </header>
 
             {/* Card Body */}
