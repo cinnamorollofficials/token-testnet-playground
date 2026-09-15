@@ -1869,3 +1869,214 @@ textarea {
     border-radius: var(--radius-outer);
   }
 }
+
+/* Password Unlock View & Vault Setup */
+.rabby-unlock-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 36px 16px 28px;
+}
+
+.rabby-unlock-icon-wrap {
+  margin-bottom: 16px;
+}
+
+.rabby-unlock-icon-circle {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: var(--primary-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(112, 91, 255, 0.35);
+}
+
+.rabby-unlock-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 6px 0;
+  letter-spacing: -0.5px;
+}
+
+.rabby-unlock-subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0 0 20px 0;
+  max-width: 280px;
+  line-height: 1.4;
+}
+
+.rabby-unlock-error-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: var(--radius-inner);
+  margin-bottom: 16px;
+  width: 100%;
+  text-align: left;
+}
+
+.rabby-unlock-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rabby-unlock-input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.rabby-unlock-input-prefix {
+  position: absolute;
+  left: 14px;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.rabby-unlock-input {
+  width: 100%;
+  padding: 12px 42px 12px 40px;
+  background: var(--bg-card-sub);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  font-size: 14px;
+  color: #ffffff;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.rabby-unlock-input:focus {
+  border-color: var(--border-focus);
+  background: var(--bg-card-hover);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+.rabby-unlock-eye-btn {
+  position: absolute;
+  right: 12px;
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  transition: opacity 0.15s ease;
+}
+
+.rabby-unlock-eye-btn:hover {
+  opacity: 0.8;
+}
+
+.rabby-unlock-submit-btn {
+  width: 100%;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: var(--radius-pill);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 4px;
+}
+
+.rabby-unlock-loading-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rabby-unlock-footer {
+  margin-top: 24px;
+  width: 100%;
+}
+
+.rabby-unlock-reset-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-size: 12px;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: color 0.15s ease;
+}
+
+.rabby-unlock-reset-btn:hover {
+  color: var(--text-main);
+}
+
+.rabby-unlock-reset-box {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: var(--radius-inner);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: left;
+}
+
+.rabby-unlock-reset-warning {
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+  color: #fca5a5;
+  line-height: 1.4;
+}
+
+.rabby-unlock-reset-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.rabby-unlock-cancel-btn {
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: var(--radius-pill);
+}
+
+.rabby-unlock-danger-btn {
+  padding: 6px 12px;
+  font-size: 12px;
+  background: var(--danger);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  font-weight: 700;
+  transition: opacity 0.15s ease;
+}
+
+.rabby-unlock-danger-btn:hover {
+  opacity: 0.9;
+}
+
+@keyframes rabbySpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.rabby-spin-animate {
+  animation: rabbySpin 1s linear infinite;
+}
