@@ -42,7 +42,7 @@ const SUPPORTED_LEDGERS: { id: ChainFilter; label: string }[] = [
   { id: 'bitcoin-t4', label: 'BTC Testnet 4 (tBTC)' },
 ];
 
-const STACKED_HEADER_CHAINS: LedgerId[] = ['ethereum', 'polygon', 'solana', 'bitcoin'];
+const STACKED_HEADER_CHAINS: LedgerId[] = ['ethereum', 'polygon', 'solana'];
 
 interface AssetItem {
   id: string;
@@ -472,10 +472,16 @@ export const App: React.FC = () => {
                           src={LEDGER_LOGOS[ledgerId]}
                           alt=""
                           className="rabby-header-chain-stack-item"
-                          style={{ zIndex: STACKED_HEADER_CHAINS.length - idx }}
+                          style={{ zIndex: STACKED_HEADER_CHAINS.length + 1 - idx }}
                           loading="lazy"
                         />
                       ))}
+                      <div
+                        className="rabby-header-chain-stack-item rabby-header-chain-stack-more"
+                        style={{ zIndex: 1 }}
+                      >
+                        +
+                      </div>
                     </div>
                   ) : (
                     <img
