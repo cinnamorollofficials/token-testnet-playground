@@ -5,7 +5,7 @@ import { deriveAccount } from '../../core/derive.js';
 
 export type ChainFilter = LedgerId | 'all';
 
-export const ACTIVE_LEDGERS: LedgerId[] = ['ethereum', 'polygon', 'solana', 'xrpl', 'bitcoin'];
+export const ACTIVE_LEDGERS: LedgerId[] = ['ethereum', 'polygon', 'solana', 'xrpl', 'bitcoin', 'bitcoin-t4'];
 
 const SESSION_STORAGE_KEY = 'pg_active_mnemonic_session';
 
@@ -102,6 +102,7 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
       solana: null,
       xrpl: null,
       bitcoin: null,
+      'bitcoin-t4': null,
       kaia: null,
     };
     if (!seed) return emptyMap;
@@ -123,6 +124,7 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
       solana: null,
       xrpl: null,
       bitcoin: null,
+      'bitcoin-t4': null,
       kaia: null,
     };
     if (!seed) return emptyMap;
