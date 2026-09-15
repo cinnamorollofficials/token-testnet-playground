@@ -42,6 +42,8 @@ const SUPPORTED_LEDGERS: { id: ChainFilter; label: string }[] = [
   { id: 'bitcoin-t4', label: 'BTC Testnet 4 (tBTC)' },
 ];
 
+const STACKED_HEADER_CHAINS: LedgerId[] = ['ethereum', 'polygon', 'solana'];
+
 interface AssetItem {
   id: string;
   ledger: LedgerId;
@@ -432,402 +434,405 @@ export const App: React.FC = () => {
                 <button
                   type="button"
                   className="rabby-header-acc-pill"
-              onClick={() => {
-                setPortfolioBalances({});
-                setActiveAccountIndex(activeAccountIndex === 0 ? 1 : 0);
-              }}
-              title={
-                displayedAddress
-                  ? `Akun aktif: Account #${activeAccountIndex} (${truncateAddress(displayedAddress, 6, 4)}). Klik untuk beralih ke Account #${activeAccountIndex === 0 ? 1 : 0}`
-                  : `Akun aktif: Account #${activeAccountIndex}. Klik untuk beralih ke Account #${activeAccountIndex === 0 ? 1 : 0}`
-              }
-            >
-              <div className="rabby-header-avatar">#{activeAccountIndex}</div>
-              <span className="rabby-header-acc-name">Acc #{activeAccountIndex}</span>
-              <ArrowLeftRight size={11} className="rabby-header-acc-switch-icon" />
-            </button>
-          ) : (
-            <div className="rabby-header-brand">
-              <div className="rabby-header-brand-icon">
-                <Wallet size={14} color="#fff" />
-              </div>
-              <span className="rabby-header-brand-title">Testnet Playground</span>
-            </div>
-          )}
-
-          {/* Right Zone: Network Selector + Actions */}
-          <div className="rabby-header-right-group">
-            {/* Network Selector Button - Icon only (no text, no dot) */}
-            <div
-              className="rabby-header-network-btn"
-              title={`Jaringan: ${selectedLedger === 'all' ? 'All Chains (5 Testnets)' : singleChainNetwork?.name}. Klik untuk mengganti.`}
-            >
-              {selectedLedger === 'all' ? (
-                <Layers size={15} color="#ffffff" />
+                  onClick={() => {
+                    setPortfolioBalances({});
+                    setActiveAccountIndex(activeAccountIndex === 0 ? 1 : 0);
+                  }}
+                  title={
+                    displayedAddress
+                      ? `Akun aktif: Account #${activeAccountIndex} (${truncateAddress(displayedAddress, 6, 4)}). Klik untuk beralih ke Account #${activeAccountIndex === 0 ? 1 : 0}`
+                      : `Akun aktif: Account #${activeAccountIndex}. Klik untuk beralih ke Account #${activeAccountIndex === 0 ? 1 : 0}`
+                  }
+                >
+                  <div className="rabby-header-avatar">#{activeAccountIndex}</div>
+                  <span className="rabby-header-acc-name">Acc #{activeAccountIndex}</span>
+                  <ArrowLeftRight size={11} className="rabby-header-acc-switch-icon" />
+                </button>
               ) : (
-                <img
-                  src={LEDGER_LOGOS[selectedLedger]}
-                  alt={singleChainNetwork?.name}
-                  className="rabby-header-network-active-logo"
-                />
+                <div className="rabby-header-brand">
+                  <div className="rabby-header-brand-icon">
+                    <Wallet size={14} color="#fff" />
+                  </div>
+                  <span className="rabby-header-brand-title">Testnet Playground</span>
+                </div>
               )}
 
-              {/* Native invisible select covering the button for seamless click-to-change */}
-              <select
-                value={selectedLedger}
-                onChange={(e) => setSelectedLedger(e.target.value as ChainFilter)}
-                className="rabby-header-network-hidden-select"
-                aria-label="Pilih Jaringan"
-              >
-                {SUPPORTED_LEDGERS.map((l) => (
-                  <option key={l.id} value={l.id} style={{ background: 'var(--bg-card)', color: 'var(--text-main)' }}>
-                    {l.label}
-                  </option>
-                ))}
-              </select>
-            </div>
+              {/* Right Zone: Network Selector + Actions */}
+              <div className="rabby-header-right-group">
+                {/* Network Selector Button - Icon only (no text, no dot) */}
+                <div
+                  className="rabby-header-network-btn"
+                  title={`Jaringan: ${selectedLedger === 'all' ? `All Chains (${SUPPORTED_LEDGERS.length - 1} Testnets)` : singleChainNetwork?.name}. Klik untuk mengganti.`}
+                >
+                  {selectedLedger === 'all' ? (
+                    <div className="rabby-header-chain-stack" aria-hidden="true">
+                      {STACKED_HEADER_CHAINS.map((ledgerId, idx) => (
+                        <img
+                          key={ledgerId}
+                          src={LEDGER_LOGOS[ledgerId]}
+                          alt=""
+                          className="rabby-header-chain-stack-item"
+                          style={{ zIndex: STACKED_HEADER_CHAINS.length - idx }}
+                          loading="lazy"
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <img
+                      src={LEDGER_LOGOS[selectedLedger]}
+                      alt={singleChainNetwork?.name}
+                      className="rabby-header-network-active-logo"
+                    />
+                  )}
 
-            {/* Header Lock Icon */}
-            <button
-              type="button"
-              className={`rabby-header-lock-btn ${isUnlocked ? 'active' : 'locked'}`}
-              onClick={isUnlocked ? () => { lockSession(); setCurrentScreen('dashboard'); } : () => setIsScannerOpen(true)}
-              title={
-                isUnlocked
-                  ? `Sesi aktif (${fingerprint}). Klik untuk mengunci wallet.`
-                  : 'Wallet terkunci. Klik untuk scan QR atau login.'
-              }
-            >
-              <Lock size={14} />
-            </button>
-          </div>
-        </header>
+                  {/* Native invisible select covering the button for seamless click-to-change */}
+                  <select
+                    value={selectedLedger}
+                    onChange={(e) => setSelectedLedger(e.target.value as ChainFilter)}
+                    className="rabby-header-network-hidden-select"
+                    aria-label="Pilih Jaringan"
+                  >
+                    {SUPPORTED_LEDGERS.map((l) => (
+                      <option key={l.id} value={l.id} style={{ background: 'var(--bg-card)', color: 'var(--text-main)' }}>
+                        {l.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-        {/* Card Body */}
-        <div className="rabby-card-body">
-          {!isUnlocked ? (
-            /* LOCKED / ONBOARDING VIEW */
-            <div style={{ textAlign: 'center', padding: '28px 12px' }}>
-              <div
-                style={{
-                  width: '68px',
-                  height: '68px',
-                  borderRadius: '50%',
-                  background: 'var(--primary-gradient)',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginBottom: '20px',
-                }}
-              >
-                <Wallet size={34} color="#fff" />
-              </div>
-
-              <h2 style={{ fontSize: '22px', fontWeight: 800, marginBottom: '8px' }}>
-                Rabby-Style Testnet Playground
-              </h2>
-              <p style={{ fontSize: '13px', color: 'var(--text-muted)', lineHeight: '1.6', marginBottom: '28px' }}>
-                Keamanan in-memory: Mnemonic tidak disimpan di disk. Masuk dengan memindai foto QR Code atau buat frasa baru.
-              </p>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <button className="rabby-btn-primary" onClick={() => setIsScannerOpen(true)}>
-                  <QrCode size={18} /> Scan QR Code via Kamera / Foto
-                </button>
-                <button className="rabby-btn-secondary" onClick={() => setIsGeneratorOpen(true)}>
-                  <Coins size={18} /> Generate Mnemonic Baru + QR Code
+                {/* Header Lock Icon */}
+                <button
+                  type="button"
+                  className={`rabby-header-lock-btn ${isUnlocked ? 'active' : 'locked'}`}
+                  onClick={isUnlocked ? () => { lockSession(); setCurrentScreen('dashboard'); } : () => setIsScannerOpen(true)}
+                  title={
+                    isUnlocked
+                      ? `Sesi aktif (${fingerprint}). Klik untuk mengunci wallet.`
+                      : 'Wallet terkunci. Klik untuk scan QR atau login.'
+                  }
+                >
+                  <Lock size={14} />
                 </button>
               </div>
-            </div>
-          ) : (
-            /* UNLOCKED DASHBOARD VIEW */
-            <>
-              {/* Hero Portfolio Section */}
-              <div className="rabby-hero-section">
-                {selectedLedger !== 'all' && (
-                  <div className="rabby-hero-balance">
-                    {loadingLedgers[selectedLedger] || !singleChainNativeBalance ? (
-                      <div className="rabby-skeleton rabby-skeleton-hero" />
-                    ) : (
-                      <>
-                        <span title={singleChainNativeBalance.formatted}>
-                          {formatDisplayBalance(singleChainNativeBalance.formatted, 5)}
-                        </span>
-                        <span className="rabby-hero-symbol">{singleChainNetwork?.nativeAsset.symbol}</span>
-                      </>
-                    )}
+            </header>
+
+            {/* Card Body */}
+            <div className="rabby-card-body">
+              {!isUnlocked ? (
+                /* LOCKED / ONBOARDING VIEW */
+                <div style={{ textAlign: 'center', padding: '28px 12px' }}>
+                  <div
+                    style={{
+                      width: '68px',
+                      height: '68px',
+                      borderRadius: '50%',
+                      background: 'var(--primary-gradient)',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginBottom: '20px',
+                    }}
+                  >
+                    <Wallet size={34} color="#fff" />
                   </div>
-                )}
 
-                {/* Glass Effect Chart Card */}
-                <div className="rabby-chart-glass-card">
-                  <div className="rabby-chart-glass-top">
-                    <div className="rabby-chart-glass-balance">
-                      {selectedLedger !== 'all' && '≈ '}
-                      {hoveredChartPoint ? hoveredChartPoint.formattedValue : formatIDR(currentValuationIdr)}
+                  <h2 style={{ fontSize: '22px', fontWeight: 800, marginBottom: '8px' }}>
+                    Rabby-Style Testnet Playground
+                  </h2>
+                  <p style={{ fontSize: '13px', color: 'var(--text-muted)', lineHeight: '1.6', marginBottom: '28px' }}>
+                    Keamanan in-memory: Mnemonic tidak disimpan di disk. Masuk dengan memindai foto QR Code atau buat frasa baru.
+                  </p>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <button className="rabby-btn-primary" onClick={() => setIsScannerOpen(true)}>
+                      <QrCode size={18} /> Scan QR Code via Kamera / Foto
+                    </button>
+                    <button className="rabby-btn-secondary" onClick={() => setIsGeneratorOpen(true)}>
+                      <Coins size={18} /> Generate Mnemonic Baru + QR Code
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                /* UNLOCKED DASHBOARD VIEW */
+                <>
+                  {/* Hero Portfolio Section */}
+                  <div className="rabby-hero-section">
+                    {selectedLedger !== 'all' && (
+                      <div className="rabby-hero-balance">
+                        {loadingLedgers[selectedLedger] || !singleChainNativeBalance ? (
+                          <div className="rabby-skeleton rabby-skeleton-hero" />
+                        ) : (
+                          <>
+                            <span title={singleChainNativeBalance.formatted}>
+                              {formatDisplayBalance(singleChainNativeBalance.formatted, 5)}
+                            </span>
+                            <span className="rabby-hero-symbol">{singleChainNetwork?.nativeAsset.symbol}</span>
+                          </>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Glass Effect Chart Card */}
+                    <div className="rabby-chart-glass-card">
+                      <div className="rabby-chart-glass-top">
+                        <div className="rabby-chart-glass-balance">
+                          {selectedLedger !== 'all' && '≈ '}
+                          {hoveredChartPoint ? hoveredChartPoint.formattedValue : formatIDR(currentValuationIdr)}
+                        </div>
+                      </div>
+
+                      <PortfolioChart
+                        points={chartPoints}
+                        change24h={change24h}
+                        onHoverPoint={setHoveredChartPoint}
+                      />
+                    </div>
+
+                    {/* Rabby Squircles Action Bar (3 per row) */}
+                    <div className="rabby-actions-grid">
+                      <button
+                        type="button"
+                        className="rabby-action-squircle"
+                        onClick={handleOpenGeneralSend}
+                        title="Send"
+                      >
+                        <Send className="rabby-action-icon" />
+                        <span className="rabby-action-label">Send</span>
+                      </button>
+                      <button
+                        type="button"
+                        className="rabby-action-squircle"
+                        onClick={handleOpenGeneralReceive}
+                        title="Receive"
+                      >
+                        <QrCode className="rabby-action-icon" />
+                        <span className="rabby-action-label">Receive</span>
+                      </button>
+                      <button
+                        type="button"
+                        className="rabby-action-squircle"
+                        onClick={handleOpenGeneralFaucet}
+                        title="Faucet"
+                      >
+                        <Droplets className="rabby-action-icon" />
+                        <span className="rabby-action-label">Faucet</span>
+                      </button>
+                      <button
+                        type="button"
+                        className="rabby-action-squircle"
+                        onClick={handleOpenMint}
+                        title="Mint HTT"
+                      >
+                        <Coins className="rabby-action-icon" />
+                        <span className="rabby-action-label">Mint HTT</span>
+                      </button>
+                      <button
+                        type="button"
+                        className="rabby-action-squircle"
+                        onClick={() => setCurrentScreen('transactions')}
+                        title="Riwayat Transaksi"
+                      >
+                        <ArrowLeftRight className="rabby-action-icon" />
+                        <span className="rabby-action-label">Transactions</span>
+                        {txCount > 0 && <span className="rabby-action-tx-badge">{txCount}</span>}
+                      </button>
                     </div>
                   </div>
 
-                  <PortfolioChart
-                    points={chartPoints}
-                    change24h={change24h}
-                    onHoverPoint={setHoveredChartPoint}
-                  />
-                </div>
-
-                {/* Rabby Squircles Action Bar (3 per row) */}
-                <div className="rabby-actions-grid">
-                  <button
-                    type="button"
-                    className="rabby-action-squircle"
-                    onClick={handleOpenGeneralSend}
-                    title="Send"
-                  >
-                    <Send className="rabby-action-icon" />
-                    <span className="rabby-action-label">Send</span>
-                  </button>
-                  <button
-                    type="button"
-                    className="rabby-action-squircle"
-                    onClick={handleOpenGeneralReceive}
-                    title="Receive"
-                  >
-                    <QrCode className="rabby-action-icon" />
-                    <span className="rabby-action-label">Receive</span>
-                  </button>
-                  <button
-                    type="button"
-                    className="rabby-action-squircle"
-                    onClick={handleOpenGeneralFaucet}
-                    title="Faucet"
-                  >
-                    <Droplets className="rabby-action-icon" />
-                    <span className="rabby-action-label">Faucet</span>
-                  </button>
-                  <button
-                    type="button"
-                    className="rabby-action-squircle"
-                    onClick={handleOpenMint}
-                    title="Mint HTT"
-                  >
-                    <Coins className="rabby-action-icon" />
-                    <span className="rabby-action-label">Mint HTT</span>
-                  </button>
-                  <button
-                    type="button"
-                    className="rabby-action-squircle"
-                    onClick={() => setCurrentScreen('transactions')}
-                    title="Riwayat Transaksi"
-                  >
-                    <ArrowLeftRight className="rabby-action-icon" />
-                    <span className="rabby-action-label">Transactions</span>
-                    {txCount > 0 && <span className="rabby-action-tx-badge">{txCount}</span>}
-                  </button>
-                </div>
-              </div>
-
-              {/* Token List Section */}
-              <div className="rabby-token-section">
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '16px',
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Layers size={16} color="#ffffff" />
-                    <span style={{ fontWeight: 700, fontSize: '15px' }}>
-                      {selectedLedger === 'all' ? 'All Chain Assets' : `${singleChainNetwork?.name} Assets`}
-                    </span>
-                    <span
+                  {/* Token List Section */}
+                  <div className="rabby-token-section">
+                    <div
                       style={{
-                        fontSize: '11px',
-                        fontWeight: 700,
-                        color: 'var(--primary)',
-                        background: 'var(--primary-glow)',
-                        padding: '2px 8px',
-                        borderRadius: 'var(--radius-pill)',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginBottom: '16px',
                       }}
                     >
-                      {filteredAssets.length}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="rabby-token-list">
-                  {filteredAssets.map((asset) => {
-                    const bal = portfolioBalances[asset.id];
-                    const assetIdrVal = calculateIDRValue(bal?.formatted, asset.symbol, rates);
-                    const unitPrice = rates[asset.symbol]?.priceIdr;
-
-                    return (
-                      <div
-                        key={asset.id}
-                        className="rabby-token-item"
-                        onClick={() => handleOpenSendForAsset(asset.ledger, asset.kind)}
-                        title={`${bal ? formatDisplayBalance(bal.formatted) : '0.00'} ${asset.symbol} (${formatIDR(assetIdrVal)}) - Klik untuk mengirim`}
-                      >
-                        {/* Sisi Kiri: Avatar & Info Token (Nama + Saldo Kripto) */}
-                        <div className="rabby-token-left">
-                          <div className="rabby-token-avatar-wrap">
-                            {asset.kind === 'native' ? (
-                              <>
-                                <img
-                                  src={LEDGER_LOGOS[asset.ledger]}
-                                  alt={asset.symbol}
-                                  className="rabby-token-avatar-img"
-                                  onError={(e) => {
-                                    (e.currentTarget as HTMLElement).style.display = 'none';
-                                    const fallback = e.currentTarget.parentElement?.querySelector('.rabby-token-avatar') as HTMLElement;
-                                    if (fallback) fallback.style.display = 'flex';
-                                  }}
-                                />
-                                <div
-                                  className="rabby-token-avatar"
-                                  style={{
-                                    display: 'none',
-                                    ...(asset.avatarBg ? { background: asset.avatarBg } : {}),
-                                  }}
-                                >
-                                  {asset.symbol.slice(0, 3)}
-                                </div>
-                              </>
-                            ) : (
-                              <>
-                                <div
-                                  className="rabby-token-avatar"
-                                  style={asset.avatarBg ? { background: asset.avatarBg } : undefined}
-                                >
-                                  {asset.symbol.slice(0, 3)}
-                                </div>
-                                <img
-                                  src={LEDGER_LOGOS[asset.ledger]}
-                                  alt={asset.networkName}
-                                  className="rabby-token-chain-badge"
-                                  title={`Network: ${asset.networkName}`}
-                                  style={{ width: 16, height: 16, objectFit: 'cover' }}
-                                />
-                              </>
-                            )}
-                          </div>
-                          <div className="rabby-token-info">
-                            <div className="rabby-token-title-row">
-                              <span className="rabby-token-name">{asset.name}</span>
-                              <span className="rabby-chain-badge-tag">
-                                <img
-                                  src={LEDGER_LOGOS[asset.ledger]}
-                                  alt=""
-                                  style={{ width: 10, height: 10, borderRadius: '50%', objectFit: 'cover' }}
-                                />
-                                {asset.badge.toUpperCase()}
-                              </span>
-                            </div>
-                            <div className="rabby-token-crypto-row">
-                              {loadingLedgers[asset.ledger] || bal === undefined ? (
-                                <div className="rabby-skeleton rabby-skeleton-token-sm" />
-                              ) : (
-                                <span className="rabby-token-crypto-amount">
-                                  {formatDisplayBalance(bal?.formatted, 4)}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Sisi Kanan: Valuasi Total IDR & Harga Per Unit Token */}
-                        <div className="rabby-token-right">
-                          <div className="rabby-token-valuation-row">
-                            {loadingLedgers[asset.ledger] || bal === undefined ? (
-                              <div className="rabby-skeleton rabby-skeleton-token-bal" />
-                            ) : (
-                              <span className="rabby-token-fiat-val">
-                                {formatIDR(assetIdrVal)}
-                              </span>
-                            )}
-                          </div>
-                          <div className="rabby-token-price-row">
-                            {unitPrice ? (
-                              <span
-                                className="rabby-token-unit-price"
-                                title={`Kurs ${asset.symbol}: ${formatIDR(unitPrice)}`}
-                              >
-                                {formatIDR(unitPrice)}
-                              </span>
-                            ) : (
-                              <span className="rabby-token-unit-price">-</span>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Quick Send Button on Card Hover */}
-                        <button
-                          type="button"
-                          className="rabby-quick-send-btn"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleOpenSendForAsset(asset.ledger, asset.kind);
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <Layers size={16} color="#ffffff" />
+                        <span style={{ fontWeight: 700, fontSize: '15px' }}>
+                          {selectedLedger === 'all' ? 'All Chain Assets' : `${singleChainNetwork?.name} Assets`}
+                        </span>
+                        <span
+                          style={{
+                            fontSize: '11px',
+                            fontWeight: 700,
+                            color: 'var(--primary)',
+                            background: 'var(--primary-glow)',
+                            padding: '2px 8px',
+                            borderRadius: 'var(--radius-pill)',
                           }}
-                          title={`Kirim ${asset.symbol}`}
                         >
-                          <Send size={12} />
-                          <span>Send</span>
-                        </button>
+                          {filteredAssets.length}
+                        </span>
                       </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </>
-          )}
-        </div>
-      </>
-    ) : currentScreen === 'send' ? (
-      <SendView
-        isOpen={true}
-        onClose={() => setCurrentScreen('dashboard')}
+                    </div>
+
+                    <div className="rabby-token-list">
+                      {filteredAssets.map((asset) => {
+                        const bal = portfolioBalances[asset.id];
+                        const assetIdrVal = calculateIDRValue(bal?.formatted, asset.symbol, rates);
+                        const unitPrice = rates[asset.symbol]?.priceIdr;
+
+                        return (
+                          <div
+                            key={asset.id}
+                            className="rabby-token-item"
+                            onClick={() => handleOpenSendForAsset(asset.ledger, asset.kind)}
+                            title={`${bal ? formatDisplayBalance(bal.formatted) : '0.00'} ${asset.symbol} (${formatIDR(assetIdrVal)}) - Klik untuk mengirim`}
+                          >
+                            {/* Sisi Kiri: Avatar & Info Token (Nama + Saldo Kripto) */}
+                            <div className="rabby-token-left">
+                              <div className="rabby-token-avatar-wrap">
+                                {asset.kind === 'native' ? (
+                                  <>
+                                    <img
+                                      src={LEDGER_LOGOS[asset.ledger]}
+                                      alt={asset.symbol}
+                                      className="rabby-token-avatar-img"
+                                      onError={(e) => {
+                                        (e.currentTarget as HTMLElement).style.display = 'none';
+                                        const fallback = e.currentTarget.parentElement?.querySelector('.rabby-token-avatar') as HTMLElement;
+                                        if (fallback) fallback.style.display = 'flex';
+                                      }}
+                                    />
+                                    <div
+                                      className="rabby-token-avatar"
+                                      style={{
+                                        display: 'none',
+                                        ...(asset.avatarBg ? { background: asset.avatarBg } : {}),
+                                      }}
+                                    >
+                                      {asset.symbol.slice(0, 3)}
+                                    </div>
+                                  </>
+                                ) : (
+                                  <>
+                                    <div
+                                      className="rabby-token-avatar"
+                                      style={asset.avatarBg ? { background: asset.avatarBg } : undefined}
+                                    >
+                                      {asset.symbol.slice(0, 3)}
+                                    </div>
+                                    <img
+                                      src={LEDGER_LOGOS[asset.ledger]}
+                                      alt={asset.networkName}
+                                      className="rabby-token-chain-badge"
+                                      title={`Network: ${asset.networkName}`}
+                                      style={{ width: 16, height: 16, objectFit: 'cover' }}
+                                    />
+                                  </>
+                                )}
+                              </div>
+                              <div className="rabby-token-info">
+                                <div className="rabby-token-title-row">
+                                  <span className="rabby-token-name">{asset.name}</span>
+                                </div>
+                                <div className="rabby-token-crypto-row">
+                                  {loadingLedgers[asset.ledger] || bal === undefined ? (
+                                    <div className="rabby-skeleton rabby-skeleton-token-sm" />
+                                  ) : (
+                                    <span className="rabby-token-crypto-amount">
+                                      {formatDisplayBalance(bal?.formatted, 4)}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Sisi Kanan: Valuasi Total IDR & Harga Per Unit Token */}
+                            <div className="rabby-token-right">
+                              <div className="rabby-token-valuation-row">
+                                {loadingLedgers[asset.ledger] || bal === undefined ? (
+                                  <div className="rabby-skeleton rabby-skeleton-token-bal" />
+                                ) : (
+                                  <span className="rabby-token-fiat-val">
+                                    {formatIDR(assetIdrVal)}
+                                  </span>
+                                )}
+                              </div>
+                              <div className="rabby-token-price-row">
+                                {unitPrice ? (
+                                  <span
+                                    className="rabby-token-unit-price"
+                                    title={`Kurs ${asset.symbol}: ${formatIDR(unitPrice)}`}
+                                  >
+                                    {formatIDR(unitPrice)}
+                                  </span>
+                                ) : (
+                                  <span className="rabby-token-unit-price">-</span>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Quick Send Button on Card Hover */}
+                            <button
+                              type="button"
+                              className="rabby-quick-send-btn"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleOpenSendForAsset(asset.ledger, asset.kind);
+                              }}
+                              title={`Kirim ${asset.symbol}`}
+                            >
+                              <Send size={12} />
+                              <span>Send</span>
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          </>
+        ) : currentScreen === 'send' ? (
+          <SendView
+            isOpen={true}
+            onClose={() => setCurrentScreen('dashboard')}
+            onSuccess={fetchAllBalances}
+            initialLedger={modalTargetLedger}
+            initialAsset={modalTargetAsset}
+            rates={rates}
+          />
+        ) : currentScreen === 'mint' ? (
+          <MintTokenView
+            isOpen={true}
+            onClose={() => setCurrentScreen('dashboard')}
+            onSuccess={fetchAllBalances}
+            initialLedger={modalTargetLedger}
+          />
+        ) : currentScreen === 'transactions' ? (
+          <TransactionView
+            isOpen={true}
+            onClose={() => setCurrentScreen('dashboard')}
+            selectedLedger={selectedLedger}
+            currentAccount={activeAccount}
+            rates={rates}
+            onOpenSend={handleOpenGeneralSend}
+            onOpenFaucet={handleOpenGeneralFaucet}
+          />
+        ) : null}
+      </div>
+
+      {/* Bottom Sheets (Compact Data & Quick Actions) */}
+      <ReceiveSheet
+        isOpen={isReceiveOpen}
+        onClose={() => setIsReceiveOpen(false)}
+        initialLedger={modalTargetLedger}
+      />
+      <FaucetSheet
+        isOpen={isFaucetOpen}
+        onClose={() => setIsFaucetOpen(false)}
         onSuccess={fetchAllBalances}
         initialLedger={modalTargetLedger}
-        initialAsset={modalTargetAsset}
-        rates={rates}
       />
-    ) : currentScreen === 'mint' ? (
-      <MintTokenView
-        isOpen={true}
-        onClose={() => setCurrentScreen('dashboard')}
-        onSuccess={fetchAllBalances}
-        initialLedger={modalTargetLedger}
-      />
-    ) : currentScreen === 'transactions' ? (
-      <TransactionView
-        isOpen={true}
-        onClose={() => setCurrentScreen('dashboard')}
-        selectedLedger={selectedLedger}
-        currentAccount={activeAccount}
-        rates={rates}
-        onOpenSend={handleOpenGeneralSend}
-        onOpenFaucet={handleOpenGeneralFaucet}
-      />
-    ) : null}
-  </div>
 
-  {/* Bottom Sheets (Compact Data & Quick Actions) */}
-  <ReceiveSheet
-    isOpen={isReceiveOpen}
-    onClose={() => setIsReceiveOpen(false)}
-    initialLedger={modalTargetLedger}
-  />
-  <FaucetSheet
-    isOpen={isFaucetOpen}
-    onClose={() => setIsFaucetOpen(false)}
-    onSuccess={fetchAllBalances}
-    initialLedger={modalTargetLedger}
-  />
-
-  {/* Onboarding Modals */}
-  <QRGeneratorModal isOpen={isGeneratorOpen} onClose={() => setIsGeneratorOpen(false)} />
-  <QRScannerModal isOpen={isScannerOpen} onClose={() => setIsScannerOpen(false)} />
-</div>
-);
+      {/* Onboarding Modals */}
+      <QRGeneratorModal isOpen={isGeneratorOpen} onClose={() => setIsGeneratorOpen(false)} />
+      <QRScannerModal isOpen={isScannerOpen} onClose={() => setIsScannerOpen(false)} />
+    </div>
+  );
 };
