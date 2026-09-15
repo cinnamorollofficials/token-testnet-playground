@@ -28,7 +28,6 @@ import {
   Droplets,
   Coins,
   QrCode,
-  Layers,
   ArrowLeftRight,
 } from 'lucide-react';
 
@@ -235,6 +234,7 @@ export const App: React.FC = () => {
   const [modalTargetLedger, setModalTargetLedger] = useState<LedgerId | undefined>(undefined);
   const [modalTargetAsset, setModalTargetAsset] = useState<'native' | 'token'>('native');
   const [hoveredChartPoint, setHoveredChartPoint] = useState<ChartPoint | null>(null);
+  const [assetTab, setAssetTab] = useState<'tokens' | 'nft'>('tokens');
 
   // Transaction count for badge
   const txCount = useMemo(() => {
@@ -647,35 +647,30 @@ export const App: React.FC = () => {
 
                   {/* Token List Section */}
                   <div className="rabby-token-section">
-                    <div
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        marginBottom: '16px',
-                      }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <Layers size={16} color="#ffffff" />
-                        <span style={{ fontWeight: 700, fontSize: '15px' }}>
-                          {selectedLedger === 'all' ? 'All Chain Assets' : `${singleChainNetwork?.name} Assets`}
-                        </span>
-                        <span
-                          style={{
-                            fontSize: '11px',
-                            fontWeight: 700,
-                            color: 'var(--primary)',
-                            background: 'var(--primary-glow)',
-                            padding: '2px 8px',
-                            borderRadius: 'var(--radius-pill)',
-                          }}
-                        >
-                          {filteredAssets.length}
-                        </span>
-                      </div>
+                    {/* Asset Sub-Tabs (Tokens vs NFT) */}
+                    <div className="rabby-asset-tabs" role="tablist">
+                      <button
+                        type="button"
+                        role="tab"
+                        aria-selected={assetTab === 'tokens'}
+                        className={`rabby-asset-tab-btn ${assetTab === 'tokens' ? 'active' : ''}`}
+                        onClick={() => setAssetTab('tokens')}
+                      >
+                        Tokens
+                      </button>
+                      <button
+                        type="button"
+                        role="tab"
+                        aria-selected={assetTab === 'nft'}
+                        className={`rabby-asset-tab-btn ${assetTab === 'nft' ? 'active' : ''}`}
+                        onClick={() => setAssetTab('nft')}
+                      >
+                        NFT
+                      </button>
                     </div>
 
-                    <div className="rabby-token-list">
+                    {assetTab === 'tokens' ? (
+                      <div className="rabby-token-list">
                       {filteredAssets.map((asset) => {
                         const bal = portfolioBalances[asset.id];
                         const assetIdrVal = calculateIDRValue(bal?.formatted, asset.symbol, rates);
@@ -788,7 +783,17 @@ export const App: React.FC = () => {
                           </div>
                         );
                       })}
-                    </div>
+                      </div>
+                    ) : (
+                      <div className="rabby-nft-empty-state">
+                        <p className="rabby-nft-empty-title">No NFT</p>
+                        <span className="rabby-nft-empty-desc">
+                          {selectedLedger === 'all'
+                            ? 'No NFTs found across connected testnets'
+                            : `No NFTs found on ${singleChainNetwork?.name || selectedLedger}`}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </>
               )}
