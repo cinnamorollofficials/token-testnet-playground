@@ -40,13 +40,13 @@
   --shadow-glow: none;
 
   /* Glass Morphism Tokens */
-  --glass-bg-heavy:    linear-gradient(180deg, rgba(26, 33, 51, 0.85) 0%, rgba(19, 24, 38, 0.65) 100%);
-  --glass-bg-medium:   linear-gradient(180deg, rgba(26, 33, 51, 0.80) 0%, rgba(19, 24, 38, 0.60) 100%);
-  --glass-bg-light:    linear-gradient(180deg, rgba(26, 33, 51, 0.70) 0%, rgba(19, 24, 38, 0.50) 100%);
-  --glass-blur-heavy:  blur(16px);
+  --glass-bg-heavy: linear-gradient(180deg, rgba(26, 33, 51, 0.85) 0%, rgba(19, 24, 38, 0.65) 100%);
+  --glass-bg-medium: linear-gradient(180deg, rgba(26, 33, 51, 0.80) 0%, rgba(19, 24, 38, 0.60) 100%);
+  --glass-bg-light: linear-gradient(180deg, rgba(26, 33, 51, 0.70) 0%, rgba(19, 24, 38, 0.50) 100%);
+  --glass-blur-heavy: blur(16px);
   --glass-blur-medium: blur(12px);
-  --glass-blur-light:  blur(8px);
-  --glass-border:       rgba(255, 255, 255, 0.09);
+  --glass-blur-light: blur(8px);
+  --glass-border: rgba(255, 255, 255, 0.09);
   --glass-border-hover: rgba(112, 91, 255, 0.40);
 }
 
@@ -102,7 +102,6 @@ textarea {
   align-items: center;
   justify-content: space-between;
   padding: 10px 16px;
-  background: var(--bg-card);
   gap: 8px;
   min-height: 52px;
 }
@@ -276,8 +275,7 @@ textarea {
 }
 
 /* Header Action & Lock Buttons */
-.rabby-header-action-btn,
-.rabby-header-lock-btn {
+.rabby-header-action-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -292,24 +290,28 @@ textarea {
   flex-shrink: 0;
 }
 
-.rabby-header-action-btn:hover,
+.rabby-header-lock-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  padding: 4px;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+  flex-shrink: 0;
+}
+
 .rabby-header-lock-btn:hover {
-  background: var(--bg-card-hover);
-  color: var(--primary);
-  border-color: var(--border-focus);
-  transform: scale(1.05);
+  opacity: 0.8;
 }
 
-.rabby-header-lock-btn.active {
-  color: var(--success);
-  background: var(--success-bg);
-  border-color: rgba(0, 168, 119, 0.25);
-}
-
-.rabby-header-lock-btn.active:hover {
-  color: var(--danger);
-  background: var(--danger-bg);
-  border-color: rgba(220, 38, 38, 0.25);
+.rabby-header-lock-btn.active,
+.rabby-header-lock-btn.locked {
+  background: transparent;
+  border: none;
+  color: #ffffff;
 }
 
 /* Cards */

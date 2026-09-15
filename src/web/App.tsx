@@ -517,7 +517,7 @@ export const App: React.FC = () => {
                       : 'Wallet terkunci. Klik untuk scan QR atau login.'
                   }
                 >
-                  <Lock size={14} />
+                  <Lock size={18} color="#ffffff" />
                 </button>
               </div>
             </header>
