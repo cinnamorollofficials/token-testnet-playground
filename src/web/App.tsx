@@ -42,7 +42,7 @@ const SUPPORTED_LEDGERS: { id: ChainFilter; label: string }[] = [
   { id: 'bitcoin-t4', label: 'BTC Testnet 4 (tBTC)' },
 ];
 
-const STACKED_HEADER_CHAINS: LedgerId[] = ['ethereum', 'polygon', 'solana'];
+const STACKED_HEADER_CHAINS: LedgerId[] = ['ethereum', 'polygon', 'solana', 'bitcoin'];
 
 interface AssetItem {
   id: string;

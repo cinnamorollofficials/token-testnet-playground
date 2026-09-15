@@ -195,35 +195,32 @@ textarea {
   flex-shrink: 0;
 }
 
-/* Header Network Button (Icon-Only) */
+/* Header Network Button (No circle wrapper, enlarged images) */
 .rabby-header-network-btn {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: var(--bg-card-sub);
-  border: 1px solid var(--border-subtle);
+  background: transparent;
+  border: none;
+  padding: 2px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease, opacity 0.2s ease;
   flex-shrink: 0;
 }
 
 .rabby-header-network-btn:hover {
-  background: var(--bg-card-hover);
-  border-color: var(--border-focus);
-  transform: scale(1.05);
+  transform: scale(1.08);
 }
 
 .rabby-header-network-active-logo {
-  width: 18px;
-  height: 18px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
   background: #ffffff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 }
 
 /* Stacked Chain Logos for All-Chains Mode */
@@ -236,14 +233,14 @@ textarea {
 }
 
 .rabby-header-chain-stack-item {
-  width: 13px;
-  height: 13px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   object-fit: cover;
   background: #ffffff;
-  border: 1.5px solid var(--bg-card-sub);
-  margin-left: -4.5px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  border: 2px solid var(--bg-card);
+  margin-left: -7px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
   transition: transform 0.15s ease;
   flex-shrink: 0;
 }
@@ -253,7 +250,7 @@ textarea {
 }
 
 .rabby-header-network-btn:hover .rabby-header-chain-stack-item {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
 .rabby-header-network-hidden-select {
