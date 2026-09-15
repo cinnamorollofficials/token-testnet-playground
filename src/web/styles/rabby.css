@@ -38,6 +38,16 @@
 
   --shadow-card: none;
   --shadow-glow: none;
+
+  /* Glass Morphism Tokens */
+  --glass-bg-heavy:    linear-gradient(180deg, rgba(26, 33, 51, 0.85) 0%, rgba(19, 24, 38, 0.65) 100%);
+  --glass-bg-medium:   linear-gradient(180deg, rgba(26, 33, 51, 0.80) 0%, rgba(19, 24, 38, 0.60) 100%);
+  --glass-bg-light:    linear-gradient(180deg, rgba(26, 33, 51, 0.70) 0%, rgba(19, 24, 38, 0.50) 100%);
+  --glass-blur-heavy:  blur(16px);
+  --glass-blur-medium: blur(12px);
+  --glass-blur-light:  blur(8px);
+  --glass-border:       rgba(255, 255, 255, 0.09);
+  --glass-border-hover: rgba(112, 91, 255, 0.40);
 }
 
 * {
