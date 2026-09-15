@@ -1,4 +1,4 @@
-export type LedgerId = 'ethereum' | 'polygon' | 'solana' | 'xrpl' | 'bitcoin' | 'kaia';
+export type LedgerId = 'ethereum' | 'polygon' | 'solana' | 'xrpl' | 'bitcoin' | 'bitcoin-t4' | 'kaia';
 
 export interface Account {
   readonly ledger: LedgerId;
