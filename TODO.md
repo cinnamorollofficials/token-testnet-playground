@@ -341,22 +341,22 @@ Legenda: `👤` = butuh tindakan manual user · `🌐` = butuh network/testnet R
 
 
 
-## Fase 15 — Penyimpanan Aman Wallet & Enkripsi Password (AES-256-GCM + PBKDF2)
+## Fase 15 — Penyimpanan Aman Wallet & Enkripsi Password (AES-256-GCM + PBKDF2) (SELESAI)
 
-- [ ] **Task 1: Core Cryptography & Types**
+- [x] **Task 1: Core Cryptography & Types** (Commit: `21a56d0`)
   - Implementasi `src/core/vault.ts` (WebCrypto AES-256-GCM, PBKDF2 100k rounds, salt/IV random)
   - Type definitions `EncryptedVault` & `VaultPayload` di `src/core/types.ts`
   - Cross-platform storage adapter (`localStorage` + `chrome.storage.local`)
-- [ ] **Task 2: Unit Testing Core Vault**
-  - `test/vault.test.ts` (uji enkripsi, dekripsi benar, salah password, tamper detection)
-- [ ] **Task 3: State Management (SessionContext)**
+- [x] **Task 2: Unit Testing Core Vault** (Commit: `b4678e8`)
+  - `test/vault.test.ts` (uji enkripsi, dekripsi benar, salah password, tamper detection — 6 tests passed)
+- [x] **Task 3: State Management (SessionContext)** (Commit: `83fa1b8`)
   - State `hasVault`, deteksi vault, method `unlockWithPassword`, `setupVaultWithPassword`, `resetVault`
-- [ ] **Task 4: UI PasswordUnlockView & Styling**
+- [x] **Task 4: UI PasswordUnlockView & Styling** (Commit: `934f989`)
   - Komponen lock screen glassmorphism, input password toggle visibility, tombol unlock & reset
   - Styling di `src/web/styles/rabby.css`
-- [ ] **Task 5: UI SetPasswordModal**
+- [x] **Task 5: UI SetPasswordModal** (Commit: `6971bf5`)
   - Modal buat password baru saat onboarding / import mnemonic
-- [ ] **Task 6: Integrasi App.tsx**
+- [x] **Task 6: Integrasi App.tsx** (Commit: `fda1378`)
   - Screen routing lock/unlock berdasarkan status vault & session
-- [ ] **Task 7: Verifikasi & Build**
-  - Lint, test suite, build web & chrome extension
+- [x] **Task 7: Verifikasi & Build**
+  - Lint (0 warning, 0 error), test suite (45 tests passed), build web & chrome extension sukses
