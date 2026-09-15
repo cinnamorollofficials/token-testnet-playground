@@ -596,8 +596,10 @@ textarea {
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
-  background: var(--bg-card-sub);
-  border: 1px solid var(--border-subtle);
+  background: var(--glass-bg-light);
+  backdrop-filter: var(--glass-blur-light);
+  -webkit-backdrop-filter: var(--glass-blur-light);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-base);
   transition: all 0.2s ease;
   cursor: pointer;
@@ -605,8 +607,8 @@ textarea {
 }
 
 .rabby-token-item:hover {
-  border-color: var(--border-hover);
-  background: var(--bg-card-hover);
+  border-color: var(--glass-border-hover);
+  background: var(--glass-bg-medium);
 }
 
 .rabby-token-left {
