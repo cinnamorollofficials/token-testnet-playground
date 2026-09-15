@@ -226,6 +226,36 @@ textarea {
   background: #ffffff;
 }
 
+/* Stacked Chain Logos for All-Chains Mode */
+.rabby-header-chain-stack {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  line-height: 0;
+}
+
+.rabby-header-chain-stack-item {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #ffffff;
+  border: 1.5px solid var(--bg-card-sub);
+  margin-left: -4.5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  transition: transform 0.15s ease;
+  flex-shrink: 0;
+}
+
+.rabby-header-chain-stack-item:first-child {
+  margin-left: 0;
+}
+
+.rabby-header-network-btn:hover .rabby-header-chain-stack-item {
+  transform: translateY(-1px);
+}
+
 .rabby-header-network-hidden-select {
   position: absolute;
   inset: 0;
