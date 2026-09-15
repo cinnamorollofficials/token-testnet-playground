@@ -249,6 +249,55 @@ Legenda: `👤` = butuh tindakan manual user · `🌐` = butuh network/testnet R
 
 ---
 
+## Fase 11 — Tambah Bitcoin Testnet 4 (di samping Signet) ₿
+
+### 1. Type System (`src/core/types.ts`)
+- [x] Tambah `'bitcoin-t4'` ke union type `LedgerId`
+
+### 2. Konfigurasi Jaringan (`src/config/networks.ts`)
+- [x] Tambah `'btc-testnet4'` ke `ALLOWLISTED_TESTNET_IDS`
+- [x] Tambah entry logo `'bitcoin-t4'` di `LEDGER_LOGOS`
+- [x] Tambah blok `NetworkConfig` baru untuk `'bitcoin-t4'`:
+  - `rpcUrl`: `mempool.space/testnet4/api` (env: `BITCOIN_TESTNET4_EXPLORER`)
+  - `explorerUrl`: `mempool.space/testnet4`
+  - `faucetUrl`: `testnet4.anyone.eu.org`
+  - `nativeAsset.symbol`: `tBTC`
+- [x] Bitcoin Signet (`'bitcoin'`) **tidak diubah**
+
+### 3. Adapter Baru (`src/adapters/bitcoin-t4.ts`)
+- [x] Buat `BitcoinT4Adapter` (LedgerId: `'bitcoin-t4'`)
+- [x] Reuse `deriveBitcoin()` — BIP-84 coin type `1'` identik Signet, address `tb1q…` valid
+- [x] `getBalance()` fetch dari `NETWORKS['bitcoin-t4'].rpcUrl` (config-driven)
+- [x] Return symbol `tBTC`
+
+### 4. Wiring Core (`registry.ts`, `derive.ts`, `tokens.ts`)
+- [x] `registry.ts`: import & register `BitcoinT4Adapter`
+- [x] `derive.ts`: tambah `case 'bitcoin-t4'` ke router `deriveAccount()`
+- [x] `tokens.ts`: tambah `'bitcoin-t4': null` ke `DEFAULT_TEST_TOKENS`
+
+### 5. Session Context (`src/web/context/SessionContext.tsx`)
+- [x] Tambah `'bitcoin-t4'` ke `ACTIVE_LEDGERS`
+- [x] Tambah `'bitcoin-t4': null` ke `accounts` & `recipientAccounts` emptyMap
+
+### 6. Web UI (`src/web/App.tsx`)
+- [x] `SUPPORTED_LEDGERS`: tambah `{ id: 'bitcoin-t4', label: 'BTC Testnet 4 (tBTC)' }`
+- [x] `ALL_ASSETS`: tambah asset `'bitcoin-t4-native'` (tBTC, badge `Testnet 4`, gradient berbeda)
+- [x] `loadingLedgers`: tambah `'bitcoin-t4': true` di initial & reset state
+- [x] `fetchAllBalances` otomatis via loop `ACTIVE_LEDGERS` — tidak perlu perubahan tambahan
+
+### 7. CLI & Env
+- [x] `rate.ts`: tambah `{ name: 'Bitcoin', testnet: 'Testnet 4', symbol: 'tBTC' }` di `ASSET_CATALOG`
+- [x] `.env.example`: tambah `BITCOIN_TESTNET4_EXPLORER=` di samping `BITCOIN_SIGNET_EXPLORER=`
+
+### 8. Verifikasi & Gate ✅
+- [x] `npm run lint` — 0 error, 0 warning (49 files)
+- [x] `npm run test` — 39 tests hijau
+- [x] `npm run build:web` — build bersih
+- [x] `npm run build:ext` — build bersih
+- [x] 7 commit per task: `feat(bitcoin-t4): ...`
+
+---
+
 ## Ditunda (Backlog)
 
 - [ ] 👤 **Kaia — putuskan coin type** (coin type 60 vs 8217 di Kaia Wallet)
@@ -257,5 +306,3 @@ Legenda: `👤` = butuh tindakan manual user · `🌐` = butuh network/testnet R
 - [ ] Batch / sweep multi-index transfer
 - [ ] Kaia fee delegation
 - [ ] EIP-2612 permit
-
-
