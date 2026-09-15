@@ -7,6 +7,8 @@ import type { LedgerId, Balance } from '../core/types.js';
 import { fetchIndodaxRates, formatIDR, calculateIDRValue, type RatesMap } from '../core/rates.js';
 import { QRGeneratorModal } from './components/QRGeneratorModal';
 import { QRScannerModal } from './components/QRScannerModal';
+import { PasswordUnlockView } from './components/PasswordUnlockView';
+import { SetPasswordModal } from './components/SetPasswordModal';
 import { FaucetSheet } from './components/FaucetModal';
 import { ReceiveSheet } from './components/ReceiveModal';
 import { MintTokenView } from './components/MintTokenModal';
@@ -217,6 +219,8 @@ export const App: React.FC = () => {
     activeAccountIndex,
     activeAccount,
     accounts,
+    hasVault,
+    isVaultLoading,
     setSelectedLedger,
     setActiveAccountIndex,
     lockSession,
@@ -235,6 +239,17 @@ export const App: React.FC = () => {
   const [modalTargetAsset, setModalTargetAsset] = useState<'native' | 'token'>('native');
   const [hoveredChartPoint, setHoveredChartPoint] = useState<ChartPoint | null>(null);
   const [assetTab, setAssetTab] = useState<'tokens' | 'nft'>('tokens');
+  const [isSetPasswordOpen, setIsSetPasswordOpen] = useState<boolean>(false);
+
+  // Trigger set password modal when unlocked for the first time without an encrypted vault
+  useEffect(() => {
+    if (isUnlocked && !hasVault && !isVaultLoading) {
+      const timer = setTimeout(() => {
+        setIsSetPasswordOpen(true);
+      }, 600);
+      return () => clearTimeout(timer);
+    }
+  }, [isUnlocked, hasVault, isVaultLoading]);
 
   // Transaction count for badge
   const txCount = useMemo(() => {
@@ -527,39 +542,44 @@ export const App: React.FC = () => {
             {/* Card Body */}
             <div className="rabby-card-body">
               {!isUnlocked ? (
-                /* LOCKED / ONBOARDING VIEW */
-                <div style={{ textAlign: 'center', padding: '28px 12px' }}>
-                  <div
-                    style={{
-                      width: '68px',
-                      height: '68px',
-                      borderRadius: '50%',
-                      background: 'var(--primary-gradient)',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      marginBottom: '20px',
-                    }}
-                  >
-                    <Wallet size={34} color="#fff" />
-                  </div>
+                hasVault ? (
+                  /* ENCRYPTED VAULT LOCK SCREEN */
+                  <PasswordUnlockView onUnlockSuccess={fetchAllBalances} />
+                ) : (
+                  /* LOCKED / ONBOARDING VIEW */
+                  <div style={{ textAlign: 'center', padding: '28px 12px' }}>
+                    <div
+                      style={{
+                        width: '68px',
+                        height: '68px',
+                        borderRadius: '50%',
+                        background: 'var(--primary-gradient)',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginBottom: '20px',
+                      }}
+                    >
+                      <Wallet size={34} color="#fff" />
+                    </div>
 
-                  <h2 style={{ fontSize: '22px', fontWeight: 800, marginBottom: '8px' }}>
-                    Rabby-Style Testnet Playground
-                  </h2>
-                  <p style={{ fontSize: '13px', color: 'var(--text-muted)', lineHeight: '1.6', marginBottom: '28px' }}>
-                    Keamanan in-memory: Mnemonic tidak disimpan di disk. Masuk dengan memindai foto QR Code atau buat frasa baru.
-                  </p>
+                    <h2 style={{ fontSize: '22px', fontWeight: 800, marginBottom: '8px' }}>
+                      Rabby-Style Testnet Playground
+                    </h2>
+                    <p style={{ fontSize: '13px', color: 'var(--text-muted)', lineHeight: '1.6', marginBottom: '28px' }}>
+                      Keamanan in-memory: Mnemonic tidak disimpan di disk. Masuk dengan memindai foto QR Code atau buat frasa baru.
+                    </p>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    <button className="rabby-btn-primary" onClick={() => setIsScannerOpen(true)}>
-                      <QrCode size={18} /> Scan QR Code via Kamera / Foto
-                    </button>
-                    <button className="rabby-btn-secondary" onClick={() => setIsGeneratorOpen(true)}>
-                      <Coins size={18} /> Generate Mnemonic Baru + QR Code
-                    </button>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      <button className="rabby-btn-primary" onClick={() => setIsScannerOpen(true)}>
+                        <QrCode size={18} /> Scan QR Code via Kamera / Foto
+                      </button>
+                      <button className="rabby-btn-secondary" onClick={() => setIsGeneratorOpen(true)}>
+                        <Coins size={18} /> Generate Mnemonic Baru + QR Code
+                      </button>
+                    </div>
                   </div>
-                </div>
+                )
               ) : (
                 /* UNLOCKED DASHBOARD VIEW */
                 <>
@@ -846,6 +866,7 @@ export const App: React.FC = () => {
       {/* Onboarding Modals */}
       <QRGeneratorModal isOpen={isGeneratorOpen} onClose={() => setIsGeneratorOpen(false)} />
       <QRScannerModal isOpen={isScannerOpen} onClose={() => setIsScannerOpen(false)} />
+      <SetPasswordModal isOpen={isSetPasswordOpen} onClose={() => setIsSetPasswordOpen(false)} />
     </div>
   );
 };
