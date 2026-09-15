@@ -452,16 +452,18 @@ textarea {
   width: calc((100% - 20px) / 3);
   height: 64px;
   padding: 8px 4px;
-  background: var(--bg-card-sub);
-  border: 1px solid var(--border-subtle);
+  background: var(--glass-bg-light);
+  backdrop-filter: var(--glass-blur-light);
+  -webkit-backdrop-filter: var(--glass-blur-light);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-base);
   transition: all 0.2s ease;
   cursor: pointer;
 }
 
 .rabby-action-squircle:hover {
-  background: var(--bg-card-hover);
-  border-color: var(--border-focus);
+  background: var(--glass-bg-medium);
+  border-color: var(--glass-border-hover);
 }
 
 .rabby-action-squircle:hover .rabby-action-label {
@@ -502,11 +504,14 @@ textarea {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--bg-card-sub);
-  border: 1px solid var(--border-subtle);
+  background: var(--glass-bg-light);
+  backdrop-filter: var(--glass-blur-light);
+  -webkit-backdrop-filter: var(--glass-blur-light);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-base);
   padding: 12px 16px;
   margin-bottom: 16px;
+  transition: border-color 0.2s ease;
 }
 
 .rabby-account-info {
