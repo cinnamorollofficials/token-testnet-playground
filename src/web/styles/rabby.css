@@ -214,8 +214,8 @@ textarea {
 }
 
 .rabby-header-network-active-logo {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
@@ -233,13 +233,13 @@ textarea {
 }
 
 .rabby-header-chain-stack-item {
-  width: 20px;
-  height: 20px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   object-fit: cover;
   background: #ffffff;
   border: 2px solid var(--bg-card);
-  margin-left: -7px;
+  margin-left: -10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
   transition: transform 0.15s ease;
   flex-shrink: 0;
@@ -255,7 +255,7 @@ textarea {
   justify-content: center;
   background: var(--bg-card-sub);
   color: #ffffff;
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 700;
   line-height: 1;
   user-select: none;
