@@ -338,7 +338,7 @@ textarea {
 }
 
 .rabby-card-body {
-  padding: 0 16px;
+  padding: 0 16px 24px 16px;
 }
 
 /* Hero Portfolio */
@@ -363,6 +363,7 @@ textarea {
 
 .rabby-token-section {
   margin-top: 20px;
+  padding-bottom: 4px;
 }
 
 .rabby-hero-label {
