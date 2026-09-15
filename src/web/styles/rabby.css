@@ -274,13 +274,16 @@ textarea {
 
 /* Cards */
 .rabby-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
+  background: var(--glass-bg-medium);
+  backdrop-filter: var(--glass-blur-medium);
+  -webkit-backdrop-filter: var(--glass-blur-medium);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-outer);
   padding: 24px;
   position: relative;
   overflow: hidden;
   margin-bottom: 16px;
+  transition: border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .rabby-unified-card {
@@ -294,10 +297,13 @@ textarea {
 
 /* Hero Portfolio */
 .rabby-hero-card {
-  background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-card-sub) 100%);
-  border: 1px solid var(--border-subtle);
+  background: var(--glass-bg-medium);
+  backdrop-filter: var(--glass-blur-medium);
+  -webkit-backdrop-filter: var(--glass-blur-medium);
+  border: 1px solid var(--glass-border);
   text-align: center;
   padding: 30px 24px;
+  transition: border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .rabby-hero-section {
