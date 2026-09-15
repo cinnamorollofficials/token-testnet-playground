@@ -3,6 +3,7 @@ import { EVMAdapter } from '../adapters/evm.js';
 import { SolanaAdapter } from '../adapters/solana.js';
 import { XRPLAdapter } from '../adapters/xrpl.js';
 import { BitcoinAdapter } from '../adapters/bitcoin.js';
+import { BitcoinT4Adapter } from '../adapters/bitcoin-t4.js';
 
 const adapters = new Map<LedgerId, LedgerAdapter>();
 let initialized = false;
@@ -18,6 +19,7 @@ export function initDefaultAdapters(): void {
   registerAdapter(new SolanaAdapter());
   registerAdapter(new XRPLAdapter());
   registerAdapter(new BitcoinAdapter());
+  registerAdapter(new BitcoinT4Adapter());
   initialized = true;
 }
 

@@ -150,6 +150,10 @@ export function deriveAccount(
     case 'bitcoin':
       res = deriveBitcoin(seed, index);
       break;
+    case 'bitcoin-t4':
+      // Sama dengan Signet — BIP-84 coin type 1' berlaku di semua Bitcoin testnet
+      res = deriveBitcoin(seed, index);
+      break;
     case 'kaia':
       // Default Kaia coin type 60 (Option A) atau 8217 (Option B) jika ditentukan
       res = deriveEVM(seed, index, 60);

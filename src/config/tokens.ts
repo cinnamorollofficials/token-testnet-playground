@@ -37,6 +37,7 @@ export const DEFAULT_TEST_TOKENS: Record<LedgerId, TokenAsset | null> = {
     symbol: 'HTT',
   },
   bitcoin: null,
+  'bitcoin-t4': null,
   kaia: null,
 };
 

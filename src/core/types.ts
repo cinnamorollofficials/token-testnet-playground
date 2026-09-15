@@ -1,4 +1,4 @@
-export type LedgerId = 'ethereum' | 'polygon' | 'solana' | 'xrpl' | 'bitcoin' | 'kaia';
+export type LedgerId = 'ethereum' | 'polygon' | 'solana' | 'xrpl' | 'bitcoin' | 'bitcoin-t4' | 'kaia';
 
 export interface Account {
   readonly ledger: LedgerId;
@@ -116,4 +116,30 @@ export interface LedgerAdapter {
   broadcast(tx: SignedTx): Promise<{ hash: string }>;
   waitConfirm(hash: string): Promise<TxStatus>;
   explorerTx(hash: string): string;
+}
+
+export interface VaultPayload {
+  mnemonic: string;
+  activeAccountIndex: number;
+  createdAt: string;
+}
+
+export interface EncryptedVault {
+  version: 1;
+  crypto: {
+    cipher: 'aes-256-gcm';
+    ciphertext: string; // Base64
+    iv: string;         // Base64
+    kdf: {
+      algorithm: 'PBKDF2';
+      hash: 'SHA-256';
+      iterations: number;
+      salt: string;     // Base64
+    };
+  };
+  metadata: {
+    createdAt: string;
+    updatedAt: string;
+    fingerprint?: string;
+  };
 }

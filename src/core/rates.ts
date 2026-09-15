@@ -60,12 +60,8 @@ function resolveIndodaxEndpoint(): string {
       return 'https://indodax.com/api/tickers';
     }
 
-    // Jika berjalan di localhost browser (Vite dev server), gunakan proxy vite untuk menghindari CORS
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      return '/api/indodax/tickers';
-    }
-
-    return 'https://indodax.com/api/tickers';
+    // Jika berjalan di web browser (Vite dev proxy / Docker Nginx reverse proxy), gunakan proxy untuk menghindari CORS
+    return '/api/indodax/tickers';
   }
 
   // 2. Lingkungan Node.js / CLI

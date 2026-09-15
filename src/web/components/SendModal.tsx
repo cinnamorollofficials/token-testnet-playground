@@ -506,7 +506,7 @@ export const SendModal: React.FC<Props> = ({
         {/* STEP 3: SUBMITTING / SIGNING */}
         {step === 'submitting' && (
           <div style={{ textAlign: 'center', padding: '40px 0' }}>
-            <Loader2 size={44} color="var(--primary)" style={{ animation: 'spin 1s linear infinite', marginBottom: '16px' }} />
+            <Loader2 size={44} color="#ffffff" style={{ animation: 'spin 1s linear infinite', marginBottom: '16px' }} />
             <h3 style={{ fontSize: '17px', fontWeight: 700, marginBottom: '6px' }}>Menandatangani & Broadcast...</h3>
             <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
               Kunci privat offline menandatangani transaksi di memori browser dan mem-broadcast ke node testnet.
