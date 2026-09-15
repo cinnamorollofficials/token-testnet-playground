@@ -195,7 +195,7 @@ textarea {
   flex-shrink: 0;
 }
 
-/* Header Network Button (No circle wrapper, enlarged images) */
+/* Header Network Button (No circle wrapper, enlarged images, no bounce) */
 .rabby-header-network-btn {
   position: relative;
   display: flex;
@@ -205,12 +205,12 @@ textarea {
   border: none;
   padding: 2px;
   cursor: pointer;
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  transition: opacity 0.15s ease;
   flex-shrink: 0;
 }
 
 .rabby-header-network-btn:hover {
-  transform: scale(1.08);
+  opacity: 0.85;
 }
 
 .rabby-header-network-active-logo {
@@ -221,6 +221,7 @@ textarea {
   flex-shrink: 0;
   background: #ffffff;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
 }
 
 /* Stacked Chain Logos for All-Chains Mode */
@@ -230,6 +231,7 @@ textarea {
   justify-content: center;
   position: relative;
   line-height: 0;
+  pointer-events: none;
 }
 
 .rabby-header-chain-stack-item {
@@ -241,7 +243,7 @@ textarea {
   border: 2px solid var(--bg-card);
   margin-left: -10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
-  transition: transform 0.15s ease;
+  pointer-events: none;
   flex-shrink: 0;
 }
 
@@ -259,10 +261,7 @@ textarea {
   font-weight: 700;
   line-height: 1;
   user-select: none;
-}
-
-.rabby-header-network-btn:hover .rabby-header-chain-stack-item {
-  transform: translateY(-2px);
+  pointer-events: none;
 }
 
 .rabby-header-network-hidden-select {
@@ -272,6 +271,8 @@ textarea {
   height: 100%;
   opacity: 0;
   cursor: pointer;
+  z-index: 10;
+  pointer-events: auto;
 }
 
 /* Header Action & Lock Buttons */
