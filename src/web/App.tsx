@@ -445,7 +445,9 @@ export const App: React.FC = () => {
                   }
                 >
                   <div className="rabby-header-avatar">#{activeAccountIndex}</div>
-                  <span className="rabby-header-acc-name">Acc #{activeAccountIndex}</span>
+                  <span className="rabby-header-acc-name">
+                    {displayedAddress ? truncateAddress(displayedAddress, 4, 3) : `#${activeAccountIndex}`}
+                  </span>
                   <ArrowLeftRight size={11} className="rabby-header-acc-switch-icon" />
                 </button>
               ) : (
