@@ -120,7 +120,7 @@ export const QRScannerModal: React.FC<Props> = ({ isOpen, onClose }) => {
         {/* Header */}
         <div className="rabby-modal-header">
           <div className="rabby-modal-title">
-            <Camera color="var(--primary)" size={20} />
+            <Camera color="#ffffff" size={20} />
             Unlock Sesi Runtime via QR
           </div>
           <button
@@ -224,7 +224,7 @@ export const QRScannerModal: React.FC<Props> = ({ isOpen, onClose }) => {
               onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'var(--primary)')}
               onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'var(--border-subtle)')}
             >
-              <Upload size={36} color="var(--primary)" />
+              <Upload size={36} color="#ffffff" />
               <div>
                 <div style={{ fontWeight: 600, fontSize: '14px', marginBottom: '4px' }}>
                   Pilih file gambar foto QR

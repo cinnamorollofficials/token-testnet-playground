@@ -481,7 +481,7 @@ textarea {
 .rabby-action-icon {
   width: 20px;
   height: 20px;
-  color: var(--primary);
+  color: #ffffff;
   transition: transform 0.2s ease;
 }
 
@@ -984,7 +984,7 @@ textarea {
 .rabby-sheet-title-icon {
   display: inline-flex;
   align-items: center;
-  color: var(--primary);
+  color: #ffffff;
 }
 
 .rabby-sheet-body {
@@ -1059,7 +1059,7 @@ textarea {
 .rabby-subpage-title-icon {
   display: inline-flex;
   align-items: center;
-  color: var(--primary);
+  color: #ffffff;
 }
 
 .rabby-subpage-body {

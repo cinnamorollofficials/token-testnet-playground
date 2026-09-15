@@ -463,7 +463,7 @@ export const App: React.FC = () => {
               title={`Jaringan: ${selectedLedger === 'all' ? 'All Chains (5 Testnets)' : singleChainNetwork?.name}. Klik untuk mengganti.`}
             >
               {selectedLedger === 'all' ? (
-                <Layers size={15} color="var(--primary)" />
+                <Layers size={15} color="#ffffff" />
               ) : (
                 <img
                   src={LEDGER_LOGOS[selectedLedger]}
@@ -637,7 +637,7 @@ export const App: React.FC = () => {
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Layers size={16} color="var(--primary)" />
+                    <Layers size={16} color="#ffffff" />
                     <span style={{ fontWeight: 700, fontSize: '15px' }}>
                       {selectedLedger === 'all' ? 'All Chain Assets' : `${singleChainNetwork?.name} Assets`}
                     </span>
