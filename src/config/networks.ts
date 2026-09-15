@@ -23,6 +23,7 @@ export const LEDGER_LOGOS: Record<LedgerId, string> = {
   solana: 'https://cdn.jsdelivr.net/gh/trustwallet/assets@master/blockchains/solana/info/logo.png',
   xrpl: 'https://cdn.jsdelivr.net/gh/trustwallet/assets@master/blockchains/ripple/info/logo.png',
   bitcoin: 'https://cdn.jsdelivr.net/gh/trustwallet/assets@master/blockchains/bitcoin/info/logo.png',
+  'bitcoin-t4': 'https://cdn.jsdelivr.net/gh/trustwallet/assets@master/blockchains/bitcoin/info/logo.png',
   kaia: 'https://coin-images.coingecko.com/coins/images/39901/large/KAIA.png',
 };
 
@@ -32,6 +33,7 @@ export const ALLOWLISTED_TESTNET_IDS: ReadonlySet<string | number> = new Set([
   'solana-devnet',   // Solana Devnet
   'xrpl-testnet',    // XRPL Testnet
   'btc-signet',      // Bitcoin Signet
+  'btc-testnet4',    // Bitcoin Testnet 4
   1001,              // Kaia Kairos (future/backlog)
 ]);
 
@@ -112,6 +114,21 @@ export const NETWORKS: Record<LedgerId, NetworkConfig> = {
     },
     supportsAutoFaucet: false,
     logoUrl: LEDGER_LOGOS.bitcoin,
+  },
+  'bitcoin-t4': {
+    id: 'bitcoin-t4',
+    name: 'Bitcoin',
+    testnetName: 'Testnet 4',
+    networkId: 'btc-testnet4',
+    rpcUrl: process.env.BITCOIN_TESTNET4_EXPLORER || 'https://mempool.space/testnet4/api',
+    explorerUrl: 'https://mempool.space/testnet4',
+    faucetUrl: 'https://testnet4.anyone.eu.org',
+    nativeAsset: {
+      symbol: 'tBTC',
+      decimals: 8,
+    },
+    supportsAutoFaucet: false,
+    logoUrl: LEDGER_LOGOS['bitcoin-t4'],
   },
   kaia: {
     id: 'kaia',
