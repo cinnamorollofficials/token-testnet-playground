@@ -39,6 +39,7 @@ const SUPPORTED_LEDGERS: { id: ChainFilter; label: string }[] = [
   { id: 'solana', label: 'Devnet (SOL)' },
   { id: 'xrpl', label: 'XRPL Testnet (XRP)' },
   { id: 'bitcoin', label: 'BTC Signet (sBTC)' },
+  { id: 'bitcoin-t4', label: 'BTC Testnet 4 (tBTC)' },
 ];
 
 interface AssetItem {
@@ -154,6 +155,20 @@ const ALL_ASSETS: AssetItem[] = [
     explorerUrl: 'https://mempool.space/signet',
     logoUrl: LEDGER_LOGOS.bitcoin,
   },
+  {
+    id: 'bitcoin-t4-native',
+    ledger: 'bitcoin-t4',
+    name: 'Bitcoin',
+    symbol: 'tBTC',
+    kind: 'native',
+    networkName: 'Bitcoin',
+    testnetName: 'Testnet 4',
+    badge: 'Testnet 4',
+    decimals: 8,
+    avatarBg: 'linear-gradient(135deg, #E87B2C 0%, #F7931A 100%)',
+    explorerUrl: 'https://mempool.space/testnet4',
+    logoUrl: LEDGER_LOGOS['bitcoin-t4'],
+  },
 ];
 
 export function formatDisplayBalance(valueStr: string | null | undefined, maxDecimals: number = 4): string {
@@ -234,6 +249,7 @@ export const App: React.FC = () => {
     solana: true,
     xrpl: true,
     bitcoin: true,
+    'bitcoin-t4': true,
     kaia: false,
   });
 
@@ -264,6 +280,7 @@ export const App: React.FC = () => {
       solana: true,
       xrpl: true,
       bitcoin: true,
+      'bitcoin-t4': true,
       kaia: false,
     });
 
